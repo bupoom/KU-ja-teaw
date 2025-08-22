@@ -1,43 +1,82 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+        tabBarShowLabel: true,
+        tabBarActiveTintColor: '#075952ff',
+        tabBarInactiveTintColor: '#A9A9A9A9',
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 25,
+          backgroundColor: '#ffffff',
+          borderRadius: 20,
+          height: 55,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 10,
           },
-          default: {},
-        }),
-      }}>
+          shadowOpacity: 0.25,
+          shadowRadius: 3.5,
+          borderWidth: 1,
+          borderColor: '#fff9f9ff',
+        },
+        tabBarItemStyle: {
+          paddingTop: 8,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "HOME",
+          headerShown: true,
+          tabBarIcon: ({ size, color, focused }) => (
+            <Feather name="home" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="place"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ size, color, focused }) => (
+            <Feather name="bookmark" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="plan"
+        options={{
+          tabBarIcon: ({ size, color, focused }) => (
+            <Feather name="plus-circle" size={size + 15} color={color} หะ/>
+          ),
+          tabBarIconStyle: {
+            width: 45,
+            height: 45,
+            bottom: 10,
+          }
+        }}
+      />
+      <Tabs.Screen
+        name="guide"
+        options={{
+          tabBarIcon: ({ size, color, focused }) => (
+            <Feather name="book-open" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          tabBarIcon: ({ size, color, focused }) => (
+            <FontAwesome6 name="user-circle" size={size - 2} color={color} />
+          ),
         }}
       />
     </Tabs>
