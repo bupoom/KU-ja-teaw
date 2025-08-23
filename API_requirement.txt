@@ -1,17 +1,27 @@
 [page]
   => (tabs)
-        =>  
-        =>
-        =>
-        => ___ Profile Screen ___
-            bookmarktrips {
-                id: 1,
+        => ___ Home Screen ___
+        => ___ Place Screen ___
+            bookmarkplace {
+                id: number,
                 title: string,
                 rating: number,                      // เต็ม 5 
                 total_rating: number,
                 location: string, 
-                image:  ???,                        // กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url,
-                isBookmarked: bool
+                image:  ???,                        //รูปสถานที่ กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url,
+                isBookmarked: bool                  // bool ต้องเป็น true เสมอ
+            }
+        => ___ Plan Screen ___
+        => ___ Guide Screen ___
+            bookmarktrips {
+                id: number,
+                title: string,
+                image: ???,                 // รูปสถานที่ กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url,
+                copies: number,             // มีกี่ copy แล้ว 
+                duration: number,           // unit[days] Ex. 7
+                user: string,
+                userAvatar: ???,            // รูป user
+                isBookmarked: bool          // bool ต้องเป็น true เสมอ
             }
         => ___ Profile Screen ___
                 Trip {
