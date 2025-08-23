@@ -19,20 +19,20 @@ const PlaceScreen = () => {
   const bookmarkedPlaces = [
     {
       id: 1,
-      title: "Trip to Paris",
-      rating: 3,
+      title: "Nut burito club",
+      rating: 2,
       total_rating: 437,
       location: "Paris, France",
-      image: "https://images2.alphacoders.com/546/546391.jpg",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvCsa70MIJzwtmqjWS5XubF-LQbZAE4Z4SFQ&s",
       isBookmarked: true
     },
     {
       id: 2,
-      title: "Pattaya Guide",
+      title: "Oshi's mom cafe",
       rating: 4.5,
       total_rating: 1792,
       location: "Pattaya, Thailand",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center",
+      image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2e/84/16/3a/caption.jpg?w=900&h=500&s=1",
       isBookmarked: true
     }
   ];

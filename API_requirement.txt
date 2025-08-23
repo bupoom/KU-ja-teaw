@@ -5,14 +5,13 @@
         =>
         => ___ Profile Screen ___
             bookmarktrips {
-                id: number,
-                title: string, 
-                image: ???,                         // กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url
-                copies: number,            w 
-                duration: number,   
-                user: string,
-                userAvatar: ???,                    // กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url 
-                isBookmarked: boolean               // true / false
+                id: 1,
+                title: string,
+                rating: number,                      // เต็ม 5 
+                total_rating: number,
+                location: string, 
+                image:  ???,                        // กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url,
+                isBookmarked: bool
             }
         => ___ Profile Screen ___
                 Trip {
