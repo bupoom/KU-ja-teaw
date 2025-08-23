@@ -21,20 +21,20 @@ const GuideBookmarkScreen = () => {
       id: 1,
       title: "Trip to Paris",
       image: "https://images2.alphacoders.com/546/546391.jpg",
-      copies: "555 Copy",
-      duration: "5 Days",
-      agent: "Agent : Keen_Kung",
-      agentAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
+      copies: 473,
+      duration: 5,
+      user: "Keen_Kung",
+      userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
       isBookmarked: true
     },
     {
       id: 2,
       title: "Pattaya Guide",
       image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop&crop=center",
-      copies: "555 Copy",
-      duration: "7 Days",
-      agent: "Agent : Keen_Kung",
-      agentAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
+      copies: 1976,
+      duration: 7,
+      user: "Keen_Kung",
+      userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
       isBookmarked: true
     }
   ];
@@ -49,9 +49,14 @@ const GuideBookmarkScreen = () => {
   const  handleUnbookmark  = () => {
     // fetch API ลบ bookmark ทิ้ง
     onRefresh()
+    Alert.alert('unbookmark แล้วไอโง่');
     return 
   }
 
+  const handleSearch = () => {
+    // redirect ไป dynamic page
+  }
+  
   return (
     <View className="flex-1 bg-gray-50">
       <StatusBar barStyle="light-content" backgroundColor="#075952" />
@@ -63,18 +68,22 @@ const GuideBookmarkScreen = () => {
 
       {/* Search Bar */}
       <View className="px-4 -mt-6 mb-6">
-        <View className="bg-white rounded-full px-4 py-3 shadow-2xl border border-gray-200 flex-row items-center">
+        <View className="bg-white rounded-full px-4 py-3 shadow-sm border border-gray-200 flex-row items-center">
           <Feather name="search" size={20} color="#666" className="mr-3" />
-          <TextInput
+          <TextInput 
             placeholder="Search ..."
             value={searchText}
             onChangeText={setSearchText}
             className="flex-1 text-gray-700 ml-3"
             placeholderTextColor="#999"
+            onPress={handleSearch}
           />
         </View>
+        <View
+          className='mt-4 w-10/16 border-hairline border-s border-gray-300'
+        />
       </View>
-
+      
       {/* Bookmarked Guides List */}
       <ScrollView 
         className="flex-1 px-4" 
@@ -114,21 +123,21 @@ const GuideBookmarkScreen = () => {
                 <View className="flex-row items-center mb-2">
                   <View className="flex-row items-center mr-4">
                     <Feather name="copy" size={14} color="#666" />
-                    <Text className="text-sm text-gray-600 ml-1">{guide.copies}</Text>
+                    <Text className="text-sm text-gray-600 ml-1">{guide.copies} copied</Text>
                   </View>
                   <View className="flex-row items-center">
                     <Feather name="calendar" size={14} color="#666" />
-                    <Text className="text-sm text-gray-600 ml-1">{guide.duration}</Text>
+                    <Text className="text-sm text-gray-600 ml-1">{guide.duration} days</Text>
                   </View>
                 </View>
 
-                {/* Agent Info */}
+                {/* user Info */}
                 <View className="flex-row items-center">
                   <Image
-                    source={{ uri: guide.agentAvatar }}
+                    source={{ uri: guide.userAvatar }}
                     className="w-5 h-5 rounded-full mr-2"
                   />
-                  <Text className="text-sm text-gray-600">{guide.agent}</Text>
+                  <Text className="text-sm text-gray-600">{guide.user}</Text>
                 </View>
               </View>
             </View>

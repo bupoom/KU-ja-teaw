@@ -16,23 +16,21 @@ import '../../global.css'
 
 // TypeScript interfaces
 interface Trip {
-  id: string;
+  id: number;
   title: string;
   image: string;
   date: string;
-  people: string;
+  people: number;
   status: 'Now' | 'Coming' | 'Completed';
-  statusColor: string;
   location?: string;
-  duration?: string;
 }
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   username: string;
   phone: string;
-  avatar: string;
+  user_image: string;
   email?: string;
   bio?: string;
 }
@@ -52,11 +50,11 @@ const ProfileScreen: React.FC = () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     return {
-      id: '1',
+      id: 1,
       name: 'Mr.Terrific',
       username: '@man300iq',
       phone: 'Tel. 0654105555',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      user_image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
       email: 'terrific@example.com',
       bio: 'Adventure seeker & travel enthusiast 🌍'
     };
@@ -67,45 +65,39 @@ const ProfileScreen: React.FC = () => {
     await new Promise(resolve => setTimeout(resolve, 800));
     return [
       {
-        id: '1',
+        id: 1,
         title: 'Tokyo Adventure',
         image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=80&h=80&fit=crop',
         date: 'Dec 15-22, 2024',
-        people: '4 people',
+        people: 4,
         status: 'Now',
-        statusColor: '#10B981',
         location: 'Tokyo, Japan',
-        duration: '7 days'
       },
       {
-        id: '2',
+        id: 2,
         title: 'Bali Retreat',
         image: 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=80&h=80&fit=crop',
         date: 'Jan 10-17, 2025',
-        people: '2 people',
+        people: 2,
         status: 'Coming',
-        statusColor: '#3B82F6',
         location: 'Bali, Indonesia',
-        duration: '7 days'
       },
       {
-        id: '3',
+        id: 3,
         title: 'Paris Getaway',
         image: 'https://images2.alphacoders.com/546/546391.jpg',
         date: 'Nov 5-12, 2024',
-        people: '3 people',
+        people: 3,
         status: 'Completed',
-        statusColor: '#6B7280',
         location: 'Paris, France',
       },
       {
-        id: '4',
+        id: 4,
         title: 'Swiss Alps',
         image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=80&h=80&fit=crop',
         date: 'Sep 20-27, 2024',
-        people: '5 people',
+        people: 5,
         status: 'Completed',
-        statusColor: '#6B7280',
         location: 'Swiss Alps',
       }
     ];
@@ -139,6 +131,19 @@ const ProfileScreen: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const get_status_color = (status:string) => {
+    switch (status) {
+    case "Complete":
+      return "#6B7280"; 
+    case "Coming":
+      return "#3B82F6"; 
+    case "Now":
+      return "#10B981"; 
+    default:
+      return "#6B7280"; 
+  }
+  }
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -213,7 +218,7 @@ const ProfileScreen: React.FC = () => {
           <View className="items-center px-4 mt-4">
             <View className="relative mb- w-130 h-130">
               <Image
-                source={{ uri: user.avatar }}
+                source={{ uri: user.user_image }}
                 className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
               />
               <TouchableOpacity 
@@ -263,6 +268,7 @@ const ProfileScreen: React.FC = () => {
           </View>
         </View>
         */}
+        {/* Info Sections */}
         <View className="items-center px-4 mt-4">
           <Text className="text-2xl font-bold color-black mb-1">{user.name}</Text>
           <Text className="color-grey mb-1">{user.username}</Text>
@@ -271,6 +277,7 @@ const ProfileScreen: React.FC = () => {
             <Text className="color-grey text-center text-sm px-4">{user.bio}</Text>
           )}
         </View>
+
         {/* Trips Sections */}
         <View className="px-4">
           {tripSections.map((section, sectionIndex) => (
@@ -279,7 +286,7 @@ const ProfileScreen: React.FC = () => {
                 {section.title}
               </Text>
               <View
-                className='mb-4 w-15/16 border-hairline border-s border-gray-500'
+                className='mb-4 w-15/16 border-hairline border-s border-gray-400'
               />
               {section.trips.map((trip) => (
                 <TouchableOpacity 
@@ -301,7 +308,7 @@ const ProfileScreen: React.FC = () => {
                         </Text>
                         <View 
                           className="px-3 py-1 rounded-full"
-                          style={{ backgroundColor: trip.statusColor }}
+                          style={{ backgroundColor: get_status_color(trip.status) }}
                         >
                           <Text className="text-white text-xs font-medium">
                             {trip.status}
@@ -317,7 +324,7 @@ const ProfileScreen: React.FC = () => {
                       <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center">
                           <Feather name="users" size={14} color="#6B7280" />
-                          <Text className="text-gray-600 text-sm ml-2">{trip.people}</Text>
+                          <Text className="text-gray-600 text-sm ml-2">{trip.people} person joined</Text>
                         </View>
                         
                         {trip.location && (

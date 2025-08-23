@@ -1,0 +1,35 @@
+[page]
+  => (tabs)
+        =>  
+        =>
+        =>
+        => ___ Profile Screen ___
+            bookmarktrips {
+                id: number,
+                title: string, 
+                image: ???,                         // กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url
+                copies: number,            w 
+                duration: number,   
+                user: string,
+                userAvatar: ???,                    // กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url 
+                isBookmarked: boolean               // true / false
+            }
+        => ___ Profile Screen ___
+                Trip {
+                    id: number; 
+                    title: string;
+                    image: ???;                             // กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url 
+                    date: string;                           // Ex. 'Dec 15-22, 2024', ถ้าส่งมารูปแบบนี้ก็จะดีมากแต่ถ้าไม่ได้ก็ไม่เป็นไร
+                    people: number; 
+                    status: 'Now' | 'Coming' | 'Completed'; // Ex. 'Completed'
+                    location?: string;                      // Ex. 'Tokyo, Japan'  ใน Figma ไม่มีแต่ควรใส่
+                },
+                User {
+                    id: number;
+                    name: string;
+                    username: string;   // Ex. '@man300iq'
+                    phone: string;      // Ex. 'Tel. 0623644535'
+                    user_image: string; 
+                    email?: string;
+                    bio?: string;
+                }
