@@ -6,7 +6,6 @@ import {
   ScrollView, 
   TouchableOpacity, 
   StatusBar, 
-  StyleSheet,
   RefreshControl,
   Alert,
   ActivityIndicator
