@@ -64,7 +64,6 @@ export default function TabsLayout() {
             width: 45,
             height: 45,
             bottom: 10,
-            
           }
         }}
       />
