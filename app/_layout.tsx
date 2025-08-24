@@ -9,6 +9,7 @@ export default function IntroLayout() {
             <Stack.Screen name="index"/>
             <Stack.Screen name="auth"/>
             <Stack.Screen name="(tabs)"/>
+            <Stack.Screen name="plan"/>
         </Stack>
     );
 }

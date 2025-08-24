@@ -1,9 +1,11 @@
-import { Tabs } from 'expo-router';
+import { Tabs , router , useSegments   } from 'expo-router'; // plan 
 import React from 'react';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 export default function TabsLayout() {
+  const segment = useSegments(); // plan 
+  const hideTabBar = [...segment].includes("plan"); // plan 
   return (
     <Tabs
       screenOptions={{
@@ -32,6 +34,7 @@ export default function TabsLayout() {
           paddingTop: 8,
         },
       }}
+      tabBar={hideTabBar ? () => null : undefined} // plan 
     >
       <Tabs.Screen
         name="index"
@@ -55,12 +58,13 @@ export default function TabsLayout() {
         name="plan"
         options={{
           tabBarIcon: ({ size, color, focused }) => (
-            <Feather name="plus-circle" size={size + 15} color={color} หะ/>
+            <Feather name="plus-circle" size={size + 15} color={color}/>
           ),
           tabBarIconStyle: {
             width: 45,
             height: 45,
             bottom: 10,
+            
           }
         }}
       />
