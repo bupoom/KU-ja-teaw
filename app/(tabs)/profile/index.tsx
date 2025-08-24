@@ -284,9 +284,7 @@ const ProfileScreen: React.FC = () => {
               <Text className="text-xl font-bold text-gray-800 mb-4">
                 {section.title}
               </Text>
-              <View
-                className='mb-4 w-15/16 border-hairline border-s border-gray-400'
-              />
+              <View className='mb-4 w-15/16 border-hairline border-s border-gray-400'/>
               {section.trips.map((trip) => (
                 <TouchableOpacity 
                   key={trip.id}
