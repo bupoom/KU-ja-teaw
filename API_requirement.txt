@@ -6,10 +6,9 @@
                 id: number,
                 title: string,
                 rating: number,                      // เต็ม 5 
-                total_rating: number,
+                reviewCount: number,
                 location: string, 
                 image:  ???,                        //รูปสถานที่ กุก็ไม่รู้ว่าส่งเป็น type อะไรได้บ้าง  img / link url,
-                isBookmarked: bool                  // bool ต้องเป็น true เสมอ
             }
         => ___ Plan Screen ___
         => ___ Guide Screen ___
@@ -21,7 +20,6 @@
                 duration: number,           // unit[days] Ex. 7
                 user: string,
                 userAvatar: ???,            // รูป user
-                isBookmarked: bool          // bool ต้องเป็น true เสมอ
             }
         => ___ Profile Screen ___
                 Trip {

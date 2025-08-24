@@ -1,11 +1,12 @@
-import { Tabs , router , useSegments   } from 'expo-router'; // plan 
+import { Tabs  , useSegments   } from 'expo-router';
 import React from 'react';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { TouchableOpacity , Image , View } from 'react-native'
 
 export default function TabsLayout() {
-  const segment = useSegments(); // plan 
-  const hideTabBar = [...segment].includes("plan"); // plan 
+  const segment = useSegments(); 
+  const hideTabBar = [...segment].includes("plan");
   return (
     <Tabs
       screenOptions={{
@@ -34,13 +35,22 @@ export default function TabsLayout() {
           paddingTop: 8,
         },
       }}
-      tabBar={hideTabBar ? () => null : undefined} // plan 
+      tabBar={hideTabBar ? () => null : undefined}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "HOME",
+          title: "KU JA TEAW",
           headerShown: true,
+          headerLeft: () => (
+            <View className="ml-5 bottom-2">
+              <Image 
+                source={require('@/assets/images/home_icon.png')} 
+                className="w-50 h-50"
+                style={{}}
+              />
+            </View>
+          ),
           tabBarIcon: ({ size, color, focused }) => (
             <Feather name="home" size={size} color={color} />
           ),
