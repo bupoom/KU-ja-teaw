@@ -20,8 +20,9 @@ interface Trip {
   id: number;
   title: string;
   dateRange: string;
-  agent: string;
   image: string;
+  agent: string;
+  agentImage: string;
   participantsCount: number;
 }
 
@@ -37,8 +38,8 @@ interface Place {
 interface GuidePlan {
   id: number;
   title: string;
-  duration: string;
-  price: string;
+  duration: number;
+  price: number;
   rating: number;
   image: string;
   highlights: string[];
@@ -76,12 +77,13 @@ export default function HomeScreen(): JSX.Element {
         id: 1,
         title: "Trip to Paris",
         dateRange: "25/06/65-01/07/65",
+        image: "https://wallpaperbat.com/img/172005-4k-paris-wallpaper-top-free-4k-paris-background.jpg",
         agent: "Keen_Kung",
-        image: "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=300&h=200&fit=crop",
+        agentImage: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
         participantsCount: 4,
       };
       
-      // ✅ เซ็ตข้อมูลลง state
+      //  เซ็ตข้อมูลลง state
       setCurrentTrip(CurrentTripData);
     } catch (error) {
       console.error('Failed to fetch current trip:', error);
@@ -99,29 +101,32 @@ export default function HomeScreen(): JSX.Element {
           id: 1,
           title: "Trip to Thailand",
           dateRange: "25/08/65-01/08/65",
-          agent: "Keen_Kung",
           image: "https://images.unsplash.com/photo-1528181304800-259b08848526?w=300&h=200&fit=crop",
+          agent: "Keen_Kung",
+          agentImage: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
           participantsCount: 5
         },
         {
           id: 2,
           title: "Trip of Osaka",
           dateRange: "15/09/65-22/09/65",
-          agent: "Oshi_Kung",
           image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=300&h=200&fit=crop",
-          participantsCount: 3
+          agent: "Oshi_Kung",
+          agentImage: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
+          participantsCount: 3,
         },
         {
           id: 3,
           title: "Trip to Tokyo",
           dateRange: "10/10/65-17/10/65",
-          agent: "Travel_Pro",
           image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=300&h=200&fit=crop",
-          participantsCount: 7
+          agent: "Travel_Pro",
+          agentImage: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
+          participantsCount: 7,
         }
       ];
       
-      // ✅ เซ็ตข้อมูลลง state
+      //  เซ็ตข้อมูลลง state
       setTripInvitations(InvitationsTripsData);
     } catch (error) {
       console.error('Failed to fetch trip invitations:', error);
@@ -169,7 +174,7 @@ export default function HomeScreen(): JSX.Element {
         }
       ];
       
-      // ✅ เซ็ตข้อมูลลง state
+      // เซ็ตข้อมูลลง state
       setPlacesToVisit(PlacesData);
     } catch (error) {
       console.error('Failed to fetch places:', error);
@@ -186,8 +191,8 @@ export default function HomeScreen(): JSX.Element {
         {
           id: 1,
           title: "7-Day European Adventure",
-          duration: "7 days",
-          price: "฿45,000",
+          duration: 7,
+          price: 45000,
           rating: 4.8,
           image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=300&h=200&fit=crop",
           highlights: ["Visit 5 countries", "Professional guide", "All meals included"],
@@ -196,8 +201,8 @@ export default function HomeScreen(): JSX.Element {
         {
           id: 2,
           title: "Asian Culture Tour",
-          duration: "10 days",
-          price: "฿32,000",
+          duration: 10,
+          price: 32000,
           rating: 4.9,
           image: "https://images.unsplash.com/photo-1528164344705-47542687000d?w=300&h=200&fit=crop",
           highlights: ["Temple visits", "Cultural workshops", "Local cuisine"],
@@ -206,8 +211,8 @@ export default function HomeScreen(): JSX.Element {
         {
           id: 3,
           title: "Beach Paradise",
-          duration: "5 days",
-          price: "฿28,000",
+          duration: 5,
+          price: 28000,
           rating: 4.7,
           image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop",
           highlights: ["Private beach", "Water sports", "Sunset cruise"],
@@ -215,7 +220,7 @@ export default function HomeScreen(): JSX.Element {
         }
       ];
       
-      // ✅ เซ็ตข้อมูลลง state
+      //  เซ็ตข้อมูลลง state
       setGuidePlans(mockData);
     } catch (error) {
       console.error('Failed to fetch guide plans:', error);
@@ -330,35 +335,30 @@ export default function HomeScreen(): JSX.Element {
     </View>
   );
 
+  //  ------------------- Invitation  -------------------
   const renderTripInvitation = ({ item }: { item: Trip }): JSX.Element => (
     <View className="bg-white rounded-xl p-4 mb-4 mx-4 shadow-sm border border-gray-100">
       <View className="flex-row">
         <Image 
           source={{ uri: item.image }} 
-          className="w-16 h-16 rounded-lg mr-3"
+          className="w-20 h-full rounded-lg mr-3"
           resizeMode="cover"
         />
         <View className="flex-1">
-          <Text className="text-lg font-semibold text-black mb-1">
-            {item.title}
-          </Text>
+          <Text className="text-lg font-semibold text-black mb-1">{item.title}</Text>
           <View className="flex-row items-center mb-1">
             <Feather name="calendar" size={14} color="#666" />
-            <Text className="text-sm text-gray-600 ml-1">
-              {item.dateRange}
-            </Text>
+            <Text className="text-sm text-gray-600 ml-1 mr-3">{item.dateRange}</Text>
+            <Feather name="users" size={14} color="#666" />
+            <Text className="text-sm text-gray-600 ml-1">{item.participantsCount} participants</Text>
           </View>
           <View className="flex-row items-center mb-1">
-            <View className="w-5 h-5 bg-orange-400 rounded-full mr-2" />
-            <Text className="text-sm text-gray-600">
-              Agent: {item.agent}
-            </Text>
-          </View>
-          <View className="flex-row items-center">
-            <Feather name="users" size={14} color="#666" />
-            <Text className="text-sm text-gray-600 ml-1">
-              {item.participantsCount} participants
-            </Text>
+            <Image 
+              source={{ uri: item.agentImage }} 
+              className="w-6 h-6 rounded-full mr-3"
+              resizeMode="cover"
+            />
+            <Text className="text-sm text-gray-600">{item.agent}</Text>
           </View>
         </View>
       </View>
@@ -380,7 +380,7 @@ export default function HomeScreen(): JSX.Element {
       </View>
     </View>
   );
-
+  //  ------------------- Place -------------------
   const renderPlace = ({ item }: { item: Place }): JSX.Element => (
     <TouchableOpacity 
       className="mr-4 w-48"
@@ -392,26 +392,20 @@ export default function HomeScreen(): JSX.Element {
         className="w-48 h-32 rounded-xl mb-2"
         resizeMode="cover"
       />
-      <Text className="text-base font-semibold text-black mb-1">
-        {item.title}
+      <Text className="text-base font-semibold text-black mb-1">{item.title}
       </Text>
-      <Text className="text-sm text-gray-600 mb-1">
-        {item.location}
-      </Text>
+      <Text className="text-sm text-gray-600 mb-1">{item.location}</Text>
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center">
           <Feather name="star" size={14} color="#FFA500" />
-          <Text className="text-sm text-gray-600 ml-1">
-            {item.rating}
-          </Text>
+          <Text className="text-sm text-gray-600 ml-1">{item.rating}</Text>
         </View>
-        <Text className="text-xs text-gray-500">
-          {item.reviewCount.toLocaleString()} reviews
-        </Text>
+        <Text className="text-xs text-gray-500">{item.reviewCount.toLocaleString()} reviews</Text>
       </View>
     </TouchableOpacity>
   );
 
+  //  ------------------- Place -------------------
   const renderGuidePlan = ({ item }: { item: GuidePlan }): JSX.Element => (
     <TouchableOpacity 
       className="mr-4 w-56"
@@ -423,22 +417,14 @@ export default function HomeScreen(): JSX.Element {
         className="w-56 h-36 rounded-xl mb-2"
         resizeMode="cover"
       />
-      <Text className="text-base font-semibold text-black mb-1" numberOfLines={2}>
-        {item.title}
-      </Text>
+      <Text className="text-base font-semibold text-black mb-1" numberOfLines={2}>{item.title}</Text>
       <View className="flex-row justify-between items-center mb-1">
-        <Text className="text-sm text-gray-600">
-          {item.duration}
-        </Text>
-        <Text className="text-lg font-bold text-teal-700">
-          {item.price}
-        </Text>
+        <Text className="text-sm text-gray-600">{item.duration} days</Text>
+        <Text className="text-lg font-bold text-teal-700">฿{item.price}</Text>
       </View>
       <View className="flex-row items-center">
         <Feather name="star" size={14} color="#FFA500" />
-        <Text className="text-sm text-gray-600 ml-1">
-          {item.rating}
-        </Text>
+        <Text className="text-sm text-gray-600 ml-1">{item.rating}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -448,7 +434,7 @@ export default function HomeScreen(): JSX.Element {
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       
       <ScrollView 
-        className="flex-1" 
+        className="flex-1 mb-10" 
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -466,41 +452,45 @@ export default function HomeScreen(): JSX.Element {
           </View>
         )}
 
-        {/* Continue Your Trip Section */}
-        <View className="bg-white mt-2 px-4 py-4">
+        {/* --------------------------------------------------------- Continue Your Trip Section --------------------------------------------------------- */}
+        <View className="bg-white mt-2 p-4 shadow-sm border border-gray-100">
           <View className="flex-row items-center justify-between mb-3">
             <Text className="text-xl font-bold text-black">Continue Your Trip</Text>
-            <Feather name="chevron-down" size={20} color="#666" />
+            {/* <Feather name="chevron-down" size={20} color="#666" /> */}
           </View>
           
           {loading.currentTrip ? (
             renderLoadingSpinner()
           ) : currentTrip ? (
             <TouchableOpacity 
-              className="flex-row bg-gray-50 rounded-xl p-3"
+              className="flex-row bg-teal-700 rounded-xl p-3 shadow-sm border-gray-100"
               //onPress={() => router.push(`/trip/${currentTrip.id}`)}
               activeOpacity={0.7}
             >
+              {/* รูป Trips */}
               <Image 
                 source={{ uri: currentTrip.image }} 
-                className="w-16 h-16 rounded-lg mr-3"
+                className="w-20 h-full rounded-lg mr-3"
                 resizeMode="cover"
               />
               <View className="flex-1">
-                <Text className="text-lg font-semibold text-black mb-1">
+                <Text className="text-lg font-semibold text-white mb-1">
                   {currentTrip.title}
                 </Text>
                 <View className="flex-row items-center mb-1">
-                  <Feather name="calendar" size={14} color="#666" />
-                  <Text className="text-sm text-gray-600 ml-1">
+                  <Feather name="calendar" size={14} color="#ffffff" />
+                  <Text className="text-sm text-white ml-1">
                     {currentTrip.dateRange}
                   </Text>
                 </View>
                 <View className="flex-row items-center">
-                  <View className="w-5 h-5 bg-orange-400 rounded-full mr-2" />
-                  <Text className="text-sm text-gray-600">
-                    Agent: {currentTrip.agent}
-                  </Text>
+                  {/* รูป user */}
+                  <Image 
+                    source={{ uri: currentTrip.agentImage }} 
+                    className="w-6 h-6 rounded-full mr-3"
+                    resizeMode="cover"
+                  />
+                  <Text className="text-sm text-white">{currentTrip.agent}</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -510,12 +500,13 @@ export default function HomeScreen(): JSX.Element {
             </View>
           )}
         </View>
+        {/* --------------------------------------------------------- Continue Your Trip Section ------------------- */}
 
-        {/* Ads Picture Section */}
-        <TouchableOpacity className="mx-4 mt-4 mb-4" activeOpacity={0.8}>
+        {/* --------------------------------------------------------- Ads Picture Section ------------------- */}
+        <TouchableOpacity className="mt-4" activeOpacity={0.8}>
           <Image 
             source={{ uri: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" }} 
-            className="w-full h-48 rounded-xl"
+            className="w-full h-48"
             resizeMode="cover"
           />
           <View className="absolute bottom-4 left-4">
@@ -527,8 +518,9 @@ export default function HomeScreen(): JSX.Element {
             </Text>
           </View>
         </TouchableOpacity>
+        {/* --------------------------------------------------------- Ads Picture Section ------------------- */}
 
-        {/* Trip Invitations Section */}
+        {/* --------------------------------------------------------- Trip Invitations Section -------------------*/}
         <View className="mt-4">
           <Text className="text-xl font-bold text-black px-4 mb-4">
             Trip Invitations
@@ -550,8 +542,9 @@ export default function HomeScreen(): JSX.Element {
             </View>
           )}
         </View>
-
-        {/* Places to Visit Section */}
+        {/* --------------------------------------------------------- Trip Invitations Section -------------------*/}
+        
+        {/* --------------------------------------------------------- Places to Visit Section -------------------*/}
         <View className="mt-6">
           <Text className="text-xl font-bold text-black px-4 mb-4">
             Places to Visit
@@ -571,7 +564,7 @@ export default function HomeScreen(): JSX.Element {
           )}
         </View>
 
-        {/* Interesting Guide Plans Section */}
+        {/* --------------------------------------------------------- Interesting Guide Plans Section ----------*/}
         <View className="mt-6 mb-8">
           <Text className="text-xl font-bold text-black px-4 mb-4">
             Interesting Guide Plans

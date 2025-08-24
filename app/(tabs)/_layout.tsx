@@ -2,7 +2,7 @@ import { Tabs  , useSegments   } from 'expo-router';
 import React from 'react';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { TouchableOpacity , Image , View } from 'react-native'
+import {  Image , View } from 'react-native'
 
 export default function TabsLayout() {
   const segment = useSegments(); 
@@ -68,7 +68,12 @@ export default function TabsLayout() {
         name="plan"
         options={{
           tabBarIcon: ({ size, color, focused }) => (
-            <Feather name="plus-circle" size={size + 15} color={color}/>
+            <Image
+              source={require('../../assets/images/add_circle_icon.png')}
+              //KU-ja-teaw\assets\images\add_circle_icon.png
+              className="w-13 rounded-full mr-3"
+              resizeMode="cover"
+            />
           ),
           tabBarIconStyle: {
             width: 45,
