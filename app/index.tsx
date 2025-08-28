@@ -23,7 +23,7 @@ const GetStartScreen = () => {
       </View>
 
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>Welcome to KU JA TEAM 🌊🌴</Text>
+        <Text style={styles.title}>Welcome to KU JA TEAW 🌊🌴</Text>
         <Text style={styles.subtitle}>Your journey with close friends starts here</Text>
         <Text style={styles.description}>Plan your perfect trip</Text>
         <Text style={styles.cta}>Let&apos;s Travel</Text>

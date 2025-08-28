@@ -11,8 +11,10 @@ import {
   Alert
 } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const GuideBookmarkScreen = () => {
+  const route = useRouter()
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   
@@ -25,7 +27,6 @@ const GuideBookmarkScreen = () => {
       duration: 5,
       user: "Keen_Kung",
       userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-      isBookmarked: true
     },
     {
       id: 2,
@@ -35,7 +36,6 @@ const GuideBookmarkScreen = () => {
       duration: 7,
       user: "Keen_Kung",
       userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-      isBookmarked: true
     }
   ];
 
@@ -54,12 +54,12 @@ const GuideBookmarkScreen = () => {
   }
 
   const handleSearch = () => {
-    // redirect ไป dynamic page
+    route.push('/(tabs)/guide/search_place')
   }
   
   return (
     <View className="flex-1 bg-gray-50">
-      <StatusBar barStyle="light-content" backgroundColor="#075952" />
+      <StatusBar barStyle="dark-content" backgroundColor="#075952" />
       
       {/* Header */}
       <View className="bg-teal-700 pt-12 pb-6 px-4 rounded-b-3xl">
@@ -68,16 +68,17 @@ const GuideBookmarkScreen = () => {
 
       {/* Search Bar */}
       <View className="px-4 -mt-6 mb-6">
-        <View className="bg-white rounded-full px-4 py-3 shadow-sm border border-gray-200 flex-row items-center">
-          <Feather name="search" size={20} color="#666" className="mr-3" />
-          <TextInput 
-            placeholder="Search ..."
-            value={searchText}
-            onChangeText={setSearchText}
-            className="flex-1 text-gray-700 ml-3"
-            placeholderTextColor="#999"
+        < View 
+          className="bg-white rounded-full p-7 shadow-sm border border-gray-200"
+        >
+          <TouchableOpacity 
             onPress={handleSearch}
-          />
+            className="bg-white flex-row items-center"
+
+          >
+            <Feather name="search" size={20} color="#666" className="mr-3" />
+            <Text className='text-gray-400'> Search...</Text>
+          </TouchableOpacity>
         </View>
         <View
           className='mt-4 w-10/16 border-hairline border-s border-gray-300'
@@ -101,7 +102,7 @@ const GuideBookmarkScreen = () => {
               {/* Guide Image */}
               <Image
                 source={{ uri: guide.image }}
-                className="w-20 h-16 rounded-xl mr-4"
+                className="w-20 h-20 rounded-xl mr-4"
               />
               
               {/* Guide Info */}
@@ -112,9 +113,9 @@ const GuideBookmarkScreen = () => {
                   </Text>
                   <TouchableOpacity className="ml-2" onPress={handleUnbookmark}>
                     <Ionicons 
-                      name={guide.isBookmarked ? "bookmark" : "bookmark-outline"} 
+                      name= {"bookmark"}
                       size={24} 
-                      color={guide.isBookmarked ? "#004D40" : "gray"} 
+                      color={"#004D40"} 
                     />
                   </TouchableOpacity>
                 </View>

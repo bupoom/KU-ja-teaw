@@ -93,7 +93,7 @@ const PlaceScreen = () => {
 
       {/* Search Bar */}
       <View className="px-4 -mt-6 mb-6">
-        <View className="bg-white rounded-full px-4 py-3 shadow-sm border border-gray-200 flex-row items-center">
+        <View className="bg-white rounded-full p-7 shadow-sm border border-gray-200 flex-row items-center">
           <Feather name="search" size={20} color="#666" className="mr-3" />
           <TextInput 
             placeholder="Search ..."
@@ -126,7 +126,7 @@ const PlaceScreen = () => {
               {/* Place Image */}
               <Image
                 source={{ uri: place.image }}
-                className="w-20 h-16 rounded-xl mr-4"
+                className="w-20 h-20 rounded-xl mr-4"
               />
               
               {/* Place Info */}
