@@ -13,6 +13,7 @@ import {
 import { Feather, Foundation } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import '../../global.css'
+import { useRouter } from 'expo-router'
 
 // TypeScript interfaces
 interface Trip {
@@ -150,12 +151,13 @@ const ProfileScreen: React.FC = () => {
     setRefreshing(false);
   };
 
+  const router = useRouter();
   const handleEditProfile = () => {
-    Alert.alert('Edit Profile', 'Edit profile feature will be implemented');
+    router.push('/profile/profile_setting')
   };
 
   const handleSettings = () => {
-    Alert.alert('Settings', 'Settings page will be opened');
+    router.push('/profile/setting')
   };
 
   const handleTripPress = (trip: Trip) => {

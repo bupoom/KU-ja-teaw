@@ -7,8 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const TripActionScreen = () => {
   const insets = useSafeAreaInsets();
   const home = () => router.replace('/(tabs)'); // jumps to /(tabs)/index
-  const create = () => router.push('/(tabs)/plan/create');
-  const join = () => router.push('/(tabs)/plan/join');
+  //const create = () => router.push('/(tabs)/plan/create');
+  //const join = () => router.push('/(tabs)/plan/join');
 
   return (
     <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
@@ -31,7 +31,7 @@ const TripActionScreen = () => {
         
         {/* Create Trip Card */}
         <TouchableOpacity 
-          onPress={create}
+          // onPress={create}
           className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6"
           activeOpacity={0.7}
         >
@@ -45,7 +45,7 @@ const TripActionScreen = () => {
 
         {/* Join Trip Card */}
         <TouchableOpacity 
-          onPress={join}
+          // onPress={join}
           className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm"
           activeOpacity={0.7}
         >

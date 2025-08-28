@@ -71,7 +71,7 @@ export default function TabsLayout() {
             <Image
               source={require('../../assets/images/add_circle_icon.png')}
               //KU-ja-teaw\assets\images\add_circle_icon.png
-              className="w-13 rounded-full mr-3"
+              className="w-13 h-13 rounded-full m-3"
               resizeMode="cover"
             />
           ),
