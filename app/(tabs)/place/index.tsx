@@ -6,14 +6,14 @@ import {
   ScrollView, 
   TouchableOpacity, 
   StatusBar,
-  TextInput,
   RefreshControl,
   Alert
 } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const PlaceScreen = () => {
-  const [searchText, setSearchText] = useState('');
+  const route = useRouter()
   const [refreshing, setRefreshing] = useState(false);
   
   const bookmarkedPlaces = [
@@ -24,7 +24,6 @@ const PlaceScreen = () => {
       total_rating: 437,
       location: "Paris, France",
       image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvCsa70MIJzwtmqjWS5XubF-LQbZAE4Z4SFQ&s",
-      isBookmarked: true
     },
     {
       id: 2,
@@ -33,14 +32,12 @@ const PlaceScreen = () => {
       total_rating: 1792,
       location: "Pattaya, Thailand",
       image: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2e/84/16/3a/caption.jpg?w=900&h=500&s=1",
-      isBookmarked: true
     }
   ];
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     // await fetch ข้อมูลใหม่
-    Alert.alert('รีเฟรชแล้ว');
     setRefreshing(false);
   }, []);
 
@@ -52,7 +49,7 @@ const PlaceScreen = () => {
   }
 
   const handleSearch = () => {
-    // redirect ไป dynamic page
+      route.push('/(tabs)/place/search_place')
   }
 
   const renderStars = (rating:number) => { // function คิดรูปดาว
@@ -93,16 +90,14 @@ const PlaceScreen = () => {
 
       {/* Search Bar */}
       <View className="px-4 -mt-6 mb-6">
-        <View className="bg-white rounded-full p-7 shadow-sm border border-gray-200 flex-row items-center">
-          <Feather name="search" size={20} color="#666" className="mr-3" />
-          <TextInput 
-            placeholder="Search ..."
-            value={searchText}
-            onChangeText={setSearchText}
-            className="flex-1 text-gray-700 ml-3"
-            placeholderTextColor="#999"
+        <View className="bg-white rounded-full p-7 shadow-sm border border-gray-200">
+          <TouchableOpacity 
             onPress={handleSearch}
-          />
+            className="bg-white flex-row items-center"
+          >
+            <Feather name="search" size={20} color="#666" className="mr-3" />
+            <Text className='text-gray-400'> Search...</Text>
+          </TouchableOpacity>
         </View>
         <View
           className='mt-4 w-10/16 border-hairline border-s border-gray-300'
@@ -137,9 +132,9 @@ const PlaceScreen = () => {
                   </Text>
                   <TouchableOpacity className="ml-2" onPress={handleUnbookmark}>
                     <Ionicons 
-                      name={place.isBookmarked ? "bookmark" : "bookmark-outline"} 
+                      name={"bookmark"} 
                       size={24} 
-                      color={place.isBookmarked ? "#004D40" : "gray"} 
+                      color={"#004D40"} 
                     />
                   </TouchableOpacity>
                 </View>

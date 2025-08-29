@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
   SafeAreaView,
   StatusBar,
   Image 
@@ -19,7 +18,7 @@ import { Feather , Entypo  } from '@expo/vector-icons';
 //  - ใส่ routing ไปยังหน้านั้นๆ
 //  - เขียนฟังชั่นค้นหาใหม่
 
-// Type definition สำหรับข้อมูลที่จะแสดง (ปรับตามข้อมูลจริงของคุณ)
+// Type definition สำหรับข้อมูลที่จะแสดง
 interface SearchResult {
   id: number;
   title: string;
@@ -91,59 +90,16 @@ const SearchScreen: React.FC = () => {
       duration: 8,
       user: "AlpineAdventurer",
       userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-    },
-    {
-      id: 7,
-      title: "Safari in Kenya",
-      image: "https://images2.alphacoders.com/546/546391.jpg",
-      copies: 278,
-      duration: 10,
-      user: "WildlifeFan",
-      userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-    },
-    {
-      id: 8,
-      title: "Rome Historical Tour",
-      image: "https://images2.alphacoders.com/546/546391.jpg",
-      copies: 567,
-      duration: 4,
-      user: "HistoryBuff",
-      userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-    },
-    {
-      id: 9,
-      title: "Iceland Northern Lights",
-      image: "https://images2.alphacoders.com/546/546391.jpg",
-      copies: 834,
-      duration: 5,
-      user: "AuroraHunter",
-      userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-    },
-    {
-      id: 10,
-      title: "Santorini Sunset",
-      image: "https://images2.alphacoders.com/546/546391.jpg",
-      copies: 692,
-      duration: 3,
-      user: "GreekIslands",
-      userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
     }
   ];
-  
-  // Reference สำหรับ TextInput เพื่อให้ focus ได้
+  // Auto focus เมื่อเข้าหน้ามาจะทำให้ page มีแป้นพิมและ cursor อยู่บน search bar ทันที
   const searchInputRef = useRef<TextInput>(null);
-
-  // Auto focus เมื่อ component mount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      searchInputRef.current?.focus();
-    }, 100); // เพิ่ม delay เล็กน้อยเพื่อให้แน่ใจว่า component render เสร็จแล้ว
-    
-    return () => clearTimeout(timer);
+    searchInputRef.current?.focus();
   }, []);
 
-  // Function สำหรับค้นหาข้อมูลในตัวอย่าง
-  const searchMockData = (query: string): SearchResult[] => {
+  // Search function API???
+  const Search_with_query = (query: string): SearchResult[] => {
     if (!query.trim()) {
       return [];
     }
@@ -154,7 +110,7 @@ const SearchScreen: React.FC = () => {
     );
   };
 
-  // Handle search with debounce
+  // Handle search ด้วยการ limit เวลา
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
       if (!searchQuery.trim()) {
@@ -167,7 +123,7 @@ const SearchScreen: React.FC = () => {
       setLoading(true);
       // จำลองการ loading
       setTimeout(() => {
-        const results = searchMockData(searchQuery);
+        const results = Search_with_query(searchQuery);
         setSearchResults(results);
         setHasSearched(true);
         setLoading(false);
@@ -181,7 +137,7 @@ const SearchScreen: React.FC = () => {
   const renderSearchResult = ({ item }: { item: SearchResult }) => (
     <TouchableOpacity 
         key={item.id}
-        className="bg-white rounded-2xl p-3 m-3 shadow-slate-200 shadow-md border border-gray-100"
+        className="bg-white rounded-2xl p-3 m-3 shadow-slate-200 shadow-sm border border-gray-100"
     >
         <View className="flex-row">
         {/* Guide Image */}

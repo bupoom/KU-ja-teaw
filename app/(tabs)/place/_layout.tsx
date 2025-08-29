@@ -7,7 +7,7 @@ export default function Layout() {
         headerShown:false,
       }}>
       <Stack.Screen name="index" options={{}} />
-      <Stack.Screen name="search_guide" options={{
+      <Stack.Screen name="search_place" options={{
       }} />
     </Stack>
   );

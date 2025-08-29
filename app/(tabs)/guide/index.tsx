@@ -6,7 +6,6 @@ import {
   ScrollView, 
   TouchableOpacity, 
   StatusBar,
-  TextInput,
   RefreshControl,
   Alert
 } from 'react-native';
@@ -15,7 +14,6 @@ import { useRouter } from 'expo-router';
 
 const GuideBookmarkScreen = () => {
   const route = useRouter()
-  const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   
   const bookmarkedGuides = [
@@ -54,7 +52,7 @@ const GuideBookmarkScreen = () => {
   }
 
   const handleSearch = () => {
-    route.push('/(tabs)/guide/search_place')
+    route.push('/(tabs)/guide/search_guide')
   }
   
   return (
@@ -87,7 +85,7 @@ const GuideBookmarkScreen = () => {
       
       {/* Bookmarked Guides List */}
       <ScrollView 
-        className="flex-1 px-4" 
+        className="flex-1 px-4"
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
