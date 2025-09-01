@@ -24,6 +24,7 @@ const EditProfile = () => {
         // Save API here console.log("Profile saved:", { name, phoneNumber });
         Alert.alert(name);
         Alert.alert(phoneNumber);
+        router.back()
     };
 
     const handleEditAvatar = () => {

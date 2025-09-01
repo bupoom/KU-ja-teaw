@@ -38,7 +38,7 @@ export default function TabsLayout() {
       tabBar={hideTabBar ? () => null : undefined}
     >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
           title: "KU JA TEAW",
           headerShown: true,

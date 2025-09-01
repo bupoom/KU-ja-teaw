@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, StatusBar, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TripActionScreen = () => {
   const insets = useSafeAreaInsets();
-  const home = () => router.replace('/(tabs)'); // jumps to /(tabs)/index
+  const home = () => router.replace('/'); // jumps to /(tabs)/index
   //const create = () => router.push('/(tabs)/plan/create');
   //const join = () => router.push('/(tabs)/plan/join');
 
@@ -50,7 +50,7 @@ const TripActionScreen = () => {
           activeOpacity={0.7}
         >
           <Text className="text-xl font-bold text-gray-900 mb-2">
-            Join someone trip
+            J
           </Text>
           <Text className="text-gray-500 text-base">
             Enter trip code & password.

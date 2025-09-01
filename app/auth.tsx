@@ -7,7 +7,7 @@ const AuthScreen = () => {
   const router = useRouter();
 
   const handleSignUp = () => {
-    router.replace('/(tabs)');
+    router.replace('/tabs/(home)');
   };
 
   return (
