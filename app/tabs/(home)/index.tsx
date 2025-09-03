@@ -88,58 +88,41 @@ export default function HomeScreen(): JSX.Element {
   }
   
   const handleJoinTrip = async (tripId: number): Promise<void> => {       // handle join trip
-    try {
-      // API join
-      //if (success)
-      Alert.alert(
-        'Success',
-        'You have successfully joined the trip!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Remove the invitation from the list after joining
-              setTripInvitations(prev => 
-                prev.filter(invitation => invitation.id !== tripId)
-              );
-            }
+    Alert.alert(
+      'Success',
+      'You have successfully joined the trip!',
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            // Remove the invitation from the list after joining
+            setTripInvitations(prev => 
+              prev.filter(invitation => invitation.id !== tripId)
+            );
           }
-        ]
-      );
-    } catch (error) {
-      Alert.alert('Error', 'Failed to join trip. Please try again.');
-    }
+        }
+      ]
+    );
   };
 
   const handleRejectTrip = async (tripId: number): Promise<void> => {     // handle reject trip
-    try {
-      // API call reject the trip
-      //if (success) {
-      // Remove the invitation from the list after rejecting
-      setTripInvitations(prev => 
-        prev.filter(invitation => invitation.id !== tripId)
-      );
-    } catch (error) {
-      Alert.alert('Error', 'Failed to reject trip. Please try again.');
-    }
+    setTripInvitations(prev => 
+      prev.filter(invitation => invitation.id !== tripId)
+    );
+
   };
 
   const onRefresh = async (): Promise<void> => {                          // refresh function
     setLoading(prev => ({ ...prev, refreshing: true }));
     setError(null);
-    
-    try {
-      await Promise.all([
-        fetchCurrentTrip(),
-        fetchTripInvitations(),
-        fetchPlacesToVisit(),
-        fetchGuidePlans()
-      ]);
-    } catch (error) {
-      setError('Failed to refresh data');
-    } finally {
-      setLoading(prev => ({ ...prev, refreshing: false }));
-    }
+    await Promise.all([
+      fetchCurrentTrip(),
+      fetchTripInvitations(),
+      fetchPlacesToVisit(),
+      fetchGuidePlans()
+    ]);
+
+    setLoading(prev => ({ ...prev, refreshing: false }));
   };
 
   // Initial data loading
