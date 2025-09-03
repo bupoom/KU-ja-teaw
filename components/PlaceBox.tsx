@@ -52,14 +52,14 @@ const PlaceBox = ({ // Component ของ guide ใน Guide Book mark
     return (
       <TouchableOpacity 
         key={id}
-        className="bg-white w-full rounded-2xl p-3 mb-3 shadow-sm border border-gray-100"
+        className="bg-white w-full rounded-lg p-3 mb-3 shadow-sm border border-gray-100"
         onPress={() => handlePlaceBoxPress(title)}
       >
         <View className="flex-row">
           {/* Place Image */}
-          <Image source={{ uri: image }} className="w-20 h-20 rounded-xl mr-4"/>
+          <Image source={{ uri: image }} className="w-20 h-20 rounded-xl"/>
           {/* Place Info */}
-          <View className="flex-1">
+          <View className="flex-1 ml-5">
             <View className="flex-row justify-between items-start mb-2">
               <Text className="text-lg font-semibold text-gray-800 flex-1">{title}</Text>
               <TouchableOpacity className="ml-2" onPress={handleUnbookmark}>

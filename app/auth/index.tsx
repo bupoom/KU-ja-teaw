@@ -17,7 +17,7 @@ const AuthScreen = () => {
         
         <View style={styles.imageContainer}>
           <Image 
-            source={require('../assets/images/gg_signin.png')}
+            source={require('../../assets/images/gg_signin.png')}
             style={styles.authImage}
             resizeMode="contain"
           />
