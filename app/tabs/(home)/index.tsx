@@ -179,7 +179,7 @@ export default function HomeScreen(): JSX.Element {
       <View className="flex-row mt-3 gap-2">
         <TouchableOpacity 
           onPress={() => handleJoinTrip(item.id)}
-          className="flex-1 bg-teal-700 py-2 rounded-lg"
+          className="flex-1 bg-green_2 py-2 rounded-lg"
           activeOpacity={0.7}
         >
           <Text className="text-white text-center font-medium">JOIN</Text>
