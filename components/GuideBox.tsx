@@ -24,8 +24,8 @@ const GuideBox = ({ // Component ของ guide ใน Guide Book mark
     Alert.alert('unbookmark แล้วไอโง่');
   }
 
-  const handleGuideBoxPress = (guide_title: string): void => {
-    router.push("/guides/[guide_id]")
+  const handleGuideBoxPress = (guide_id: number): void => {
+    router.push(`/guides/${guide_id}`)
     // Alert.alert("Navigate to Guide Plan", `Going to ${guide_title}`)
   };
 
@@ -79,7 +79,7 @@ const GuideBox = ({ // Component ของ guide ใน Guide Book mark
       <TouchableOpacity
         key={id}
         className="bg-white w-full rounded-lg p-3 mb-1 shadow-sm border border-gray-100"
-        onPress={() => handleGuideBoxPress(title)}
+        onPress={() => handleGuideBoxPress(id)}
       >
         <View className="flex-row">
           {/* Guide Image */}
@@ -118,7 +118,7 @@ const GuideBox = ({ // Component ของ guide ใน Guide Book mark
     return (
       <TouchableOpacity 
         className="flex-1 mb-6 bg-white rounded-xl shadow-sm overflow-hidden"
-        onPress={() => handleGuideBoxPress(title)}
+        onPress={() => handleGuideBoxPress(id)}
         activeOpacity={0.8}
       >
         {/* Main Image */}

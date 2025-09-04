@@ -28,8 +28,8 @@ const TripBox = ({ // Component ของ guide ใน Guide Book mark
   const pathname = usePathname();
   const router = useRouter()
   
-  const handleTripPress = (guide_title: string): void => {
-    router.push("/trips/[trip_id]")
+  const handleTripPress = (trip_id: number): void => {
+    router.push(`/trips/${trip_id}`)
     // Alert.alert("Navigate to Guide Plan", `Going to ${guide_title}`)
   };
 
@@ -37,7 +37,7 @@ const TripBox = ({ // Component ของ guide ใน Guide Book mark
     return (
       <TouchableOpacity 
         key={id}
-        onPress={() => handleTripPress(title)}
+        onPress={() => handleTripPress(id)}
         className="bg-white rounded-2xl p-4 mb-3 shadow-sm border border-gray-100"
         activeOpacity={0.7}
       >

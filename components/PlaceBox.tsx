@@ -43,8 +43,8 @@ const PlaceBox = ({ // Component ของ guide ใน Guide Book mark
     return 
   }
   
-  const handlePlaceBoxPress = (guide_title: string): void => {
-    router.push('/places/[place_id]')
+  const handlePlaceBoxPress = (place_id: number): void => {
+    router.push(`/`)
     // Alert.alert("Navigate to Guide Plan", `Going to ${guide_title}`)
   };
 
@@ -53,7 +53,7 @@ const PlaceBox = ({ // Component ของ guide ใน Guide Book mark
       <TouchableOpacity 
         key={id}
         className="bg-white w-full rounded-lg p-3 mb-3 shadow-sm border border-gray-100"
-        onPress={() => handlePlaceBoxPress(title)}
+        onPress={() => handlePlaceBoxPress(id)}
       >
         <View className="flex-row">
           {/* Place Image */}
@@ -86,7 +86,7 @@ const PlaceBox = ({ // Component ของ guide ใน Guide Book mark
     return (
       <TouchableOpacity 
         className="mr-4 w-48 bg-white rounded-xl shadow-sm overflow-hidden"
-        onPress={() => handlePlaceBoxPress(title)}
+        onPress={() => handlePlaceBoxPress(id)}
         activeOpacity={0.8}
         style={{
           shadowColor: '#000',
