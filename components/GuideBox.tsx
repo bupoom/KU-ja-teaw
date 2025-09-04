@@ -25,7 +25,7 @@ const GuideBox = ({ // Component ของ guide ใน Guide Book mark
   }
 
   const handleGuideBoxPress = (guide_id: number): void => {
-    router.push(`/guides/${guide_id}`)
+    router.push('/tabs/guide/[guide_id]')
     // Alert.alert("Navigate to Guide Plan", `Going to ${guide_title}`)
   };
 
