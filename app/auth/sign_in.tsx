@@ -7,7 +7,7 @@ const AuthScreen = () => {
   const router = useRouter();
 
   const handleSignUp = () => {
-    router.replace('/tabs/(home)');
+    router.replace('/auth/set_profile');
   };
 
   return (

@@ -6,7 +6,7 @@ const GetStartScreen = () => {
   const router = useRouter();
 
   const handleGetStart = () => {
-    router.replace('/auth');
+    router.replace('/auth/sign_in');
   };
 
   return (

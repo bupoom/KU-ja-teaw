@@ -1,14 +1,41 @@
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
 
-export default function Layout() {
+export default function PlanStackLayout() {
   return (
     <Stack
-        screenOptions={{
-        headerShown:false,
-      }}>
-      <Stack.Screen name="index" options={{}} />
-      <Stack.Screen name="search_place" options={{
-      }} />
+      screenOptions={{
+        headerShadowVisible: false,
+        headerTitleAlign: "center",
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          headerShown: false,
+          title: "Select Plan Option",
+        }}
+      />
+
+      <Stack.Screen
+        name="join"
+        options={{
+          title: "Jojn Plan",
+        }}
+      />
+
+      <Stack.Screen
+        name="set_plan_detail"
+        options={{
+          title: "Set Plan Detail",
+        }}
+      />
+
+      <Stack.Screen
+        name="set_plan_code"
+        options={{
+          title: "Set Plan Code",
+        }}
+      />
     </Stack>
   );
 }

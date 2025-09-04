@@ -6,7 +6,8 @@ export default function IntroLayout() {
           headerShown: false
         }}>
             <Stack.Screen name="index"/>
-            <Stack.Screen name="auth"/>
+            <Stack.Screen name="auth/sign_in.tsx"/>
+            <Stack.Screen name="auth/set_profile.tsx"/>
             <Stack.Screen name="tabs"/>
             <Stack.Screen 
                 name="guides/[guide_id]" 
