@@ -10,10 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.teawapp.KUJATEAW",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "bundleIdentifier": "com.teawapp.KUJATEAW"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.teawapp.KU_JA_TEAW"
+      "package": "com.teawapp.KUJATEAW"
     },
     "web": {
       "bundler": "metro",
@@ -40,10 +40,7 @@
         }
       ],
       [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.135126503585-jbinfk6tkpvp2f83qt6mnom0u1ql314v"
-        }
+        "@react-native-google-signin/google-signin"
       ]
     ],
     "experiments": {

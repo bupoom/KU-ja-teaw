@@ -31,7 +31,6 @@ const AuthScreen: React.FC = () => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      iosClientId: "135126503585-jbinfk6tkpvp2f83qt6mnom0u1ql314v.apps.googleusercontent.com",
       webClientId: "135126503585-pce50l6d660ihjcs2b884vfn76c4bnlc.apps.googleusercontent.com",
       profileImageSize: 150,
       offlineAccess: true,
@@ -81,7 +80,7 @@ const AuthScreen: React.FC = () => {
               onPress: () => {
                 // Navigate to home with user data
                 router.replace({
-                  pathname: '/tabs/(home)' as any,
+                  pathname: '/auth/set_profile' as any,
                   params: {
                     userName: userInfo.name,
                     userEmail: userInfo.email,
