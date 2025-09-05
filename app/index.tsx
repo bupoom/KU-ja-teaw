@@ -42,9 +42,9 @@ const GetStartScreen = () => {
             </Text>
           </View>
         </View>
-
+        <View className='mt-4 mb-4'></View>
         {/* Get Started Button */}
-        <View className="px-4 pb-4 mt-12">
+        <View className="px-4 pb-4 mt-10">
           <TouchableOpacity 
             className="bg-green_2 py-4 rounded-xl w-full items-center shadow-lg"
             onPress={handleGetStart}

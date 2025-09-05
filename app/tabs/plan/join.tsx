@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import Header from "../../../components/Header";
+import { Ionicons, Feather } from "@expo/vector-icons";
 
 const JoinTripScreen = () => {
   const router = useRouter();
@@ -87,8 +88,9 @@ const JoinTripScreen = () => {
                 className="absolute right-4 top-4"
                 onPress={() => setShowPassword(!showPassword)}
               >
-                <Text className="text-dark_gray text-lg">
-                  {showPassword ? "👁️" : "🙈"}
+                <Text className="text-dark_gray text-lg mr-4">
+                  {showPassword ? <Feather name="eye" size={20} color="black" />
+                   : <Feather name="eye-off" size={20} color="black" />}
                 </Text>
               </TouchableOpacity>
             </View>

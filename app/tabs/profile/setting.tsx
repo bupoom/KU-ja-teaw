@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Switch, Alert, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, Feather } from '@expo/vector-icons';;
 
 const Setting = () => {
     const router = useRouter();
@@ -16,28 +16,7 @@ const Setting = () => {
 
     const handleLogout = () => {
         // delete login data
-        router.replace('/auth')
-    };
-
-    const handleDeleteAccount = () => {
-        // API delete account
-        Alert.alert(
-            "Delete Account",
-            "This action cannot be undone. Are you sure you want to delete your account permanently?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: () => {
-                        router.replace('/auth')
-                    }
-                }
-            ]
-        );
+        router.replace('/')
     };
 
     return (
@@ -83,15 +62,6 @@ const Setting = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Delete Account Button */}
-                <TouchableOpacity 
-                    onPress={handleDeleteAccount}
-                    className="bg-red-500 rounded-lg py-4 mx-3"
-                >
-                    <Text className="text-white text-center text-base font-semibold">
-                        Delete Account
-                    </Text>
-                </TouchableOpacity>
             </View>
         </View>
     )
