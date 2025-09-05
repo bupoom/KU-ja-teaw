@@ -31,6 +31,13 @@ interface PlaceDetails {
   image: string;
 }
 
+interface UserInfo {
+  idToken: string ,
+  name: string,
+  email: string,
+  photo: string,
+};
+
 interface UserDetails {
   id: number;
   name: string;
