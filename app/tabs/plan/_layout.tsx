@@ -5,13 +5,13 @@ export default function PlanStackLayout() {
     <Stack
       screenOptions={{
         headerShadowVisible: false,
+        headerShown: false,
         headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
           title: "Select Plan Option",
         }}
       />

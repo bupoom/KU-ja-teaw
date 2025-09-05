@@ -30,7 +30,6 @@ const TripBox = ({ // Component ของ guide ใน Guide Book mark
   
   const handleTripPress = (trip_id: number): void => {
     router.push(`/trips/${trip_id}`)
-    // Alert.alert("Navigate to Guide Plan", `Going to ${guide_title}`)
   };
 
   if (pathname === '/tabs' || pathname === '/tabs/profile') {
@@ -90,79 +89,6 @@ export const CurrentTripData: TripDetails = {
   creator: "Keenkung",
   creator_image: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
 };
-
-export const MockTripsData: TripDetails[] = [
-  {
-    id: 1,
-    title: "Trip to Thailand",
-    dateRange: "25/08/65-01/08/65",
-    image: "https://images.unsplash.com/photo-1528181304800-259b08848526?w=300&h=200&fit=crop",
-    creator: "Keen_Kung",
-    creator_image: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
-    participantsCount: 5,
-    status: 'Completed',
-  },
-  {
-    id: 2,
-    title: "Trip of Osaka",
-    dateRange: "15/09/65-22/09/65",
-    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=300&h=200&fit=crop",
-    creator: "Oshi_Kung",
-    creator_image: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
-    participantsCount: 3,
-    status: "Completed",
-  },
-  {
-    id: 3,
-    title: "Trip to Tokyo",
-    dateRange: "10/10/65-17/10/65",
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=300&h=200&fit=crop",
-    creator: "Travel_Pro",
-    creator_image: "https://i.pinimg.com/474x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg",
-    participantsCount: 7,
-    status: "Planning",
-  },
-  {
-    id: 4,
-    title: 'Tokyo Adventure',
-    image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=80&h=80&fit=crop',
-    dateRange: 'Dec 15-22, 2024',
-    participantsCount: 4,
-    status: 'Traveling',
-    creator:"keen_kung",
-    creator_image: "#",
-  },
-  {
-    id: 5,
-    title: 'Bali Retreat',
-    image: 'https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=80&h=80&fit=crop',
-    dateRange: 'Jan 10-17, 2025',
-    participantsCount: 2,
-    status: 'Coming',
-    creator:"keen_kung",
-    creator_image: "#",
-  },
-  {
-    id: 6,
-    title: 'Paris Getaway',
-    image: 'https://images2.alphacoders.com/546/546391.jpg',
-    dateRange: 'Nov 5-12, 2024',
-    participantsCount: 3,
-    status: 'Completed',
-    creator:"keen_kung",
-    creator_image: "#",
-  },
-  {
-    id: 7,
-    title: 'Swiss Alps',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=80&h=80&fit=crop',
-    dateRange: 'Sep 20-27, 2024',
-    participantsCount: 5,
-    status: 'Completed',
-    creator:"keen_kung",
-    creator_image: "#",
-  }
-];
 
 {/* Stats Section */}
         

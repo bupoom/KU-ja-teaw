@@ -23,7 +23,7 @@ const GetStartScreen = () => {
       </View>
 
       {/* Content Section */}
-      <View className="flex-1 px-4 py-6 bg-white justify-between mt-10">
+      <View className="flex-1 px-4 py-6 bg-white mt-4">
         {/* Text Content */}
         <View className="items-center mt-4">
           <Text className="font-sf-semibold text-3xl font-bold text-black text-center mb-4 leading-9">
@@ -44,7 +44,7 @@ const GetStartScreen = () => {
         </View>
 
         {/* Get Started Button */}
-        <View className="px-4 pb-4">
+        <View className="px-4 pb-4 mt-12">
           <TouchableOpacity 
             className="bg-green_2 py-4 rounded-xl w-full items-center shadow-lg"
             onPress={handleGetStart}
