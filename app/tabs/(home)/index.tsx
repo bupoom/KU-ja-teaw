@@ -13,10 +13,13 @@ import {
   RefreshControl,
 } from "react-native";
 import { useRouter } from "expo-router";
-import GuideBox, { MockDataGuides } from "@/components/GuideBox";
-import PlaceBox, { MockDataPlace } from "@/components/PlaceBox";
+import GuideBox from "@/components/GuideBox";
+import PlaceBox from "@/components/PlaceBox";
 import TripBox, { CurrentTripData } from "@/components/TripBox";
-import InviteBox, { InviteTripData } from "@/components/InviteBox";
+import InviteBox  from "@/components/InviteBox";
+import { MockDataGuides } from "@/mock/data/guide_box";
+import { InviteTripData } from "@/mock/data/invite_box";
+import { MockDataPlace } from "@/mock/data/place_box";
 
 export default function HomeScreen(): JSX.Element {
   // State Management
@@ -169,10 +172,12 @@ export default function HomeScreen(): JSX.Element {
           </View>
         )}
 
+        <View className='bg-green_2 h-[15px]'></View>
+
         {/* ------------------------------- Continue Your Trip Section ------------------------------- */}
-        <View className="bg-white mt-2 p-4 shadow-sm border border-gray-100">
+        <View className="bg-white mt-2 pl-4 pr-4">
           <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-xl font-bold text-black">
+            <Text className="text-[24px] font-sf-bold text-black">
               Continue Your Trip
             </Text>
           </View>

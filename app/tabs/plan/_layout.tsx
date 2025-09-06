@@ -6,7 +6,6 @@ export default function PlanStackLayout() {
       screenOptions={{
         headerShadowVisible: false,
         headerShown: false,
-        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState} from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -13,13 +13,14 @@ export default function SetTripCode() {
   const [secure, setSecure] = useState(true);
 
   type Params = {
-    name?: string;
-    start?: string;
-    end?: string;
-    posterUri?: string;
-    tripCode?: string;
+    name: string;
+    start: string;
+    end: string;
+    posterUri: string;
+    tripCode: string;
   };
-  const { name, start, end, posterUri, tripCode } = useLocalSearchParams<Params>();
+  const { name, start, end, posterUri, tripCode } =
+    useLocalSearchParams<Params>();
 
   const onNext = async () => {
     if (!password.trim()) {
@@ -28,31 +29,44 @@ export default function SetTripCode() {
     }
 
     setSubmitting(true);
-    try {
-      // const res = await fetch("https://api.example.com/plans", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     name,
-      //     startDate: start,
-      //     endDate: end,
-      //     posterUri,
-      //     password,
-      //     tripCode,
-      //   }),
-      // });
+    // try {
+    //   const formData = new FormData();
+    //   formData.append("name", name);
+    //   formData.append("startDate", start ?? "");
+    //   formData.append("endDate", end ?? "");
+    //   formData.append("password", password);
+    //   formData.append("tripCode", tripCode);
 
-      // if (!res.ok) throw new Error("Failed to create plan");
-      // const data = await res.json();
-      // const planId = String(data.plan_id);
-      const planId = "mock123"; // Remove this line when using real API
+    //   if (posterUri) {
+    //     const ext = posterUri.split(".").pop()?.toLowerCase() || "jpg";
+    //     const mimeType = ext === "png" ? "image/png" : "image/jpeg";
+    //     formData.append("poster", {
+    //       uri: posterUri,
+    //       name: `poster.${ext}`,
+    //       type: mimeType,
+    //     } as any);
+    //   }
+
+    //   const res = await fetch("https://api.example.com/plans", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //     body: formData,
+    //   });
+
+    //   if (!res.ok) throw new Error("Failed to create plan");
+
+    //   const data = await res.json();
+    //   const planId = String(data.plan_id);
+      const planId = "1"; // Placeholder plan ID
 
       router.replace(`/tabs/plan/${planId}`);
-    } catch (e) {
-      Alert.alert("Error", (e as Error).message);
-    } finally {
-      setSubmitting(false);
-    }
+    // } catch (e) {
+    //   Alert.alert("Error", (e as Error).message);
+    // } finally {
+    //   setSubmitting(false);
+    // }
   };
 
   return (

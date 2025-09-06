@@ -56,7 +56,7 @@ export default function SetPlanDetail() {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.9,
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
     });
     if (!result.canceled) setPosterUri(result.assets[0].uri);
   };
@@ -71,7 +71,6 @@ export default function SetPlanDetail() {
   };
 
   const onNext = () => {
-    const tripCode = generateTripCode();
     const v = validate();
 
     if (v) {
@@ -82,11 +81,11 @@ export default function SetPlanDetail() {
     router.push({
       pathname: "/tabs/plan/set_plan_code",
       params: {
-        name,
+        name: name ?? "",
         start: startDate?.toISOString() ?? "",
         end: endDate?.toISOString() ?? "",
-        posterUri: posterUri ?? "",
-        tripCode,
+        posterUri: posterUri ?? "", // ส่ง URI ของรูป (string) ก็พอ แล้วหน้า set_plan_code เอา URI นั้นไปส่งต่อให้ backend ทีเดียว
+        tripCode: generateTripCode(),
       },
     });
   };
@@ -211,7 +210,9 @@ export default function SetPlanDetail() {
         </View>
 
         {/* Next Button */}
-        <NextButton onPress={onNext} />
+        <NextButton
+          onPress={onNext}
+        />
       </View>
     </View>
   );

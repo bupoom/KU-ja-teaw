@@ -11,7 +11,7 @@ module.exports = {
         green_3: '#41645C',
         super_red: '#FF0000',
         gray_border: '#D9D9D9',
-        blue_button: '#3367C7',
+        blue_button: '#3367c7',
         dark_gray: '#69737C',
         gray_icon: '#9CA3AF',
       },
