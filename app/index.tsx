@@ -1,13 +1,53 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  Image, 
+  SafeAreaView, 
+  StatusBar,
+  ActivityIndicator
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { AuthService } from '@/service/authService';
 
 const GetStartScreen = () => {
   const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        const loggedIn = await AuthService.isLoggedIn();
+        if (loggedIn) {
+          router.replace('/tabs/(home)');
+        }
+      } catch (error) {
+        console.error('Error checking login status:', error);
+      } finally {
+        setIsCheckingAuth(false); // ตั้งค่าให้เสร็จสิ้นการตรวจสอบ
+      }
+    };
+
+    checkLogin();
+  }, []);
 
   const handleGetStart = () => {
-    router.replace('/auth/sign_in');
+    router.push('/auth/sign_in'); // ใช้ push แทน replace
   };
+
+  // แสดง loading ขณะตรวจสอบ authentication
+  if (isCheckingAuth) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#22c55e" />
+          <Text className="text-gray-600 mt-4 text-lg">starting...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -38,11 +78,11 @@ const GetStartScreen = () => {
               Plan your perfect trip
             </Text>
             <Text className="text-base text-black text-center leading-6">
-              Let's Travel
+              Let&apos;s Travel
             </Text>
           </View>
         </View>
-        <View className='mt-4 mb-4'></View>
+        
         {/* Get Started Button */}
         <View className="px-4 pb-4 mt-10">
           <TouchableOpacity 

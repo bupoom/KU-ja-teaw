@@ -1,3 +1,4 @@
+
 interface TripDetails {
   id: number;
   title: string;
@@ -29,23 +30,6 @@ interface PlaceDetails {
   reviewCount: number,
   location: string;
   image: string;
-}
-
-interface UserInfo {
-  idToken: string ,
-  name: string,
-  email: string,
-  photo: string,
-};
-
-interface UserDetails {
-  id: number;
-  name: string;
-  username: string;
-  phone: string;
-  user_image: string;
-  email?: string;
-  bio?: string;
 }
 
 interface LoadingState {

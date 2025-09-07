@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Switch, Alert, TextInput } from 'react-na
 import React, { useState } from 'react'
 import { useRouter } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';;
+import { AuthService } from '@/service/authService';
 
 const Setting = () => {
     const router = useRouter();
@@ -16,6 +17,7 @@ const Setting = () => {
 
     const handleLogout = () => {
         // delete login data
+        AuthService.removeToken()
         router.replace('/')
     };
 

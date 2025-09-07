@@ -18,12 +18,6 @@ import {
   statusCodes,  
 } from "@react-native-google-signin/google-signin";
 
-interface UserInfo {
-  idToken: string;
-  name: string;
-  email: string;
-  photo: string | null;
-}
 
 const AuthScreen: React.FC = () => {
   const router = useRouter();
@@ -40,11 +34,18 @@ const AuthScreen: React.FC = () => {
   const handleGoogleSignIn = async (): Promise<void> => {
     try {
       setIsSubmitting(true);
+      
+      // ตรวจสอบ Play Services (สำหรับ Android)
       await GoogleSignin.hasPlayServices();
+      
+      // ทำการ Sign In
       const response = await GoogleSignin.signIn();
       
       if (isSuccessResponse(response)) {
         const { data } = response;
+        
+        // ตรวจสอบว่ามี idToken หรือไม่
+        // fetch /api/users/login
         if (!data.idToken) {
           Alert.alert("Error", "Failed to get authentication token.");
           return;
@@ -52,7 +53,9 @@ const AuthScreen: React.FC = () => {
 
         const { idToken, user } = data;
         const { name, email, photo } = user;
-        const userInfo: UserInfo = {
+        
+        // ส่งตัวแปรผ่าน Params
+        const userInfo = {
           idToken: idToken,
           name: name || 'Unknown User',
           email: email || '',
@@ -172,9 +175,6 @@ const AuthScreen: React.FC = () => {
             onPress={handleSkipSignIn}
             disabled={isSubmitting}
           >
-            <Text style={[styles.skipButtonText, isSubmitting && styles.disabledText]}>
-              Skip for now
-            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -242,11 +242,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
-  },
-  skipButtonText: {
-    fontSize: 16,
-    color: '#7f8c8d',
-    textDecorationLine: 'underline',
   },
   disabledButton: {
     opacity: 0.5,
