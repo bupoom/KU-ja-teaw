@@ -31,7 +31,7 @@ const AuthScreen: React.FC = () => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: "135126503585-pce50l6d660ihjcs2b884vfn76c4bnlc.apps.googleusercontent.com",
+      webClientId: "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
       profileImageSize: 150,
       offlineAccess: true,
     });
@@ -40,17 +40,11 @@ const AuthScreen: React.FC = () => {
   const handleGoogleSignIn = async (): Promise<void> => {
     try {
       setIsSubmitting(true);
-      
-      // ตรวจสอบ Play Services (สำหรับ Android)
       await GoogleSignin.hasPlayServices();
-      
-      // ทำการ Sign In
       const response = await GoogleSignin.signIn();
       
       if (isSuccessResponse(response)) {
         const { data } = response;
-        
-        // ตรวจสอบว่ามี idToken หรือไม่
         if (!data.idToken) {
           Alert.alert("Error", "Failed to get authentication token.");
           return;
@@ -58,8 +52,6 @@ const AuthScreen: React.FC = () => {
 
         const { idToken, user } = data;
         const { name, email, photo } = user;
-        
-        // สร้าง user info object
         const userInfo: UserInfo = {
           idToken: idToken,
           name: name || 'Unknown User',

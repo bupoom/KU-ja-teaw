@@ -1,4 +1,4 @@
-package com.teawapp.KU_JA_TEAW
+package com.teawapp.kujateaw
 
 import android.app.Application
 import android.content.res.Configuration

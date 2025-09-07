@@ -13,7 +13,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.teawapp.KUJATEAW"
+      "bundleIdentifier": "com.teawapp.kujateaw"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.teawapp.KUJATEAW"
+      "package": "com.teawapp.kujateaw"
     },
     "web": {
       "bundler": "metro",
@@ -40,17 +40,17 @@
         }
       ],
       [
-        "@react-native-google-signin/google-signin"
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "8aaf4740-5a1f-4d1c-bf21-f7b7eddd0030"
-      }
+      "router": {}
     }
   }
 }

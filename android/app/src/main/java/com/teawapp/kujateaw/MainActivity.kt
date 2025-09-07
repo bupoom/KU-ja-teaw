@@ -1,4 +1,4 @@
-package com.teawapp.KU_JA_TEAW
+package com.teawapp.kujateaw
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
