@@ -10,7 +10,47 @@ import {
   StatusBar,
 } from 'react-native';
 import { Feather , Entypo } from '@expo/vector-icons';
-import PlaceBox , { MockDataPlace }  from '@/components/PlaceBox';
+import PlaceBox from '@/components/PlaceBox';
+import { mockPlaceBoxes } from '@/mock/mockDataComplete';
+import { useRouter } from 'expo-router';
+
+
+// Import interfaces
+interface PlaceBox {
+  id: number;
+  title: string;
+  rating?: number;
+  review_count?: number;
+  location: string;
+  place_image?: string;
+  place_id?: number;
+}
+
+interface PlaceDetails {
+  id: number;
+  title: string;
+  description?: string;
+  rating?: number;
+  review_count?: number;
+  location: string;
+  place_image?: string;
+  categories?: string[];
+  map_link?: string;
+  official_link?: string;
+  notes?: Note[];
+}
+
+interface Note {
+  id: number;
+  note_text: string;
+  user_profile: string;
+  user_name: string;
+  is_editable: boolean;
+  reference_id?: number;
+  reference_type?: 'place' | 'event';
+  created_at: string;
+  trip_id: number;
+}
 
 //  สิ่งที่ต้องแก้ไขเพิ่มเติมคือ
 //  - ใส่ API Function 
@@ -19,7 +59,7 @@ import PlaceBox , { MockDataPlace }  from '@/components/PlaceBox';
 
 const SearchScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<PlaceDetails[]>([]);
+  const [searchResults, setSearchResults] = useState<PlaceBox[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   
@@ -29,17 +69,17 @@ const SearchScreen: React.FC = () => {
     searchInputRef.current?.focus();
   }, []);
 
-  // Search function API???
-  const Search_with_query = (query: string): PlaceDetails[] => {
-    if (!query.trim()) {
-      return [];
-    }
+  // Search function API??? - เปลี่ยน return type เป็น PlaceBox[]
+ const Search_with_query = (query: string): PlaceBox[] => {
+  if (!query.trim()) {
+    return [];
+  }
 
-    return MockDataPlace.filter(item =>
-      item.title.toLowerCase().includes(query.toLowerCase()) ||
-      item.location.toLowerCase().includes(query.toLowerCase())
-    );
-  };
+  return mockPlaceBoxes.filter(item =>
+    item.title.toLowerCase().includes(query.toLowerCase()) ||
+    item.location.toLowerCase().includes(query.toLowerCase())
+  );
+};
 
   // Handle search ด้วยการ limit เวลา
   useEffect(() => {
@@ -78,36 +118,45 @@ const SearchScreen: React.FC = () => {
         <View className="items-center">
           <Text className="text-gray-500 text-lg mb-2">Start searching</Text>
           <Text className="text-gray-400 text-center">
-            Enter keywords to find what you&apos;re looking for
+            Enter keywords to find what you are looking for
           </Text>
         </View>
       )}
     </View>
   );
 
+  // Handle navigation to PlaceDetails screen
+  const handlePlacePress = (place: PlaceBox) => {
+    const router = useRouter()
+    // TODO: Navigate to PlaceDetails screen
+    router.push(`/places/${place.place_id}`);
+    console.log('Navigate to place details:', place.place_id);
+  };
+
   return (
     <SafeAreaView className="h-full bg-white py-14">
         <StatusBar barStyle="dark-content" backgroundColor="#075952" />
 
         {/* Search Header */}
-        <View className="bg-white p-4">
-            <View className="flex-row items-center bg-gray-100 rounded-full p-3">
-                <Feather name="search" size={20} color="#666" className="mr-3" />
+        <View className="bg-white p-4 mt-5">
+            <View className="flex-row items-center bg-gray-50 rounded-full px-4 py-1 border border-gray_border">
+                <Feather name="search" size={20} color="#666" />
                 <TextInput
                     ref={searchInputRef}
-                    className="flex-1"
+                    className="text-gray-400 ml-3 flex-1"
                     placeholder="Search..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                     autoCorrect={false}
                     autoCapitalize="none"
                     returnKeyType="search"
-                    clearButtonMode="while-editing" // iOS only
                 />
                 {loading && (
                   <ActivityIndicator size="small" color="#6b7280" className="ml-2" />
                 )}
-                <Entypo name="circle-with-cross" size={24} color="black" onPress={() => setSearchQuery("")}/>
+                <TouchableOpacity onPress={() => setSearchQuery("")}>
+                  <Entypo name="circle-with-cross" size={24} color="black" />
+                </TouchableOpacity>
             </View>
         </View>
 
@@ -115,7 +164,10 @@ const SearchScreen: React.FC = () => {
         <FlatList
           data={searchResults}
           renderItem={({ item }) => (
-            <TouchableOpacity style={{ marginBottom: 10 }}>
+            <TouchableOpacity 
+              style={{ marginBottom: 10 }}
+              onPress={() => handlePlacePress(item)}
+            >
               <PlaceBox {...item} />
             </TouchableOpacity>
           )}

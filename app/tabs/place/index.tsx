@@ -1,82 +1,102 @@
-import React, { useState , useCallback} from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   View, 
   Text, 
   FlatList, 
-  ScrollView, 
   TouchableOpacity, 
   StatusBar,
   RefreshControl,
+  SafeAreaView 
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import PlaceBox , { MockDataPlace } from '@/components/PlaceBox';
+import PlaceBox from '@/components/PlaceBox';
+import { mockBookmarkPlaces } from '@/mock/mockDataComplete';
+
+// Interface definition
+interface PlaceBoxData {
+  id: number;
+  title: string;
+  rating?: number;
+  review_count?: number;
+  location: string;
+  place_image?: string;
+  place_id?: number;
+}
 
 const PlaceScreen = () => {
-  const route = useRouter()
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+  const [places, setPlaces] = useState<PlaceBoxData[]>(mockBookmarkPlaces);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    // await fetch ข้อมูลใหม่
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setPlaces(mockBookmarkPlaces);
     setRefreshing(false);
   }, []);
 
   const handleSearch = () => {
-      route.push('/tabs/place/search_place')
-  }
-  
+    router.push('/tabs/place/search_place');
+  };
+
+  const handlePlacePress = (place: PlaceBoxData) => {
+    router.push(`/places/${place.place_id}`);
+  };
+
   return (
-    <View className="flex-1 bg-gray-50">
-      <StatusBar barStyle="light-content" backgroundColor="#075952" />
-      {/* Header */}
-      <View className="bg-teal-700 pt-12 pb-6 px-4 rounded-b-3xl">
-        <Text className="text-white text-2xl py-3 font-bold text-center">Place Bookmark</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <StatusBar barStyle="light-content" backgroundColor="green_2" />
+      
+      <View className="bg-green_2 pb-6 px-4 pt-20">
+        <Text className="text-white text-[35px] font-sf-bold text-center pt-2">
+          Place Bookmark
+        </Text>
       </View>
 
-      {/* Search Bar */}
-      <View className="px-4 -mt-6 mb-6">
-        <View className="bg-white rounded-full p-7 shadow-sm border border-gray-200">
-          <TouchableOpacity 
-            onPress={handleSearch}
-            className="bg-white flex-row items-center"
-          >
-            <Feather name="search" size={20} color="#666" className="mr-3" />
-            <Text className='text-gray-400'> Search...</Text>
-          </TouchableOpacity>
-        </View>
-        <View  className='mt-4 w-10/16 border-hairline border-s border-gray-300'/>
+      <View className="px-4 py-4 bg-white">
+        <TouchableOpacity
+          onPress={handleSearch}
+          className="flex-row items-center bg-gray-50 rounded-full px-4 py-3 border border-gray_border"
+        >
+          <Feather name="search" size={20} color="#666" />
+          <Text className="text-gray-400 ml-3 flex-1">Search...</Text>
+        </TouchableOpacity>
       </View>
-      
-      {/* Bookmarked Places List */}
-      <ScrollView 
-        className="flex-1 px-4" 
+
+      <FlatList
+        data={places}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handlePlacePress(item)}>
+            <PlaceBox 
+              id={item.id}
+              title={item.title}
+              rating={item.rating}
+              review_count={item.review_count}
+              location={item.location}
+              place_image={item.place_image}
+              place_id={item.place_id}
+            />
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        className="flex-1 bg-white"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-      > 
-        <FlatList
-          data={MockDataPlace}
-          renderItem={({ item }) => (
-            <TouchableOpacity>
-              <PlaceBox {...item} />
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          className="pb-5"
-          scrollEnabled={false}
-        />
-
-        {/* Empty State or Load More */}
-        <View className="items-center py-8">
-          <Text className="text-gray-400 text-sm">No more bookmarks</Text>
-        </View>
-
-        {/* Bottom spacing for tab bar */}
-        <View className="h-20" />
-      </ScrollView>
-    </View>
+        ListEmptyComponent={() => (
+          <View className="items-center py-16">
+            <Feather name="bookmark" size={48} color="#D1D5DB" />
+            <Text className="text-gray-500 mt-4 text-lg">No bookmarks yet</Text>
+            <Text className="text-gray-400 mt-2 text-center px-8">
+              Start exploring and bookmark your favorite places!
+            </Text>
+          </View>
+        )}
+      />
+    </SafeAreaView>
   );
 };
 

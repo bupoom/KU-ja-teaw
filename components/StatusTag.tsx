@@ -1,4 +1,3 @@
-// components/StatusTag.tsx
 import React from "react";
 import { Pressable, Text, ViewStyle } from "react-native";
 
