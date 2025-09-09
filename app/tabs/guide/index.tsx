@@ -80,7 +80,7 @@ const GuideBookmarkScreen = () => {
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id.toString()}
-        className="flex-1 bg-white"
+        className="flex-1 bg-white mb-20"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
         refreshControl={

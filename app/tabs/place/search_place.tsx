@@ -62,6 +62,7 @@ const SearchScreen: React.FC = () => {
   const [searchResults, setSearchResults] = useState<PlaceBox[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const router = useRouter()
   
   // Auto focus เมื่อเข้าหน้ามาจะทำให้ page มีแป้นพิมและ cursor อยู่บน search bar ทันที
   const searchInputRef = useRef<TextInput>(null);
@@ -127,7 +128,6 @@ const SearchScreen: React.FC = () => {
 
   // Handle navigation to PlaceDetails screen
   const handlePlacePress = (place: PlaceBox) => {
-    const router = useRouter()
     // TODO: Navigate to PlaceDetails screen
     router.push(`/places/${place.place_id}`);
     console.log('Navigate to place details:', place.place_id);
