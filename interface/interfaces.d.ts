@@ -1,130 +1,204 @@
+interface TripBox {
+  trip_id: number;
+  trip_name: string;
+  trip_image: string;
+  start_date: string;
+  end_date: string;
+  member_count: number;
+  status_planning: 'planning' | 'completed';
+  owner_name: string;
+  owner_image: string;
+} // เเสดงในหน้า home เเละ user profile ใช้สำหรับ invite ด้วย
 
-interface TripDetails {
+interface CreateTrip {
+  trip_name: string; 
+  trip_image: string;
+  start_date: string;
+  end_date: string;
+  trip_code: string;
+  trip_password: string;
+} // ใช้ในการสร้าง trip ใหม่ เเละส่งไป server
+
+interface Note {
+  id: number;
+  note_text: string;
+  user_profile: string;
+  user_name: string;
+  is_editable: boolean;
+  reference_id?: number;
+  reference_type?: 'place' | 'event';
+  created_at: string;
+  trip_id: number;
+} // เเสดงในหน้า daily trip, placeDetails ที่เชื่อมกับ activityPlaceBox , activityEventBox
+
+interface Flight {
+  id: number;
+  departure_airport: string;
+  arrival_airport: string;
+  departure_date: string;
+  arrival_date: string;
+  airline: string;
+  departure_country: string;
+  arrival_country: string;
+  trip_id: number;
+} // เเสดงในหน้า daily trip, tripDetails, guideDetails
+
+interface FileGroup {
+  id: number;
+  file_name: string;
+  file_url: string;
+  uploaded_date: string;
+  uploaded_by: string;
+  file_size_mb: number;
+  file_type?: string;
+  trip_id: number;
+} // เเสดงในหน้า daily trip
+
+interface ActivityPlaceBox {
   id: number;
   title: string;
-  image: string;
-  dateRange: string;
-  participantsCount: number;
-  status: 'Traveling' | 'Coming' | 'Completed' | 'Planning';
-  creator: string;
-  creator_image:  string;
-}
-interface GuideDetails {
+  date: string;
+  time_begin: string;
+  time_end: string;
+  location: string;
+  place_id?: number;
+  place_image?: string;
+  trip_id: number;
+} // เเสดงในหน้า daily trip
+
+interface ActivityEventBox {
   id: number;
   title: string;
-  duration: number;
+  date: string;
+  time_begin: string;
+  time_end: string;
+  transportation?: string;
+  Notes?: Note[];
+  trip_id: number;
+} // เเสดงในหน้า daily trip, eventDetails
+
+interface ActivityVotePlace {
+  id: number;
+  date: string;
+  time_begin: string;
+  time_end: string;
+  number_of_votes: number;
+  options: PlaceBox[];
+  votes: Vote[];
+  trip_id: number;
+} // เเสดงหน้า vote place
+
+interface TransportationOption {
+  id: number;
+  type: 'Car' | 'Bus' | 'Train' | 'Walk' | 'Flight' | 'Boat';
+} // ตัวเลือกการเดินทาง
+
+interface ActivityVoteEvent {
+  id: number;
+  date: string;
+  time_begin: string;
+  time_end: string;
+  number_of_votes: number;
+  options: TransportationOption[];
+  votes: Vote[];
+  trip_id: number;
+} // เเสดงหน้า vote event
+
+interface Vote {
+  id: number;
+  user_id: number;
+  activity_id: number;
+  vote_type: 'place' | 'event';
+  place_id?: number;
+  event_id?: number;
+  username: string;
+  trip_id: number;
+} // บอกว่าใครโหวตอันไหน
+
+interface NotificationBox {
+  id: number;
+  title: string;
+  message: string;
+  created_at: string;
+  notification_type?: string;
+  trip_id: number;
+} // เเสดงหน้า notification ใน daily trip
+
+interface GuideBox {
+  id: number;
+  title: string;
+  start_date: string;
+  end_date: string;
+  guide_image: string;
   copies: number;
-  price: number;
-  rating: number;
-  image: string;
-  highlights: string;
-  guideId: string;
-  creator: string;
-  creator_image: string;
-}
+  owner_name: string;
+  owner_image: string;
+  owner_comments: string;
+  guide_id: number
+} // เเสดงหน้า search ของ guide bookmark
+
+interface Trip_Guide_Details {
+  id: number;
+  title: string;
+  start_date: string;
+  end_date: string;
+  guide_image: string;
+  copies: number;
+  owner_name: string;
+  owner_image: string;
+  owner_comments: string;
+  owner_email: string;
+  group_members: number;
+  budget: number;
+  trip_id: number;
+} // เเสดงหน้า details ของ guide ตอนกดเข้าไปจาก guide bookmark กับ หน้า home
+
+interface PlaceBox {
+  id: number;
+  title: string;
+  rating?: number;
+  review_count?: number;
+  location: string;
+  place_image?: string;
+  place_id?: number;
+} // เเสดงหน้า search ของ place bookmark
 
 interface PlaceDetails {
   id: number;
   title: string;
-  rating: number;
-  reviewCount: number,
+  description?: string;
+  rating?: number;
+  review_count?: number;
   location: string;
-  image: string;
+  place_image?: string;
+  categories?: string[];
+  map_link?: string;
+  official_link?: string;
+  notes?: Note[];
+} // เเสดงหน้า details ของ place ตอนกดเข้าไปจาก place bookmark กับ หน้า daily trip
+
+interface TripMember {
+  id: number;
+  name: string;
+  user_image: string;
+  email?: string;
+  phone?: string;
+  role: 'owner' | 'editer' | 'viewer';
+} // เเสดงในหน้า trip details ที่จบไปเเล้วอ่ะ เเล้ว หน้า Group
+
+interface UserDetails {
+  id: number;
+  name: string;
+  phone: string;
+  user_image: string;
+  email: string;
 }
 
-interface LoadingState {
-  currentTrip: boolean;
-  invitations: boolean;
-  places: boolean;
-  guidePlans: boolean;
-  refreshing: boolean;
-}
-
-// // <----------------------- Trip ------------------------>
-
-// interface TripBox {
-//   id: number;
-//   title: string;
-//   trip_image: string; // URL of the image
-//   startdate: string; // Start date in ISO format
-//   enddate: string; // End date in ISO format
-//   member: number;
-//   statusPlan: boolean; // false if Planning, true if Completed
-//   owner_name: string;
-//   owner_image: string; // URL of the owner's image
-// } // อันนี้รับรับมาจากการ fetch data from server เเละเเปลงให้ใช้กับ TripBox หรือ InviteBox
-
-// interface CraeteTrip {
-//   title: string;
-//   trip_image: string;
-//   startdate: string;
-//   enddate: string;
-//   trip_code: string;
-//   trip_password:  string;
-// } // อันนี้ใช้ในการสร้าง trip ใหม่ เเละส่งไป server
-
-// interface Note {
-//     id: number;
-//     note: string;
-//     user_profile: string; // URL of the user's profile image
-//     user_name: string;
-//     is_editable: boolean; // true if the note can be edited by the current user
-// } // อันนี้รับมาจาก server ใช้กับ NoteBox
-
-// interface interFlight {
-//     id: number;
-//     flight_number: string;
-//     departure_airport: string;
-//     arrival_airport: string;
-//     departure_date: string; // ISO format
-//     arrival_date: string; // ISO format
-//     airline: string;
-//     departure_country: string;
-//     arrival_country: string;
-// } // อันนี้รับมาจาก server ใช้กับ FlightBox เเละส่งไป server ตอนเพิ่ม flight
-
-// // <----------------------- Guide ------------------------>
-
-// interface GuideBox {
-//   id: number;
-//   title: string;
-//   staertdate: string;
-//   enddate: string;
-//   guide_image: string; // URL of the image
-//   copies: number;
-//   owner_name: string;
-//   owner_image: string; // URL of the owner's image
-//   owner_comments: number; // ในหน้า Overview มันมีอยู่เอา Note ของ Owner มาโชว์่่
-// }
-
-// // <----------------------- Place ------------------------>
-
-// interface PlaceBox {
-//   id: number;
-//   title: string;
-//   rating?: number;
-//   reviewCount?: number;
-//   location: string;
-//   place_image?: string;
-// }
-
-// // <----------------------- User ------------------------>
-
-// interface UserDetails {
-//   id: number;
-//   name: string;
-//   phone: string;
-//   user_image: string;
-//   email?: string;
-//   bio_image?: string;
-// }
-
-// // <----------------------- Add On Function ------------------------>
 
 // interface LoadingState {
-//   currentTrip: boolean;
+//   current_trip: boolean;
 //   invitations: boolean;
 //   places: boolean;
-//   guidePlans: boolean;
+//   guide_plans: boolean;
 //   refreshing: boolean;
 // }

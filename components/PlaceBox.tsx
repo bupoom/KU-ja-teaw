@@ -1,139 +1,153 @@
 import { useRouter, usePathname } from "expo-router";
-import { View, Image, Text, TouchableOpacity , Alert} from "react-native";
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { View, Image, Text, TouchableOpacity, Alert } from "react-native";
+import { Feather, Ionicons } from "@expo/vector-icons";
 
+// Interface matching your latest mockData
+interface PlaceBoxProps {
+  id: number;
+  title: string;
+  rating?: number;
+  review_count?: number;
+  location: string;
+  place_image?: string;
+  place_id?: number;
+}
 
-const renderStars = (rating:number) => { // function คิดรูปดาว
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    const stars = [];
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <Ionicons key={i} name="star" size={14} color="#FFD700" />
-      );
-    }
-    if (hasHalfStar) {
-      stars.push(
-        <Ionicons key="half" name="star-half" size={14} color="#FFD700" />
-      );
-    }
-    const remainingStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(
-        <Ionicons key={`empty-${i}`} name="star-outline" size={14} color="#E0E0E0" />
-      );
-    }
-    return stars;
-};
-
-const PlaceBox = ({ // Component ของ guide ใน Guide Book mark
+const PlaceBox: React.FC<PlaceBoxProps> = ({
   id,
   title,
-  rating,
-  reviewCount,
+  rating = 0,
+  review_count = 0,
   location,
-  image,
-}: PlaceDetails) =>  {
+  place_image,
+  place_id,
+}) => {
   const pathname = usePathname();
-  const give_bookmark  = pathname === '/tabs/place'
-  const router = useRouter()
-  const  handleUnbookmark  = () => {
+  const router = useRouter();
+  const give_bookmark = pathname === "/tabs/place";
+
+  const handleUnbookmark = () => {
     // fetch API ลบ bookmark ทิ้ง
-    Alert.alert('unbookmark แล้วไอโง่');
-    return 
-  }
-  
-  const handlePlaceBoxPress = (place_id: number): void => {
-    router.push(`/`)
-    // Alert.alert("Navigate to Guide Plan", `Going to ${guide_title}`)
+    Alert.alert("Unbookmark", "Place removed from bookmarks");
+    return;
   };
 
-  if (pathname === '/tabs/place' || pathname === '/tabs/place/search_place') {
+  const handlePlaceBoxPress = (): void => {
+    // Navigate to place details using place_id or id
+    const placeId = place_id || id;
+    router.push(`/places/${placeId}`);
+  };
+
+  // Default image if place_image is not provided
+  const imageUri =
+    place_image ||
+    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop";
+
+  // Place bookmark page layout
+  if (pathname === "/tabs/place" || pathname === "/tabs/place/search_place") {
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         key={id}
-        className="bg-white w-full rounded-lg p-3 mb-3 shadow-sm border border-gray-100"
-        onPress={() => handlePlaceBoxPress(id)}
+        className="bg-white rounded-xl p-3 mb-3 mr-1 ml-1 border border-gray_border"
+        onPress={handlePlaceBoxPress}
       >
         <View className="flex-row">
           {/* Place Image */}
-          <Image source={{ uri: image }} className="w-20 h-20 rounded-xl"/>
+          <Image 
+            source={{ uri: imageUri }} 
+            className="w-20 h-20 rounded-xl" 
+          />
+
           {/* Place Info */}
           <View className="flex-1 ml-5">
-            <View className="flex-row justify-between items-start mb-2">
-              <Text className="text-lg font-semibold text-gray-800 flex-1">{title}</Text>
+            <View className="flex-row justify-between items-start">
+              <Text className="text-[16px] font-sf-semibold text-black leading-6">
+                {title}
+              </Text>
               <TouchableOpacity className="ml-2" onPress={handleUnbookmark}>
-              {give_bookmark && (
-                <Ionicons name={"bookmark"} size={24} color={"#004D40"} />
-              )}
+                {give_bookmark && (
+                  <Ionicons name="bookmark" size={24} color="#000000" />
+                )}
               </TouchableOpacity>
             </View>
+
             {/* Rating Row */}
-            <View className="flex-row items-center mb-2">
-              <View className="flex-row items-center mr-2">{renderStars(rating)}</View>
-              <Text className="text-sm text-gray-600 ml-1">{rating} ({reviewCount})</Text>
+            <View className="flex-row items-center">
+              <View className="flex-row items-center">
+                <Ionicons name="star" size={15} color="#FFD700" />
+              </View>
+              <Text className="text-[11px] text-dark_gray ml-2 font-sf-semibold">
+                {rating} ({review_count?.toLocaleString() || 0} Review)
+              </Text>
             </View>
+
             {/* Location Info */}
             <View className="flex-row items-center">
-              <Feather name="map-pin" size={14} color="#666" />
-              <Text className="text-sm text-gray-600 ml-1">{location}</Text>
+              <Feather name="map-pin" size={15} color="#666" />
+              <Text className="text-[11px] text-dark_gray ml-2 font-sf-semibold">
+                {location}
+              </Text>
             </View>
           </View>
         </View>
       </TouchableOpacity>
-    )
-  } else if (pathname === '/tabs') {
+    );
+  }
+
+  // Home page horizontal scroll layout
+  else if (pathname === "/tabs") {
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         className="mr-4 w-48 bg-white rounded-xl shadow-sm overflow-hidden"
-        onPress={() => handlePlaceBoxPress(id)}
+        onPress={handlePlaceBoxPress}
         activeOpacity={0.8}
         style={{
-          shadowColor: '#000',
+          shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.08,
           shadowRadius: 6,
           elevation: 2,
         }}
       >
-        <Image 
-          source={{ uri: image }} 
+        <Image
+          source={{ uri: imageUri }}
           className="w-full h-32 rounded-xl"
           resizeMode="cover"
         />
-        
+
         <View className="p-3">
-          <Text 
-            className="text-base font-bold text-gray-900 mb-1" 
+          <Text
+            className="text-base font-bold text-gray-900 mb-1"
             numberOfLines={2}
             style={{ lineHeight: 20 }}
           >
             {title}
           </Text>
-          
-          <Text 
-            className="text-sm text-gray-500 mb-2" 
-            numberOfLines={1}
-          >
+
+          <Text className="text-sm text-gray-500 mb-2" numberOfLines={1}>
             {location}
           </Text>
-          
+
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center">
               <Feather name="star" size={14} color="#FFA500" />
               <Text className="text-sm font-semibold text-gray-700 ml-1">
-                {rating}
+                {rating > 0 ? rating.toFixed(1) : "N/A"}
               </Text>
             </View>
-            
+
             <Text className="text-xs text-gray-400 font-medium">
-              {reviewCount.toLocaleString()} reviews
+              {review_count > 0
+                ? `${review_count.toLocaleString()} reviews`
+                : "No reviews"}
             </Text>
           </View>
         </View>
       </TouchableOpacity>
-    )
+    );
   }
-}
+
+  return null;
+};
 
 export default PlaceBox;

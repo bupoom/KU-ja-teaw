@@ -18,6 +18,12 @@ export default function Layout() {
         headerTitle: "Account",
         headerTitleAlign: "center",
       }} />
+      <Stack.Screen name="all_end_trip" options={{
+        headerShown:true,
+        headerTitle: "Account",
+        headerTitleAlign: "center",
+      }} />
+
     </Stack>
   );
 }
