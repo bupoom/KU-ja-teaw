@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { API_CONFIG } from '@/service/serverAPI';
+// import { API_CONFIG } from '@/service/serverAPI';
 import { AuthService } from '@/service/authService';
 
 interface UserDetails {
@@ -51,26 +51,26 @@ const ProfileSetupScreen = () => {
     return '';
   };
 
-  const registerUser = async (userData: any) => {
-    const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.REGISTER_USER}`;
+  // const registerUser = async (userData: any) => {
+  //   const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.REGISTER_USER}`;
     
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${idToken}`,
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
+  //   const response = await fetch(apiUrl, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${idToken}`,
+  //       'Accept': 'application/json',
+  //     },
+  //     body: JSON.stringify(userData),
+  //   });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
-    }
+  //   if (!response.ok) {
+  //     const errorData = await response.json().catch(() => null);
+  //     throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+  //   }
 
-    return await response.json();
-  };
+  //   return await response.json();
+  // };
 
   const handleGetStart = async () => {
     const errorPhoneNumber = validatePhone(phoneNumber);
