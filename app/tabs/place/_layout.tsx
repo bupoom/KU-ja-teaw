@@ -9,7 +9,7 @@ export default function Layout() {
   useFocusEffect(
     React.useCallback(() => {
       // Reset กลับไปหน้า index เมื่อ tab ถูกเลือก
-      router.replace('/tabs/place/');
+      router.replace('/tabs/place');
     }, [])
   );
 

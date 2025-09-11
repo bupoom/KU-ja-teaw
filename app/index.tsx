@@ -33,7 +33,7 @@ const GetStartScreen = () => {
   }, []);
 
   const handleGetStart = () => {
-    router.push('/auth/sign_in'); // ใช้ push แทน replace
+    router.push('/auth'); // ใช้ push แทน replace
   };
 
   // แสดง loading ขณะตรวจสอบ authentication

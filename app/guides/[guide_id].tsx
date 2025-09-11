@@ -1,6 +1,5 @@
 import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { fetchAllGuides } from '@/service/serverAPI/guideAPI';
 
 export default function SimpleMessage() {
   const router = useRouter();

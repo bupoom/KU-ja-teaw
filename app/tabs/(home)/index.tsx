@@ -24,6 +24,7 @@ import {
   mockGuideBoxes 
 } from "@/mock/mockDataComplete";
 
+
 // Import interfaces
 interface TripBox {
   trip_id: number;
@@ -83,7 +84,6 @@ export default function HomeScreen(): JSX.Element {
   });
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
   // ------------------------------- จำลองการ Fetch ------------------------------
 const fetchCurrentTrip = async (): Promise<void> => {
   setLoading((prev) => ({ ...prev, currentTrip: true }));
@@ -217,7 +217,7 @@ const fetchCurrentTrip = async (): Promise<void> => {
   //  ------------------- HOME PAGE -------------------
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <StatusBar barStyle="dark-content" backgroundColor='#ffffff' />
 
       {/* Header */}
       <View className="bg-green_2 p-2 flex-row items-center"></View>
