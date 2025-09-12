@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-// import { API_CONFIG } from '@/service/serverAPI';
 import { AuthService } from '@/service/authService';
+
 
 interface UserDetails {
   user_id: string;
