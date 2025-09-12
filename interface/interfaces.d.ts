@@ -151,6 +151,7 @@ interface Trip_Guide_Details {
   group_members: number;
   budget: number;
   trip_id: number;
+  note?: Note[]
 } // เเสดงหน้า details ของ guide ตอนกดเข้าไปจาก guide bookmark กับ หน้า home
 
 interface PlaceBox {
@@ -194,11 +195,10 @@ interface UserDetails {
   email: string;
 }
 
-
-// interface LoadingState {
-//   current_trip: boolean;
-//   invitations: boolean;
-//   places: boolean;
-//   guide_plans: boolean;
-//   refreshing: boolean;
-// }
+interface LoadingState {
+  current_trip: boolean;
+  invitations: boolean;
+  places: boolean;
+  guide_plans: boolean;
+  refreshing: boolean;
+}

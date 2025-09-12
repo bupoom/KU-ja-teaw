@@ -36,6 +36,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({
   };
 
   const handleGuideBoxPress = (): void => {
+    console.log(`id: ${id}`)
     router.push(`/guides/${id}`);
   };
 

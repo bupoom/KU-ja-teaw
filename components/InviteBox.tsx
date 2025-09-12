@@ -34,7 +34,6 @@ export default function TripInvitationBox({
   status_planning,
   owner_name,
   owner_image,
-  onPressCard,
   onJoin,
   onReject,
 }: InviteDetails) {
@@ -52,10 +51,8 @@ export default function TripInvitationBox({
   };
 
   return (
-    <TouchableOpacity
+    <View
       className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray_border"
-      onPress={() => onPressCard?.(tripData)}
-      activeOpacity={0.8}
     >
       <View className="flex-row mb-2">
         <Image 
@@ -114,6 +111,6 @@ export default function TripInvitationBox({
           <Text className="text-gray-700 text-center font-medium">Reject</Text>
         </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 }

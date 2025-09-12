@@ -6,6 +6,8 @@ export default function PlanLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="setting_plan" />
+      <Stack.Screen name="/tabs/plan/[plan_id]/daily_trip" />
+      <Stack.Screen name="/tabs/plan/[plan_id]/group" />
     </Stack>
   );
 }
