@@ -39,11 +39,23 @@ export default function SetPlanDetail() {
 
   const onPickStart = (_: DateTimePickerEvent, d?: Date) => {
     setShowStart(false);
-    if (d) setStartDate(d);
+    if (!d) return;
+    // 1) เซ็ต startDate ก่อน
+    setStartDate(d);
+    // 2) ถ้า endDate มีค่า → เช็ค logic
+    if (endDate && d > endDate) {
+      Alert.alert("Invalid date range", "Start date cannot be after end date.");
+    }
   };
   const onPickEnd = (_: DateTimePickerEvent, d?: Date) => {
     setShowEnd(false);
-    if (d) setEndDate(d);
+    if (!d) return;
+    // 1) เซ็ต endDate ก่อน
+    setEndDate(d);
+    // 2) ถ้า startDate มีค่า → เช็ค logic
+    if (startDate && startDate > d) {
+      Alert.alert("Invalid date range", "End date must be after start date.");
+    }
   };
 
   const pickPoster = async () => {
@@ -70,11 +82,15 @@ export default function SetPlanDetail() {
     return null;
   };
 
-  const onNext = () => {
-    const v = validate();
+  // ฟังก์ชันสำหรับเช็คว่าควร disable button หรือไม่
+  const isNextDisabled = () => {
+    return validate() !== null;
+  };
 
-    if (v) {
-      Alert.alert("Invalid input", v);
+  const onNext = () => {
+    const validationError = validate();
+    if (validationError) {
+      Alert.alert("Invalid input", validationError);
       return;
     }
 
@@ -101,7 +117,7 @@ export default function SetPlanDetail() {
           Plan a new trip
         </Text>
         <Text className="text-dark_gray text-base">
-          It’s a beginning of your journey
+          It's a beginning of your journey
         </Text>
 
         {/* Trip Name */}
@@ -210,9 +226,7 @@ export default function SetPlanDetail() {
         </View>
 
         {/* Next Button */}
-        <NextButton
-          onPress={onNext}
-        />
+        <NextButton onPress={onNext} disabled={isNextDisabled()} />
       </View>
     </View>
   );

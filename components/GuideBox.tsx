@@ -14,6 +14,7 @@ interface GuideBoxProps {
   owner_name: string;
   owner_image: string;
   owner_comments: string;
+  onRemove?: (id:number) => void;
 }
 
 const GuideBox: React.FC<GuideBoxProps> = ({
@@ -25,17 +26,40 @@ const GuideBox: React.FC<GuideBoxProps> = ({
   copies,
   owner_name,
   owner_image,
-  owner_comments
+  owner_comments,
+  onRemove
 }) => {
   const pathname = usePathname();
   const router = useRouter();
   const give_bookmark = pathname === '/tabs/guide';
 
   const handleUnbookmark = () => {
-    Alert.alert('Unbookmark', 'Guide removed from bookmarks');
+    Alert.alert(
+      "Remove Bookmark", 
+      `Are you sure you want to remove "${title}" from bookmarks?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            // กด Remove เเล้วจะไปใช้ function onremove ที่หน้า place bookmark
+            if (onRemove) {
+              onRemove(id);
+            }
+            // You can also add API call here for real implementation
+            // fetch API ลบ bookmark ทิ้ง
+          }
+        }
+      ]
+    );
   };
 
   const handleGuideBoxPress = (): void => {
+    console.log(`id: ${id}`)
     router.push(`/guides/${id}`);
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,12 @@ import {
   RefreshControl,
   Alert,
   FlatList,
-  SafeAreaView
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import GuideBox from '@/components/GuideBox';
-import { mockGuideBoxes } from '@/mock/mockDataComplete';
+  SafeAreaView,
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import GuideBox from "@/components/GuideBox";
+import { mockGuideBoxes } from "@/mock/mockDataComplete";
 
 // Import interfaces
 interface GuideBox {
@@ -35,24 +35,30 @@ const GuideBookmarkScreen = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setGuides(mockGuideBoxes);
     setRefreshing(false);
   }, []);
 
   const handleSearch = () => {
-    router.push('/tabs/guide/search_guide');
+    router.push("/tabs/guide/search_guide");
   };
+
+  const handleRemoveGuides = useCallback((guidesId: number) => {
+    setGuides((prevGuides) =>
+      prevGuides.filter((guides) => guides.id !== guidesId)
+    );
+  }, []);
 
   const handleGuidePress = (guide: GuideBox) => {
     router.push(`/guides/${guide.guide_id}`);
-    console.log('Navigate to guide:', guide.guide_id);
+    console.log("Navigate to guide:", guide.guide_id);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <StatusBar barStyle="light-content" backgroundColor="#075952" />
-      
+
       <View className="bg-green_2 pb-6 px-4 pt-20">
         <Text className="text-white text-[35px] font-sf-bold text-center pt-2">
           Guide Bookmark
@@ -72,15 +78,21 @@ const GuideBookmarkScreen = () => {
       <FlatList
         data={guides}
         renderItem={({ item }) => (
-          <TouchableOpacity 
-            onPress={() => handleGuidePress(item)}
-            className="mb-3"
-          >
-            <GuideBox {...item} />
-          </TouchableOpacity>
+          <GuideBox
+            id={item.id}
+            title={item.title}
+            start_date={item.start_date}
+            end_date={item.end_date}
+            guide_image={item.guide_image}
+            copies={item.copies}
+            owner_name={item.owner_name}
+            owner_image={item.owner_image}
+            owner_comments={item.owner_comments}
+            onRemove={handleRemoveGuides}
+          />
         )}
         keyExtractor={(item) => item.id.toString()}
-        className="flex-1 bg-white"
+        className="flex-1 bg-white mb-20"
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
         refreshControl={

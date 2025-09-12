@@ -148,9 +148,9 @@ const ProfileScreen: React.FC = () => {
     router.push('/tabs/profile/setting')
   };
 
-  const handleTripPress = (trip: TripBox) => {
-    // Navigate to trip details using the structure you have
-    router.push(`/tabs/plan/${trip.trip_id}`);
+  // Custom navigation function for END trips
+  const handleEndTripPress = (trip_id: number) => {
+    router.push(`/trips/${trip_id}`);
   };
 
   const handleSeeAllEndTrips = () => {
@@ -255,7 +255,6 @@ const ProfileScreen: React.FC = () => {
               <FlatList
                 data={section.title === 'END' ? section.trips.slice(0, 2) : section.trips}
                 renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => handleTripPress(item)}>
                     <TripBox 
                       trip_id={item.trip_id}
                       trip_name={item.trip_name}
@@ -266,8 +265,8 @@ const ProfileScreen: React.FC = () => {
                       status_planning={item.status_planning}
                       owner_name={item.owner_name}
                       owner_image={item.owner_image}
+                      onPress={section.title === 'END' ? handleEndTripPress : undefined}
                     />
-                  </TouchableOpacity>
                 )}
                 keyExtractor={(item) => item.trip_id.toString()}
                 className="pb-5"

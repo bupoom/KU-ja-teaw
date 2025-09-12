@@ -37,16 +37,6 @@ interface TripBox {
   owner_image: string;
 }
 
-interface PlaceBox {
-  id: number;
-  title: string;
-  rating?: number;
-  review_count?: number;
-  location: string;
-  place_image?: string;
-  place_id?: number;
-}
-
 interface GuideBox {
   id: number;
   title: string;
@@ -145,22 +135,20 @@ const fetchCurrentTrip = async (): Promise<void> => {
   };
 
   // -------------------------------- API Action Functions ------------------------
-  const handlePreviewTrip = (trip: TripBox): void => {
-    router.push(`/trips/${trip.trip_id}`);
-  };
-
-  const handleCurrentTripPress = (): void => {
-    if (currentTrip) {
-      router.push(`/trips/${currentTrip.trip_id}`);
-    }
-  };
+  // const handleCurrentTripPress = (): void => {
+  //   if (currentTrip) {
+  //     router.push(`/trips/${currentTrip.trip_id}`);
+  //     router.push(`/tabs/plan/${currentTrip.trip_id}`)
+  //   }
+  // };
 
   const handleJoinTrip = async (trip: TripBox): Promise<void> => {
     Alert.alert("Success", "You have successfully joined the trip!", [
       {
         text: "OK",
         onPress: () => {
-          router.push(`/trips/${trip.trip_id}`);
+          // router.push(`/trips/${trip.trip_id}`);
+          router.push(`/plan/${trip.trip_id}`)
           setTripInvitations((prev) =>
             prev.filter((inv) => inv.trip_id !== trip.trip_id)
           );
@@ -171,10 +159,6 @@ const fetchCurrentTrip = async (): Promise<void> => {
 
   const handleRejectTrip = async (trip: TripBox): Promise<void> => {
     setTripInvitations((prev) => prev.filter((inv) => inv.trip_id !== trip.trip_id));
-  };
-
-  const handlePlacePress = (place: PlaceBox): void => {
-    router.push(`/places/${place.place_id}`);
   };
 
   const handleGuidePress = (guide: GuideBox): void => {
@@ -252,9 +236,7 @@ const fetchCurrentTrip = async (): Promise<void> => {
           {loading.currentTrip ? (
             renderLoadingSpinner()
           ) : currentTrip ? (
-            <TouchableOpacity onPress={handleCurrentTripPress}>
               <TripBox {...currentTrip} />
-            </TouchableOpacity>
           ) : (
             <View className="bg-gray-50 rounded-xl p-4 items-center">
               <Text className="text-gray-500">No active trips</Text>
@@ -295,7 +277,6 @@ const fetchCurrentTrip = async (): Promise<void> => {
                 <View className="mt-3">
                   <InviteBox
                     {...item}
-                    onPressCard={handlePreviewTrip}
                     onJoin={handleJoinTrip}
                     onReject={handleRejectTrip}
                   />
@@ -341,9 +322,7 @@ const fetchCurrentTrip = async (): Promise<void> => {
               data={guidePlans.slice(0, 4)} // แสดงแค่ 4 อันแรก
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handleGuidePress(item)}>
-                  <GuideBox {...item} />
-                </TouchableOpacity>
+                <GuideBox {...item} />
               )}
               horizontal
               showsHorizontalScrollIndicator={false}

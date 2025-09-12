@@ -11,6 +11,7 @@ interface PlaceBoxProps {
   location: string;
   place_image?: string;
   place_id?: number;
+  onRemove?: (id: number) => void; // Add onRemove prop for handling removal
 }
 
 const PlaceBox: React.FC<PlaceBoxProps> = ({
@@ -21,21 +22,39 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
   location,
   place_image,
   place_id,
+  onRemove,
 }) => {
   const pathname = usePathname();
   const router = useRouter();
   const give_bookmark = pathname === "/tabs/place";
 
   const handleUnbookmark = () => {
-    // fetch API ลบ bookmark ทิ้ง
-    Alert.alert("Unbookmark", "Place removed from bookmarks");
-    return;
+    Alert.alert(
+      "Remove Bookmark", 
+      `Are you sure you want to remove "${title}" from bookmarks?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            // กด Remove เเล้วจะไปใช้ function onremove ที่หน้า place bookmark
+            if (onRemove) {
+              onRemove(id);
+            }
+            // You can also add API call here for real implementation
+            // fetch API ลบ bookmark ทิ้ง
+          }
+        }
+      ]
+    );
   };
 
   const handlePlaceBoxPress = (): void => {
-    // Navigate to place details using place_id or id
-    const placeId = place_id || id;
-    router.push(`/places/${placeId}`);
+    router.push(`/places/${place_id}`);
   };
 
   // Default image if place_image is not provided
@@ -88,59 +107,6 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
                 {location}
               </Text>
             </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  // Home page horizontal scroll layout
-  else if (pathname === "/tabs") {
-    return (
-      <TouchableOpacity
-        className="mr-4 w-48 bg-white rounded-xl shadow-sm overflow-hidden"
-        onPress={handlePlaceBoxPress}
-        activeOpacity={0.8}
-        style={{
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.08,
-          shadowRadius: 6,
-          elevation: 2,
-        }}
-      >
-        <Image
-          source={{ uri: imageUri }}
-          className="w-full h-32 rounded-xl"
-          resizeMode="cover"
-        />
-
-        <View className="p-3">
-          <Text
-            className="text-base font-bold text-gray-900 mb-1"
-            numberOfLines={2}
-            style={{ lineHeight: 20 }}
-          >
-            {title}
-          </Text>
-
-          <Text className="text-sm text-gray-500 mb-2" numberOfLines={1}>
-            {location}
-          </Text>
-
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <Feather name="star" size={14} color="#FFA500" />
-              <Text className="text-sm font-semibold text-gray-700 ml-1">
-                {rating > 0 ? rating.toFixed(1) : "N/A"}
-              </Text>
-            </View>
-
-            <Text className="text-xs text-gray-400 font-medium">
-              {review_count > 0
-                ? `${review_count.toLocaleString()} reviews`
-                : "No reviews"}
-            </Text>
           </View>
         </View>
       </TouchableOpacity>

@@ -8,33 +8,14 @@ export default function PlanStackLayout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "Select Plan Option",
-        }}
-      />
+      <Stack.Screen name="index" />
 
-      <Stack.Screen
-        name="join"
-        options={{
-          title: "Jojn Plan",
-        }}
-      />
+      <Stack.Screen name="join" />
 
-      <Stack.Screen
-        name="set_plan_detail"
-        options={{
-          title: "Set Plan Detail",
-        }}
-      />
+      <Stack.Screen name="set_plan_detail" />
 
-      <Stack.Screen
-        name="set_plan_code"
-        options={{
-          title: "Set Plan Code",
-        }}
-      />
+      <Stack.Screen name="set_plan_code" />
+
     </Stack>
   );
 }
