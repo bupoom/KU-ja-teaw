@@ -15,11 +15,37 @@ import { Feather, Foundation } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import '../../global.css'
 import { useRouter } from 'expo-router'
-import TripBox , { MockTripsData }from '@/components/TripBox';
+import TripBox from '@/components/TripBox';
+import { 
+  mockUserDetails, 
+  mockTripBoxes
+} from '@/mock/mockDataComplete';
+import { calculateTripStatus } from '@/util/calculateTripStatus';
+
+// Interface definitions
+interface UserDetails {
+  id: number;
+  name: string;
+  phone: string;
+  user_image: string;
+  email: string;
+}
+
+interface TripBox {
+  trip_id: number;
+  trip_name: string;
+  trip_image: string;
+  start_date: string;
+  end_date: string;
+  member_count: number;
+  status_planning: 'planning' | 'completed';
+  owner_name: string;
+  owner_image: string;
+}
 
 interface TripSection {
   title: string;
-  trips: TripDetails[];
+  trips: TripBox[];
 }
 
 const ProfileScreen: React.FC = () => {
@@ -32,32 +58,63 @@ const ProfileScreen: React.FC = () => {
   const fetchUserData = async (): Promise<UserDetails> => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Return custom user data for Mr.Terrific
+    // Note: When properties have the same name, the later ones override the earlier ones
+    // So name: 'Mr.Terrific' will override name: 'John Smith' from mockUserDetails[0]
     return {
       id: 1,
-      name: 'Mr.Terrific',
-      username: '@man300iq',
-      phone: 'Tel. 0654105555',
-      user_image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-      email: 'terrific@example.com',
-      bio: 'Adventure seeker & travel enthusiast 🌍'
+      name: 'Mr.Terrific', // This will override mockUserDetails[0].name
+      phone: 'Tel. 0654105555', // This will override mockUserDetails[0].phone  
+      email: 'terrific@example.com', // This will override mockUserDetails[0].email
+      user_image: mockUserDetails[0].user_image // Keep the same image
     };
   };
 
-  const fetchTripsData = async (): Promise<TripDetails[]> => {
+  const fetchTripsData = async (): Promise<TripBox[]> => {
     // Simulate API call
-    return MockTripsData;
+    await new Promise(resolve => setTimeout(resolve, 800));
+    return mockTripBoxes;
   };
 
-  const organizeTrips = (trips: TripDetails[]): TripSection[] => {
-    const now = trips.filter(trip => trip.status === 'Traveling');
-    const coming = trips.filter(trip => trip.status === 'Coming');
-    const completed = trips.filter(trip => trip.status === 'Completed');
+  const organizeTrips = (trips: TripBox[]): TripSection[] => {
+    const nowTrips: TripBox[] = [];
+    const comingTrips: TripBox[] = [];
+    const endTrips: TripBox[] = [];
 
-    return [
-      { title: 'Now', trips: now },
-      { title: 'Coming', trips: coming },
-      { title: 'END', trips: completed }
-    ].filter(section => section.trips.length > 0);
+    trips.forEach(trip => {
+      // Use utility function to calculate status based only on dates
+      // status_planning is separate and just for UI tags
+      const status = calculateTripStatus(trip.start_date, trip.end_date);
+      
+      switch (status) {
+        case 'Now':
+          nowTrips.push(trip);
+          break;
+        case 'Coming':
+          comingTrips.push(trip);
+          break;
+        case 'END':
+          endTrips.push(trip);
+          break;
+      }
+    });
+
+    const sections: TripSection[] = [];
+    
+    if (nowTrips.length > 0) {
+      sections.push({ title: 'Now', trips: nowTrips });
+    }
+    
+    if (comingTrips.length > 0) {
+      sections.push({ title: 'Coming', trips: comingTrips });
+    }
+    
+    if (endTrips.length > 0) {
+      sections.push({ title: 'END', trips: endTrips });
+    }
+
+    return sections;
   };
 
   const loadData = async () => {
@@ -91,6 +148,16 @@ const ProfileScreen: React.FC = () => {
     router.push('/tabs/profile/setting')
   };
 
+  const handleTripPress = (trip: TripBox) => {
+    // Navigate to trip details using the structure you have
+    router.push(`/tabs/plan/${trip.trip_id}`);
+  };
+
+  const handleSeeAllEndTrips = () => {
+    // Navigate to all completed trips using your file structure  
+    router.push('/tabs/profile/all_end_trip');
+  };
+
   useEffect(() => {
     loadData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +187,7 @@ const ProfileScreen: React.FC = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+<View className="flex-1 bg-gray-50">
       <StatusBar barStyle="light-content" />
       <ScrollView 
         showsVerticalScrollIndicator={false}
@@ -130,14 +197,13 @@ const ProfileScreen: React.FC = () => {
       >
         {/* Header */}
         <LinearGradient
-          // 059669
           colors={['#284D44', '#059669']}
         >
           {/* Settings Button */}
           <View className="flex-row justify-end items-center pt-12 px-4">
             <TouchableOpacity 
               onPress={handleSettings}
-              className="p-2 bg-white/20 rounded-full"
+              className="p-2 bg-white/0 rounded-full"
             >
               <Feather name="settings" size={24} color="white" />
             </TouchableOpacity>
@@ -145,64 +211,72 @@ const ProfileScreen: React.FC = () => {
 
           {/* Profile Pic */}
           <View className="items-center px-4 mt-4">
-            <View className="relative mb- w-130 h-130">
+            <View className="relative mb-4 w-40 h-40">
               <Image
                 source={{ uri: user.user_image }}
-                className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
+                className="w-40 h-40 rounded-full border-4 border-white shadow-lg"
               />
               <TouchableOpacity 
                 onPress={handleEditProfile}
-                className="absolute -bottom-0 -right-2 w-8 h-8 bg-purple-300 rounded-full border-2  border-white items-center justify-center shadow-sm"
+                className="absolute -bottom-0 -right-2 w-9 h-9 bg-white rounded-full border-2 border-white items-center justify-center shadow-sm"
               >
-                <Foundation name="pencil" size={16} color="#374151" />
+                <Foundation name="pencil" size={18} color="#374151" />
               </TouchableOpacity>
             </View>
           </View>
         </LinearGradient>
 
-        {/* Info Sections */}
-        <View className="items-center px-4 mt-4">
-          <Text className="text-2xl font-bold color-black mb-1">{user.name}</Text>
-          <Text className="color-grey mb-1">{user.username}</Text>
-          <Text className="color-grey mb-2">{user.phone}</Text>
-          {user.bio && (
-            <Text className="color-grey text-center text-sm px-4">{user.bio}</Text>
-          )}
+        {/* User Info */}
+        <View className="items-center px-4">
+          <Text className="text-[25px] font-sf-bold text-black mb-0">{user.name}</Text>
+          <Text className="text-dark_gray mb-2">{user.email}</Text>
+          <Text className="text-dark_gray mb-2">{user.phone}</Text>
         </View>
 
         {/* Trips Sections */}
-        <View className="px-4">
+        <View className="px-4 mt-6">
           {tripSections.map((section, sectionIndex) => (
-            <View key={section.title} className="mb-6">
-              <Text className="text-xl font-bold text-gray-800 mb-4">
-                {section.title}
-              </Text>
-              <View className='mb-4 w-15/16 border-hairline border-s border-gray-400'/>
-              <FlatList // Trips in TipsBox Component
-                data={section.trips}
-                renderItem={({ item }) => (
-                  <TouchableOpacity>
-                    <TripBox {...item} />
+            <View key={section.title}>
+              <View className="flex-row justify-between items-center">
+                <Text className="text-[15px] font-sf-bold text-black ml-5">
+                  {section.title}
+                </Text>
+                {section.title === 'END' && (
+                  <TouchableOpacity onPress={handleSeeAllEndTrips}>
+                    <Text className="text-[12px] text-black font-sf mr-2">
+                      See All End Trips
+                    </Text>
                   </TouchableOpacity>
                 )}
-                keyExtractor={(item) => item.id.toString()}
+              </View>
+              
+              <View className="mb-4 w-full h-px bg-gray-300" />
+              
+              <FlatList
+                data={section.title === 'END' ? section.trips.slice(0, 2) : section.trips}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => handleTripPress(item)}>
+                    <TripBox 
+                      trip_id={item.trip_id}
+                      trip_name={item.trip_name}
+                      trip_image={item.trip_image}
+                      start_date={item.start_date}
+                      end_date={item.end_date}
+                      member_count={item.member_count}
+                      status_planning={item.status_planning}
+                      owner_name={item.owner_name}
+                      owner_image={item.owner_image}
+                    />
+                  </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.trip_id.toString()}
                 className="pb-5"
                 scrollEnabled={false}
+                showsVerticalScrollIndicator={false}
               />
             </View>
           ))}
         </View>
-
-        {/* Empty State */}
-        {tripSections.length === 0 && (
-          <View className="items-center justify-center py-16">
-            <Feather name="map" size={48} color="#D1D5DB" />
-            <Text className="text-gray-500 mt-4 text-lg">No trips yet</Text>
-            <Text className="text-gray-400 mt-2 text-center px-8">
-              Start planning your first adventure!
-            </Text>
-          </View>
-        )}
 
         {/* Bottom spacing */}
         <View className="h-24" />

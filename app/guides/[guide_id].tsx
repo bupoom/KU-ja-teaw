@@ -1,6 +1,5 @@
 import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { fetchAllGuides } from '@/service/serverAPI/guideAPI';
 
 export default function SimpleMessage() {
   const router = useRouter();
@@ -9,7 +8,7 @@ export default function SimpleMessage() {
   return (
     <View className="flex-1 items-center justify-center bg-white">
       <Text className="text-base text-gray-600 mt-2">
-        test Screen
+        Guide_ID Test
       </Text>
     </View>
   );

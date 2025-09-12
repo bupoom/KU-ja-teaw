@@ -17,13 +17,7 @@ import {
   isSuccessResponse,
   statusCodes,  
 } from "@react-native-google-signin/google-signin";
-
-interface UserInfo {
-  idToken: string;
-  name: string;
-  email: string;
-  photo: string | null;
-}
+import { loginWithGoogleToken, UserData } from '@/service/login';
 
 const AuthScreen: React.FC = () => {
   const router = useRouter();
@@ -31,7 +25,7 @@ const AuthScreen: React.FC = () => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: "135126503585-pce50l6d660ihjcs2b884vfn76c4bnlc.apps.googleusercontent.com",
+      webClientId: "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
       profileImageSize: 150,
       offlineAccess: true,
     });
@@ -40,37 +34,27 @@ const AuthScreen: React.FC = () => {
   const handleGoogleSignIn = async (): Promise<void> => {
     try {
       setIsSubmitting(true);
-      
-      // ตรวจสอบ Play Services (สำหรับ Android)
       await GoogleSignin.hasPlayServices();
-      
-      // ทำการ Sign In
       const response = await GoogleSignin.signIn();
       
       if (isSuccessResponse(response)) {
         const { data } = response;
-        
-        // ตรวจสอบว่ามี idToken หรือไม่
         if (!data.idToken) {
           Alert.alert("Error", "Failed to get authentication token.");
           return;
         }
-
-        const { idToken, user } = data;
-        const { name, email, photo } = user;
-        
-        // สร้าง user info object
-        const userInfo: UserInfo = {
-          idToken: idToken,
-          name: name || 'Unknown User',
-          email: email || '',
-          photo: photo || null,
+        const userData: UserData = await loginWithGoogleToken(data.idToken);
+        const userInfo = {
+          idToken: data.idToken,
+          name: userData.name || data.user.name || 'Unknown User',
+          email: userData.email || data.user.email || '',
+          photo: userData.profile_picture_url || data.user.photo || '',
+          userId: userData.user_id,
+          accessToken: userData.access_token,
+          refreshToken: userData.refresh_token,
         };
-        
-        // แสดงข้อมูลใน console (สำหรับ debug)
+        if 
         console.log('Google Sign-In Success:', userInfo);
-        
-        // แสดง Alert สำเร็จ
         Alert.alert(
           "Sign In Successful",
           `Welcome ${userInfo.name}!`,
@@ -84,15 +68,16 @@ const AuthScreen: React.FC = () => {
                   params: {
                     userName: userInfo.name,
                     userEmail: userInfo.email,
-                    userPhoto: userInfo.photo || '',
+                    userPhoto: userInfo.photo,
                     idToken: userInfo.idToken,
+                    userId: userInfo.userId,
+                    accessToken: userInfo.accessToken,
                   },
                 });
               },
             },
           ]
         );
-        
       } else {
         Alert.alert("Cancelled", "Google sign-in was cancelled.");
       }
@@ -116,8 +101,8 @@ const AuthScreen: React.FC = () => {
             break;
         }
       } else {
-        // Error ที่ไม่เกี่ยวข้องกับ Google Sign-In
-        Alert.alert("Error", "An unexpected error occurred. Please try again.");
+        const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred. Please try again.";
+        Alert.alert("Error", errorMessage);
       }
     } finally {
       setIsSubmitting(false);
@@ -180,7 +165,7 @@ const AuthScreen: React.FC = () => {
             onPress={handleSkipSignIn}
             disabled={isSubmitting}
           >
-            <Text style={[styles.skipButtonText, isSubmitting && styles.disabledText]}>
+            <Text style={[styles.skipText, isSubmitting && styles.disabledText]}>
               Skip for now
             </Text>
           </TouchableOpacity>
@@ -251,10 +236,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
-  skipButtonText: {
+  skipText: {
     fontSize: 16,
-    color: '#7f8c8d',
-    textDecorationLine: 'underline',
+    color: '#4285f4',
+    textAlign: 'center',
   },
   disabledButton: {
     opacity: 0.5,
