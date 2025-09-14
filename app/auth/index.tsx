@@ -17,12 +17,12 @@ import {
   isSuccessResponse,
   statusCodes,  
 } from "@react-native-google-signin/google-signin";
-
+import { AuthService } from '@/service/authService';
 
 const AuthScreen: React.FC = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
+  
   useEffect(() => {
     GoogleSignin.configure({
       webClientId: "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
@@ -40,53 +40,59 @@ const AuthScreen: React.FC = () => {
       
       // ทำการ Sign In
       const response = await GoogleSignin.signIn();
-      
+      console.log(response)
       if (isSuccessResponse(response)) {
         const { data } = response;
         
         // ตรวจสอบว่ามี idToken หรือไม่
-        // fetch /api/users/login
         if (!data.idToken) {
           Alert.alert("Error", "Failed to get authentication token.");
           return;
         }
 
-        const { idToken, user } = data;
-        const { name, email, photo } = user;
-        
-        // ส่งตัวแปรผ่าน Params
-        const userInfo = {
-          idToken: idToken,
-          name: name || 'Unknown User',
-          email: email || '',
-          photo: photo || null,
-        };
-        
-        // แสดงข้อมูลใน console (สำหรับ debug)
-        console.log('Google Sign-In Success:', userInfo);
-        
-        // แสดง Alert สำเร็จ
-        Alert.alert(
+        const { idToken } = data;
+
+        // -- API KUJATEAW --
+        const result = await AuthService.login(idToken);
+        if (!result.success) {
+          Alert.alert("Error", "Failed to find or create user.");
+          return;
+        }
+        if (!result.newUser) { // User เก่า - บันทึกข้อมูลแล้วไปหน้าหลัก
+          router.push('/tabs/(home)')
+        } else {
+          if (!result.user?.id) {
+            Alert.alert("Error", "Invalid user data received.");
+            return;
+          }
+          const userData: UserDetails = {
+            id: result.user.id,      
+            name: result.user.name,  
+            phone: result.user.phone,
+            user_image: result.user.user_image,
+            email: result.user.email,
+          };
+
+          Alert.alert(
           "Sign In Successful",
-          `Welcome ${userInfo.name}!`,
+          `Welcome ${result.user.name}!`,
           [
             {
               text: "OK",
               onPress: () => {
-                // Navigate to home with user data
-                router.replace({
+                router.push({
                   pathname: '/auth/set_profile' as any,
                   params: {
-                    userName: userInfo.name,
-                    userEmail: userInfo.email,
-                    userPhoto: userInfo.photo || '',
-                    idToken: userInfo.idToken,
+                    userName: userData.name,
+                    userEmail: userData.email,
+                    userPhoto: userData.user_image || '',
                   },
                 });
               },
             },
           ]
         );
+        }
         
       } else {
         Alert.alert("Cancelled", "Google sign-in was cancelled.");

@@ -1,10 +1,5 @@
+import { statusCodes } from '@react-native-google-signin/google-signin';
 import * as SecureStore from 'expo-secure-store';
-
-export interface UserData {
-  name?: string;
-  email?: string;
-  photo?: string;
-}
 
 export interface TokenData {
   accessToken: string;
@@ -29,6 +24,8 @@ const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 const USER_DATA_KEY = 'userData';
 const TOKEN_EXPIRES_KEY = 'tokenExpires';
+
+const BASE_URL = "http://192.168.1.104:3000"
 
 export const AuthService = {
   /**
@@ -127,7 +124,7 @@ export const AuthService = {
 
       // เรียก API เพื่อ refresh token
       // TODO: แทนที่ด้วย API endpoint จริง
-      const response = await fetch('https://api.example.com/auth/refresh', {
+      const response = await fetch('https://your-api-domain.com/api/auth/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +157,7 @@ export const AuthService = {
   /**
    * บันทึกข้อมูล user
    */
-  saveUserData: async (userData: UserData): Promise<void> => {
+  saveUserData: async (userData: UserDetails): Promise<void> => {
     try {
       await SecureStore.setItemAsync(USER_DATA_KEY, JSON.stringify(userData));
     } catch (error) {
@@ -172,7 +169,7 @@ export const AuthService = {
   /**
    * อ่านข้อมูล user
    */
-  getUserData: async (): Promise<UserData | null> => {
+  getUserData: async (): Promise<UserDetails | null> => {
     try {
       const userData = await SecureStore.getItemAsync(USER_DATA_KEY);
       return userData ? JSON.parse(userData) : null;
@@ -218,21 +215,38 @@ export const AuthService = {
   /**
    * Login และบันทึก tokens
    */
-  login: async (email: string, password: string): Promise<{ success: boolean; user?: UserData }> => {
+  login: async (googleIdToken: string): Promise<{ success: boolean; user?: UserDetails , newUser? : boolean }> => {
     try {
+      console.log('🔄 Starting API login with Google token...');
       // TODO: เรียก login API
-      const response = await fetch('https://api.example.com/auth/login', {
+      const response = await fetch(`${BASE_URL}/api/users/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.ACCESS_TOKEN_ID}`
+        },
+        body: JSON.stringify({ 
+          token_id: googleIdToken
+        })
       });
-
+      console.log('📡 Response status:', response.status);
+      
       if (!response.ok) {
         throw new Error('Login failed');
       }
 
       const data = await response.json();
-
+      let newUser = false
+      switch (response.status) {
+        case 200:
+          newUser = false
+          break;
+        case 201:
+          newUser = true
+          break;
+        default:
+          console.log('Unexpected status:', response.status);
+      }
       // บันทึก tokens
       await AuthService.saveTokens({
         accessToken: data.accessToken,
@@ -241,14 +255,16 @@ export const AuthService = {
       });
 
       // บันทึกข้อมูล user
-      const userData: UserData = {
-        name: data.user.name,
-        email: data.user.email,
-        photo: data.user.photo
+      const userData: UserDetails = {
+        id: data.user_id,
+        name: data.name,
+        phone: data.phone,
+        user_image: data.profile_picture_url,
+        email: data.email,
       };
       await AuthService.saveUserData(userData);
 
-      return { success: true, user: userData };
+      return { success: true, user: userData , newUser : newUser };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false };

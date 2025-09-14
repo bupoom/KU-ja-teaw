@@ -2,7 +2,7 @@ import axios from "axios";
 import { AuthService } from "./authService";
 
 const client = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || "https://api.example.com",
+  baseURL: process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.104:3000",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -66,13 +66,7 @@ client.interceptors.response.use(
 
 export const endpoints = {
   auth: {
-    login: "/api/auth/login",
-    refresh: "/api/auth/refresh",
-    logout: "/api/auth/logout",
-  },
-  user: {
-    profile: "/api/user/profile",
-    update: "/api/user/update",
+    login: "/api/users/login"
   }
 };
 

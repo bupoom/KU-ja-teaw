@@ -188,7 +188,7 @@ interface TripMember {
 } // เเสดงในหน้า trip details ที่จบไปเเล้วอ่ะ เเล้ว หน้า Group
 
 interface UserDetails {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   user_image: string;

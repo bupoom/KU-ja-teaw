@@ -15,26 +15,15 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 // import { API_CONFIG } from '@/service/serverAPI';
 import { AuthService } from '@/service/authService';
-
-interface UserDetails {
-  user_id: string;
-  name: string;
-  email: string;
-  phoneNumber: string;
-  profileImage: string;
-}
-
+import { updateUserDetails } from '@/service/ีuserServices';
 const ProfileSetupScreen = () => {
   const router = useRouter();
-  
   // รับ parameters ที่ส่งมาจากหน้า Auth
-  const { userName, userEmail, userPhoto, idToken } = useLocalSearchParams<{
+  const { userName, userEmail, userPhoto } = useLocalSearchParams<{
     userName?: string;
     userEmail?: string;
     userPhoto?: string;
-    idToken?: string;
   }>();
-  // State variables
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [agreedToPolicies, setAgreedToPolicies] = useState(false);
@@ -43,38 +32,14 @@ const ProfileSetupScreen = () => {
   const validatePhone = (text: string) => {
     const cleaned = text.replace(/[\s-\.]/g, '');
     const thaiPhoneRegex = /^(0\d{9}|\+66\d{9})$/;
-
     if (!thaiPhoneRegex.test(cleaned)) {
       return "Phone number is invalid. Example: 0812345678 or +66812345678";
     }
-
     return '';
   };
 
-  // const registerUser = async (userData: any) => {
-  //   const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.REGISTER_USER}`;
-    
-  //   const response = await fetch(apiUrl, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${idToken}`,
-  //       'Accept': 'application/json',
-  //     },
-  //     body: JSON.stringify(userData),
-  //   });
-
-  //   if (!response.ok) {
-  //     const errorData = await response.json().catch(() => null);
-  //     throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
-  //   }
-
-  //   return await response.json();
-  // };
-
   const handleGetStart = async () => {
     const errorPhoneNumber = validatePhone(phoneNumber);
-    
     if (!username.trim()) {
       Alert.alert("Error", "Please enter your username");
       return;
@@ -91,43 +56,9 @@ const ProfileSetupScreen = () => {
     }
 
     try {
-      // เตรียมข้อมูลทั้งหมดสำหรับส่งไป server
-      const userData: UserDetails = {
-        user_id: Array.isArray(idToken) ? idToken[0] : idToken || '',
-        name: username.trim(),
-        phoneNumber: phoneNumber.trim(),
-        email: Array.isArray(userEmail) ? userEmail : userEmail || '',
-        profileImage: Array.isArray(userPhoto) ? userPhoto : userPhoto || '',
-      };
-      
-      // if (idToken) {
-      //   await AuthService.saveToken(
-      //     idToken
-      //   );
-      // }
-
-      console.log('Sending user data:', userData);
+      const respose = await updateUserDetails(username , phoneNumber , "#") // ในอนาคตอย่าลืม
+      console.log('Sending user data:', respose);
       Alert.alert("signin-completely")
-      // TODO: ส่งข้อมูลไปยัง server
-      // const response = await fetch('YOUR_API_ENDPOINT', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${params?.idToken}`,
-      //   },
-      //   body: JSON.stringify(userData),
-      // });
-
-      // if (response.ok) {
-      //   const result = await response.json();
-      //   console.log('Registration successful:', result);
-        
-      //   // ไปหน้า home เมื่อสำเร็จ
-      //   router.push('/tabs/(home)');
-      // } else {
-      //   const error = await response.json();
-      //   Alert.alert("Error", error.message || "Registration failed");
-      // }
       router.push('/tabs/(home)');
     } catch (error) {
       console.error('Registration error:', error);
