@@ -124,8 +124,8 @@ const SettingsScreen: React.FC = () => {
         onPress: async () => {
           try {
             console.log("User logged out");
-            await AuthService.removeToken();
-            router.replace("/auth/sign_in");
+            await AuthService.logout();
+            router.replace("/auth");
           } catch (error) {
             console.error("Logout error:", error);
           }

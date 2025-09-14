@@ -100,11 +100,11 @@ const ProfileSetupScreen = () => {
         profileImage: Array.isArray(userPhoto) ? userPhoto : userPhoto || '',
       };
       
-      if (idToken) {
-        await AuthService.saveToken(
-          idToken
-        );
-      }
+      // if (idToken) {
+      //   await AuthService.saveToken(
+      //     idToken
+      //   );
+      // }
 
       console.log('Sending user data:', userData);
       Alert.alert("signin-completely")
