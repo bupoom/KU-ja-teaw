@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { 
-  View, 
-  Text, 
-  FlatList, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
   StatusBar,
   RefreshControl,
-  SafeAreaView 
+  SafeAreaView
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -40,9 +40,11 @@ const PlaceScreen = () => {
     router.push('/tabs/place/search_place');
   };
 
-  const handlePlacePress = (place: PlaceBoxData) => {
-    router.push(`/places/${place.place_id}`);
-  };
+  const handleRemovePlace = useCallback((placeId: number) => {
+    setPlaces(prevPlaces => 
+      prevPlaces.filter(place => place.id !== placeId)
+    );
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -67,17 +69,16 @@ const PlaceScreen = () => {
       <FlatList
         data={places}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handlePlacePress(item)}>
-            <PlaceBox 
-              id={item.id}
-              title={item.title}
-              rating={item.rating}
-              review_count={item.review_count}
-              location={item.location}
-              place_image={item.place_image}
-              place_id={item.place_id}
-            />
-          </TouchableOpacity>
+          <PlaceBox
+            id={item.id}
+            title={item.title}
+            rating={item.rating}
+            review_count={item.review_count}
+            location={item.location}
+            place_image={item.place_image}
+            place_id={item.place_id}
+            onRemove={handleRemovePlace}
+          />
         )}
         keyExtractor={(item) => item.id.toString()}
         className="flex-1 bg-white mb-20"

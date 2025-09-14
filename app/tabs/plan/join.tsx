@@ -10,6 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import Header from "../../../components/Header";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import NextButton from "@/components/NextButton";
 
 const JoinTripScreen = () => {
   const router = useRouter();
@@ -43,7 +44,7 @@ const JoinTripScreen = () => {
           <Text className="text-2xl font-sf-bold text-black mb-2">
             Join Trip
           </Text>
-          <Text className="text-dark_gray text-base">
+          <Text className="text-dark_gray text-base ml-2">
             Enter the trip code & password
           </Text>
         </View>
@@ -101,25 +102,7 @@ const JoinTripScreen = () => {
         </View>
 
         {/* Next Button */}
-        <View className="mt-12">
-          <TouchableOpacity
-            className={`py-4 rounded-lg w-full items-center ${
-              isNextDisabled
-                ? "bg-gray-300"
-                : "bg-emerald-800 active:bg-emerald-900"
-            }`}
-            onPress={handleNext}
-            disabled={isNextDisabled}
-          >
-            <Text
-              className={`text-lg font-semibold ${
-                isNextDisabled ? "text-gray-500" : "text-white"
-              }`}
-            >
-              Next
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <NextButton onPress={handleNext} disabled={isNextDisabled}/>
       </View>
     </SafeAreaView>
   );
