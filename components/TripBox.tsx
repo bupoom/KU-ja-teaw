@@ -5,6 +5,7 @@ import { Feather } from "@expo/vector-icons";
 import StatusTag from "./StatusTag";
 import CountdownTag from "./CountdownTag";
 import { formatDateRange } from "@/util/formatDateRange";
+import { truncateText } from "@/util/truncateText";
 
 // Interface matching your latest mockData
 interface TripBoxProps {
@@ -56,34 +57,34 @@ const TripBox: React.FC<TripBoxProps> = ({
       <View className="flex-row">
         <Image
           source={{ uri: trip_image }}
-          className="w-24 h-24 rounded-xl"
+          className="w-20 h-20 rounded-xl"
         />
 
         <View className="flex-1 ml-4 justify-between py-0">
           {/* Header row - Title and Countdown Tag */}
           <View className="flex-row items-start justify-between">
             <Text
-              className="text-[20px] font-sf-semibold text-black flex-1 mr-5 leading-6"
+              className="text-lg font-sf-semibold text-black flex-1 mr-5 leading-6"
               numberOfLines={1}
             >
-              {trip_name}
+              {truncateText(trip_name, 20)}
             </Text>
             <CountdownTag startDate={start_date} endDate={end_date} />
           </View>
 
           {/* Date row */}
-          <View className="flex-row items-center mt-1">
+          <View className="flex-row items-center">
             <Feather name="calendar" size={16} color="#6B7280" />
-            <Text className="text-dark_gray text-[12px] ml-2 font-sf-semibold">
+            <Text className="text-dark_gray text-sm ml-2 font-sf-semibold">
               {formatDateRange(start_date, end_date)}
             </Text>
           </View>
 
           {/* Participants and Status row */}
-          <View className="flex-row items-center justify-between mt-1">
+          <View className="flex-row items-center justify-between">
             <View className="flex-row items-center">
               <Feather name="users" size={16} color="#6B7280" />
-              <Text className="text-dark_gray text-[12px] ml-2 font-sf-semibold">
+              <Text className="text-dark_gray text-sm ml-2 font-sf-semibold">
                 {member_count} Person Joined
               </Text>
             </View>

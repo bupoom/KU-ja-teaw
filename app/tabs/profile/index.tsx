@@ -100,19 +100,12 @@ const ProfileScreen: React.FC = () => {
       }
     });
 
-    const sections: TripSection[] = [];
-    
-    if (nowTrips.length > 0) {
-      sections.push({ title: 'Now', trips: nowTrips });
-    }
-    
-    if (comingTrips.length > 0) {
-      sections.push({ title: 'Coming', trips: comingTrips });
-    }
-    
-    if (endTrips.length > 0) {
-      sections.push({ title: 'END', trips: endTrips });
-    }
+    // Always return all three sections, even if empty
+    const sections: TripSection[] = [
+      { title: 'Now', trips: nowTrips },
+      { title: 'Coming', trips: comingTrips },
+      { title: 'END', trips: endTrips }
+    ];
 
     return sections;
   };
@@ -158,6 +151,20 @@ const ProfileScreen: React.FC = () => {
     router.push('/tabs/profile/all_end_trip');
   };
 
+  // Function to get empty state message for each section
+  const getEmptyStateMessage = (sectionTitle: string): string => {
+    switch (sectionTitle) {
+      case 'Now':
+        return 'No ongoing trips';
+      case 'Coming':
+        return 'No upcoming trips';
+      case 'END':
+        return 'No completed trips';
+      default:
+        return 'No trips available';
+    }
+  };
+
   useEffect(() => {
     loadData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,7 +194,7 @@ const ProfileScreen: React.FC = () => {
   }
 
   return (
-<View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50">
       <StatusBar barStyle="light-content" />
       <ScrollView 
         showsVerticalScrollIndicator={false}
@@ -241,7 +248,7 @@ const ProfileScreen: React.FC = () => {
                 <Text className="text-[15px] font-sf-bold text-black ml-5">
                   {section.title}
                 </Text>
-                {section.title === 'END' && (
+                {section.title === 'END' && section.trips.length > 0 && (
                   <TouchableOpacity onPress={handleSeeAllEndTrips}>
                     <Text className="text-[12px] text-black font-sf mr-2">
                       See All End Trips
@@ -252,9 +259,10 @@ const ProfileScreen: React.FC = () => {
               
               <View className="mb-4 w-full h-px bg-gray-300" />
               
-              <FlatList
-                data={section.title === 'END' ? section.trips.slice(0, 2) : section.trips}
-                renderItem={({ item }) => (
+              {section.trips.length > 0 ? (
+                <FlatList
+                  data={section.title === 'END' ? section.trips.slice(0, 2) : section.trips}
+                  renderItem={({ item }) => (
                     <TripBox 
                       trip_id={item.trip_id}
                       trip_name={item.trip_name}
@@ -267,12 +275,19 @@ const ProfileScreen: React.FC = () => {
                       owner_image={item.owner_image}
                       onPress={section.title === 'END' ? handleEndTripPress : undefined}
                     />
-                )}
-                keyExtractor={(item) => item.trip_id.toString()}
-                className="pb-5"
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-              />
+                  )}
+                  keyExtractor={(item) => item.trip_id.toString()}
+                  className="pb-5"
+                  scrollEnabled={false}
+                  showsVerticalScrollIndicator={false}
+                />
+              ) : (
+                <View className="py-8 items-center">
+                  <Text className="text-gray-500 text-[14px] font-sf">
+                    {getEmptyStateMessage(section.title)}
+                  </Text>
+                </View>
+              )}
             </View>
           ))}
         </View>

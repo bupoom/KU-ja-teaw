@@ -7,5 +7,5 @@ export const formatDateRange = (startDate: string, endDate: string): string => {
     return `${day}/${month}/${year}`;
   };
 
-  return `${formatDate(startDate)}-${formatDate(endDate)}`;
+  return `${formatDate(startDate)} - ${formatDate(endDate)}`;
 };

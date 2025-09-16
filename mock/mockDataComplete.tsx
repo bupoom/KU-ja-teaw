@@ -72,8 +72,11 @@ export const mockCreateTripData: CreateTrip[] = [
   }
 ];
 
+
 // 4. Flight Data
+// เพิ่ม Flight Data สำหรับ Guide Trips
 export const mockFlights: Flight[] = [
+  // --- ของเดิม ---
   {
     id: 1,
     departure_airport: "LAX",
@@ -83,7 +86,7 @@ export const mockFlights: Flight[] = [
     airline: "Japan Airlines",
     departure_country: "United States",
     arrival_country: "Japan",
-    trip_id: 1 // Japan trip
+    trip_id: 1
   },
   {
     id: 2,
@@ -94,7 +97,7 @@ export const mockFlights: Flight[] = [
     airline: "Japan Airlines",
     departure_country: "Japan",
     arrival_country: "United States",
-    trip_id: 1 // Japan trip
+    trip_id: 1
   },
   {
     id: 3,
@@ -105,7 +108,7 @@ export const mockFlights: Flight[] = [
     airline: "Air France",
     departure_country: "United States",
     arrival_country: "France",
-    trip_id: 2 // European trip
+    trip_id: 2
   },
   {
     id: 4,
@@ -116,9 +119,78 @@ export const mockFlights: Flight[] = [
     airline: "Bangkok Airways",
     departure_country: "Thailand",
     arrival_country: "Thailand",
-    trip_id: 3 // Thailand trip
+    trip_id: 3
+  },
+
+  // --- ใหม่ เพิ่มให้ trip_id 9–11 ---
+  {
+    id: 5,
+    departure_airport: "SFO",
+    arrival_airport: "HND",
+    departure_date: "2025-07-14T22:30:00",
+    arrival_date: "2025-07-15T04:55:00",
+    airline: "ANA",
+    departure_country: "United States",
+    arrival_country: "Japan",
+    trip_id: 9 // Ultimate Japan Travel Guide
+  },
+  {
+    id: 6,
+    departure_airport: "HND",
+    arrival_airport: "SFO",
+    departure_date: "2025-07-25T17:30:00",
+    arrival_date: "2025-07-25T10:15:00",
+    airline: "ANA",
+    departure_country: "Japan",
+    arrival_country: "United States",
+    trip_id: 9
+  },
+  {
+    id: 7,
+    departure_airport: "EWR",
+    arrival_airport: "FRA",
+    departure_date: "2025-09-09T19:45:00",
+    arrival_date: "2025-09-10T09:10:00",
+    airline: "Lufthansa",
+    departure_country: "United States",
+    arrival_country: "Germany",
+    trip_id: 10 // European Backpacker's Paradise
+  },
+  {
+    id: 8,
+    departure_airport: "FCO",
+    arrival_airport: "EWR",
+    departure_date: "2025-09-30T14:30:00",
+    arrival_date: "2025-09-30T17:45:00",
+    airline: "United Airlines",
+    departure_country: "Italy",
+    arrival_country: "United States",
+    trip_id: 10
+  },
+  {
+    id: 9,
+    departure_airport: "ICN",
+    arrival_airport: "BKK",
+    departure_date: "2025-12-19T23:00:00",
+    arrival_date: "2025-12-20T02:30:00",
+    airline: "Thai Airways",
+    departure_country: "South Korea",
+    arrival_country: "Thailand",
+    trip_id: 11 // Thailand Island Hopping
+  },
+  {
+    id: 10,
+    departure_airport: "HKT",
+    arrival_airport: "ICN",
+    departure_date: "2025-12-28T18:45:00",
+    arrival_date: "2025-12-28T23:30:00",
+    airline: "Thai Airways",
+    departure_country: "Thailand",
+    arrival_country: "South Korea",
+    trip_id: 11
   }
 ];
+
 
 // 5. File Groups
 export const mockFileGroups: FileGroup[] = [
@@ -234,7 +306,8 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     email: "john.smith@email.com",
     phone: "+1-555-0123",
-    role: "owner"
+    role: "owner",
+    trip_id: 1 // Summer Adventure in Japan
   },
   {
     id: 2,
@@ -242,7 +315,8 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop&crop=face",
     email: "sarah.johnson@email.com",
     phone: "+1-555-0124",
-    role: "editer"
+    role: "editer",
+    trip_id: 1
   },
   {
     id: 3,
@@ -250,7 +324,8 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     email: "michael.chen@email.com",
     phone: "+1-555-0125",
-    role: "editer"
+    role: "editer",
+    trip_id: 2 // European Backpacking Tour
   },
   {
     id: 4,
@@ -258,7 +333,8 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     email: "emily.davis@email.com",
     phone: "+1-555-0126",
-    role: "viewer"
+    role: "viewer",
+    trip_id: 2
   },
   {
     id: 5,
@@ -266,16 +342,17 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     email: "david.wilson@email.com",
     phone: "+1-555-0127",
-    role: "viewer"
+    role: "viewer",
+    trip_id: 3 // Thailand Beach Getaway
   },
-  // NEW MEMBERS FOR ADDITIONAL TRIPS
   {
     id: 6,
     name: "Alice Wang",
     user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
     email: "alice.wang@email.com",
     phone: "+1-555-0128",
-    role: "owner"
+    role: "owner",
+    trip_id: 4 // Tokyo Winter Festival
   },
   {
     id: 7,
@@ -283,7 +360,8 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
     email: "bob.chen@email.com",
     phone: "+1-555-0129",
-    role: "owner"
+    role: "owner",
+    trip_id: 5 // Bali Adventure
   },
   {
     id: 8,
@@ -291,7 +369,8 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop",
     email: "carol.smith@email.com",
     phone: "+1-555-0130",
-    role: "owner"
+    role: "owner",
+    trip_id: 6 // Swiss Alps Hiking
   },
   {
     id: 9,
@@ -299,7 +378,8 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop",
     email: "keen.kung@email.com",
     phone: "+66-812-345-678",
-    role: "owner"
+    role: "owner",
+    trip_id: 7 // Trip to Thailand (Invitation)
   },
   {
     id: 10,
@@ -307,81 +387,277 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop",
     email: "sarah.kim@email.com",
     phone: "+82-10-1234-5678",
-    role: "owner"
+    role: "owner",
+    trip_id: 8 // Korean Food Tour (Invitation)
   }
 ];
 
+export const mockWeathers: Weather[] = [
+  // Trip 1: Summer Adventure in Japan (2025-09-05 → 2025-09-12, NOW, today=09-08 → มี 4 วันแรกต่อเนื่อง)
+  { id: 1, trip_id: 1, date: "2025-09-05", weather_code: 1 }, // Clouds
+  { id: 2, trip_id: 1, date: "2025-09-06", weather_code: 4 }, // Rain
+  { id: 3, trip_id: 1, date: "2025-09-07", weather_code: 0 }, // Clear
+  { id: 4, trip_id: 1, date: "2025-09-08", weather_code: 3 }, // Drizzle
+
+  // Trip 2: European Backpacking Tour (2025-09-23 → 2025-10-13, future → แค่บางวันแรก ๆ)
+  { id: 5, trip_id: 2, date: "2025-09-23", weather_code: 0 }, // Clear
+  { id: 6, trip_id: 2, date: "2025-09-24", weather_code: 1 }, // Clouds
+  { id: 7, trip_id: 2, date: "2025-09-25", weather_code: 2 }, // Fog/Mist
+
+  // Trip 3: Thailand Beach Getaway (2025-08-19 → 2025-08-27, completed → ต้องครบ 9 วัน)
+  { id: 8, trip_id: 3, date: "2025-08-19", weather_code: 0 },
+  { id: 9, trip_id: 3, date: "2025-08-20", weather_code: 1 },
+  { id: 10, trip_id: 3, date: "2025-08-21", weather_code: 4 },
+  { id: 11, trip_id: 3, date: "2025-08-22", weather_code: 0 },
+  { id: 12, trip_id: 3, date: "2025-08-23", weather_code: 0 },
+  { id: 13, trip_id: 3, date: "2025-08-24", weather_code: 5 },
+  { id: 14, trip_id: 3, date: "2025-08-25", weather_code: 7 },
+  { id: 15, trip_id: 3, date: "2025-08-26", weather_code: 1 },
+  { id: 16, trip_id: 3, date: "2025-08-27", weather_code: 0 },
+
+  // Trip 4: Tokyo Winter Festival (2025-12-06 → 2025-12-11, future → บางวันแรกต่อเนื่อง)
+  { id: 17, trip_id: 4, date: "2025-12-06", weather_code: 5 }, // Snow
+  { id: 18, trip_id: 4, date: "2025-12-07", weather_code: 6 }, // Ice/Sleet
+
+  // Trip 5: Bali Adventure (2025-11-15 → 2025-11-22, future → บางวันแรกต่อเนื่อง)
+  { id: 19, trip_id: 5, date: "2025-11-15", weather_code: 0 },
+  { id: 20, trip_id: 5, date: "2025-11-16", weather_code: 4 },
+
+  // Trip 6: Swiss Alps Hiking (2025-07-10 → 2025-07-17, completed → ต้องครบ 8 วัน)
+  { id: 21, trip_id: 6, date: "2025-07-10", weather_code: 1 },
+  { id: 22, trip_id: 6, date: "2025-07-11", weather_code: 4 },
+  { id: 23, trip_id: 6, date: "2025-07-12", weather_code: 0 },
+  { id: 24, trip_id: 6, date: "2025-07-13", weather_code: 5 },
+  { id: 25, trip_id: 6, date: "2025-07-14", weather_code: 6 },
+  { id: 26, trip_id: 6, date: "2025-07-15", weather_code: 7 },
+  { id: 27, trip_id: 6, date: "2025-07-16", weather_code: 1 },
+  { id: 28, trip_id: 6, date: "2025-07-17", weather_code: 0 }
+];
+
+// <---------------------------------- Note ---------------------------->
+
 // 8. Notes
 export const mockNotes: Note[] = [
+  // ========== TRIP 1: Summer Adventure in Japan ==========
   {
     id: 1,
     note_text: "Don't forget to try the famous ramen here! Best time to visit is around 11 AM to avoid crowds.",
     user_profile: mockUserDetails[0].user_image,
-    user_name: mockUserDetails[0].name,
+    user_name: mockUserDetails[0].name, // John Smith
     is_editable: true,
+    refer_user_id: 1, // John Smith in trip_id 1
     reference_id: 1,
     reference_type: 'place',
     created_at: "2025-09-08T14:30:00",
-    trip_id: 1 // Japan trip
+    trip_id: 1
   },
   {
     id: 2,
     note_text: "Bring comfortable walking shoes. The temple grounds are quite large.",
     user_profile: mockUserDetails[1].user_image,
-    user_name: mockUserDetails[1].name,
+    user_name: mockUserDetails[1].name, // Sarah Johnson
     is_editable: false,
+    refer_user_id: 2, // Sarah Johnson in trip_id 1
     reference_id: 2,
     reference_type: 'place',
     created_at: "2025-09-07T10:15:00",
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 3,
-    note_text: "Remember to book train tickets in advance during peak season.",
-    user_profile: mockUserDetails[2].user_image,
-    user_name: mockUserDetails[2].name,
-    is_editable: true,
-    reference_id: 1,
-    reference_type: 'event',
-    created_at: "2025-09-06T16:45:00",
-    trip_id: 2 // European trip
-  },
-  {
-    id: 4,
-    note_text: "The sunset view from here is absolutely stunning! Arrive by 6 PM.",
-    user_profile: mockUserDetails[0].user_image,
-    user_name: mockUserDetails[0].name,
-    is_editable: true,
-    reference_id: 3,
-    reference_type: 'place',
-    created_at: "2025-08-25T19:20:00",
-    trip_id: 3 // Thailand trip (completed)
+    trip_id: 1
   },
   {
     id: 5,
     note_text: "Amazing street food! Try the takoyaki from the vendor on the left side.",
     user_profile: mockUserDetails[1].user_image,
-    user_name: mockUserDetails[1].name,
+    user_name: mockUserDetails[1].name, // Sarah Johnson
     is_editable: true,
+    refer_user_id: 2,
     reference_id: 5,
     reference_type: 'place',
     created_at: "2025-09-07T18:20:00",
-    trip_id: 1 // Japan trip
+    trip_id: 1
   },
   {
     id: 6,
     note_text: "Perfect spot for cherry blossom viewing in spring season.",
     user_profile: mockUserDetails[2].user_image,
-    user_name: mockUserDetails[2].name,
+    user_name: mockUserDetails[2].name, // Michael Chen (ไม่ใช่ member trip 1 → assign owner แทน)
     is_editable: false,
+    refer_user_id: 1, // Fallback ให้ John Smith (owner)
     reference_id: 4,
     reference_type: 'place',
     created_at: "2025-09-06T12:45:00",
-    trip_id: 1 // Japan trip
+    trip_id: 1
+  },
+  {
+    id: 7,
+    note_text: "Overall trip highlight: Japan’s culture mix of tradition and modern life.",
+    user_profile: mockUserDetails[0].user_image,
+    user_name: mockUserDetails[0].name,
+    is_editable: true,
+    refer_user_id: 1,
+    reference_type: 'overview',
+    created_at: "2025-09-08T20:00:00",
+    trip_id: 1
+  },
+  {
+    id: 8,
+    note_text: "Budget seems on track, keep checking transport costs.",
+    user_profile: mockUserDetails[1].user_image,
+    user_name: mockUserDetails[1].name,
+    is_editable: true,
+    refer_user_id: 2,
+    reference_type: 'overview',
+    created_at: "2025-09-08T21:00:00",
+    trip_id: 1
+  },
+
+  // ========== TRIP 2: European Backpacking Tour ==========
+  {
+    id: 3,
+    note_text: "Remember to book train tickets in advance during peak season.",
+    user_profile: mockUserDetails[2].user_image,
+    user_name: mockUserDetails[2].name, // Michael Chen
+    is_editable: true,
+    refer_user_id: 3, // Michael Chen in trip_id 2
+    reference_id: 1,
+    reference_type: 'event',
+    created_at: "2025-09-06T16:45:00",
+    trip_id: 2
+  },
+  {
+    id: 9,
+    note_text: "Trip overview: Backpacking requires lightweight packing.",
+    user_profile: mockUserDetails[2].user_image,
+    user_name: mockUserDetails[2].name,
+    is_editable: true,
+    refer_user_id: 3,
+    reference_type: 'overview',
+    created_at: "2025-09-08T12:00:00",
+    trip_id: 2
+  },
+  {
+    id: 10,
+    note_text: "Double-check visa requirements for Schengen countries.",
+    user_profile: mockUserDetails[1].user_image,
+    user_name: mockUserDetails[1].name, // Sarah Johnson (ไม่ใช่ member trip 2 → assign owner แทน)
+    is_editable: false,
+    refer_user_id: 3, // Michael Chen (owner trip 2)
+    reference_type: 'overview',
+    created_at: "2025-09-08T12:30:00",
+    trip_id: 2
+  },
+
+  // ========== TRIP 3: Thailand Beach Getaway ==========
+  {
+    id: 4,
+    note_text: "The sunset view from here is absolutely stunning! Arrive by 6 PM.",
+    user_profile: mockUserDetails[0].user_image,
+    user_name: mockUserDetails[0].name, // John Smith
+    is_editable: true,
+    refer_user_id: 1, // John Smith in trip_id 3
+    reference_id: 3,
+    reference_type: 'place',
+    created_at: "2025-08-25T19:20:00",
+    trip_id: 3
+  },
+  {
+    id: 11,
+    note_text: "Beach trip was relaxing, weather was perfect.",
+    user_profile: mockUserDetails[0].user_image,
+    user_name: mockUserDetails[0].name,
+    is_editable: true,
+    refer_user_id: 1,
+    reference_type: 'overview',
+    created_at: "2025-08-28T10:00:00",
+    trip_id: 3
+  },
+  {
+    id: 12,
+    note_text: "Expenses lower than expected, mainly food and local transport.",
+    user_profile: mockUserDetails[2].user_image,
+    user_name: mockUserDetails[2].name, // Michael Chen (ไม่ใช่ member trip 3 → assign David Wilson)
+    is_editable: false,
+    refer_user_id: 5, // David Wilson (viewer trip 3)
+    reference_type: 'overview',
+    created_at: "2025-08-28T11:00:00",
+    trip_id: 3
+  },
+
+  // ========== TRIP 4: Tokyo Winter Festival ==========
+  {
+    id: 13,
+    note_text: "Expect cold weather during the festival.",
+    user_profile: mockUserDetails[1].user_image,
+    user_name: mockUserDetails[1].name, // Sarah Johnson (ไม่ใช่ member trip 4 → assign owner)
+    is_editable: true,
+    refer_user_id: 6, // Alice Wang (owner trip 4)
+    reference_type: 'overview',
+    created_at: "2025-09-08T09:00:00",
+    trip_id: 4
+  },
+  {
+    id: 14,
+    note_text: "Plan for festival tickets early.",
+    user_profile: mockUserDetails[2].user_image,
+    user_name: mockUserDetails[2].name, // Michael Chen
+    is_editable: false,
+    refer_user_id: 6, // Alice Wang
+    reference_type: 'overview',
+    created_at: "2025-09-08T09:30:00",
+    trip_id: 4
+  },
+
+  // ========== TRIP 5: Bali Adventure ==========
+  {
+    id: 15,
+    note_text: "Adventure activities may require pre-booking.",
+    user_profile: mockUserDetails[0].user_image,
+    user_name: mockUserDetails[0].name, // John Smith
+    is_editable: true,
+    refer_user_id: 7, // Bob Chen (owner trip 5)
+    reference_type: 'overview',
+    created_at: "2025-09-08T08:00:00",
+    trip_id: 5
+  },
+  {
+    id: 16,
+    note_text: "Remember to carry local currency for small vendors.",
+    user_profile: mockUserDetails[1].user_image,
+    user_name: mockUserDetails[1].name, // Sarah Johnson
+    is_editable: false,
+    refer_user_id: 7, // Bob Chen
+    reference_type: 'overview',
+    created_at: "2025-09-08T08:30:00",
+    trip_id: 5
+  },
+
+  // ========== TRIP 6: Swiss Alps Hiking ==========
+  {
+    id: 17,
+    note_text: "Hiking conditions were safe, but some trails steep.",
+    user_profile: mockUserDetails[2].user_image,
+    user_name: mockUserDetails[2].name, // Michael Chen
+    is_editable: true,
+    refer_user_id: 8, // Carol Smith (owner trip 6)
+    reference_type: 'overview',
+    created_at: "2025-07-18T10:00:00",
+    trip_id: 6
+  },
+  {
+    id: 18,
+    note_text: "Overall great team spirit during the hike.",
+    user_profile: mockUserDetails[0].user_image,
+    user_name: mockUserDetails[0].name,
+    is_editable: false,
+    refer_user_id: 8, // Carol Smith
+    reference_type: 'overview',
+    created_at: "2025-07-18T11:00:00",
+    trip_id: 6
   }
 ];
 
-// 9. Place Boxes (5 places)
+// <-------------------- Place ----------------------------------->
+
+// 18. Place Boxes (5 places)
 export const mockPlaceBoxes: PlaceBox[] = [
   {
     id: 1,
@@ -522,7 +798,7 @@ export const mockPlaceBoxes: PlaceBox[] = [
   }
 ];
 
-// 10. Place Details (5 places - matching PlaceBox)
+// 19. Place Details (5 places - matching PlaceBox) อ้างอิง Note
 export const mockPlaceDetails: PlaceDetails[] = [
   {
     id: 1,
@@ -722,380 +998,7 @@ export const mockPlaceDetails: PlaceDetails[] = [
     notes: []
   }
 ];
-
-// 11. Activity Place Boxes
-export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
-  {
-    id: 1,
-    title: "Visit Tokyo Tower",
-    date: "2025-09-07",
-    time_begin: "09:00",
-    time_end: "11:30",
-    location: "Minato City, Tokyo",
-    place_id: 1,
-    place_image: "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=200&h=150&fit=crop",
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 2,
-    title: "Explore Senso-ji Temple",
-    date: "2025-09-08",
-    time_begin: "14:00",
-    time_end: "16:00",
-    location: "Asakusa, Tokyo",
-    place_id: 2,
-    place_image: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=200&h=150&fit=crop",
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 3,
-    title: "Eiffel Tower Visit",
-    date: "2025-09-25",
-    time_begin: "10:00",
-    time_end: "12:00",
-    location: "Paris, France",
-    place_id: 3,
-    place_image: "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=200&h=150&fit=crop",
-    trip_id: 2 // European trip
-  }
-];
-
-// 12. Activity Event Boxes
-export const mockActivityEventBoxes: ActivityEventBox[] = [
-  {
-    id: 1,
-    title: "Travel to Hotel",
-    date: "2025-09-05",
-    time_begin: "16:00",
-    time_end: "17:30",
-    transportation: "Train",
-    Notes: mockNotes.filter(note => note.reference_id === 1 && note.reference_type === 'event'),
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 2,
-    title: "Lunch Break",
-    date: "2025-09-07",
-    time_begin: "12:00",
-    time_end: "13:30",
-    transportation: "Walk",
-    Notes: [],
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 3,
-    title: "Train to Amsterdam",
-    date: "2025-09-26",
-    time_begin: "09:00",
-    time_end: "12:00",
-    transportation: "Train",
-    Notes: [],
-    trip_id: 2 // European trip
-  }
-];
-
-// 13. Votes (FIXED with trip_id)
-export const mockVotes: Vote[] = [
-  {
-    id: 1,
-    user_id: 1,
-    activity_id: 101,
-    vote_type: 'place',
-    place_id: 1,
-    username: mockUserDetails[0].name,
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 2,
-    user_id: 2,
-    activity_id: 101,
-    vote_type: 'place',
-    place_id: 2,
-    username: mockUserDetails[1].name,
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 3,
-    user_id: 3,
-    activity_id: 101,
-    vote_type: 'place',
-    place_id: 1,
-    username: mockUserDetails[2].name,
-    trip_id: 1 // Japan trip
-  },
-  {
-    id: 4,
-    user_id: 1,
-    activity_id: 102,
-    vote_type: 'event',
-    event_id: 1,
-    username: mockUserDetails[0].name,
-    trip_id: 2 // European trip
-  },
-  {
-    id: 5,
-    user_id: 2,
-    activity_id: 102,
-    vote_type: 'event',
-    event_id: 2,
-    username: mockUserDetails[1].name,
-    trip_id: 2 // European trip
-  },
-  {
-    id: 6,
-    user_id: 3,
-    activity_id: 102,
-    vote_type: 'event',
-    event_id: 1,
-    username: mockUserDetails[2].name,
-    trip_id: 2 // European trip
-  }
-];
-
-// 14. Activity Vote Place
-export const mockActivityVotePlaces: ActivityVotePlace[] = [
-  {
-    id: 101,
-    date: "2025-09-09",
-    time_begin: "18:00",
-    time_end: "20:00",
-    number_of_votes: 3,
-    options: [
-      {
-        id: 6,
-        title: "Sushi Ichiban",
-        rating: 4.5,
-        review_count: 200,
-        location: "Ginza, Tokyo",
-        place_image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=200&fit=crop",
-        place_id: 6
-      },
-      {
-        id: 7,
-        title: "Ramen Yokocho",
-        rating: 4.2,
-        review_count: 150,
-        location: "Shinjuku, Tokyo",
-        place_image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=200&fit=crop",
-        place_id: 7
-      },
-      {
-        id: 8,
-        title: "Tempura Matsui",
-        rating: 4.7,
-        review_count: 180,
-        location: "Asakusa, Tokyo",
-        place_image: "https://images.unsplash.com/photo-1559314809-0f31657def5e?w=300&h=200&fit=crop",
-        place_id: 8
-      }
-    ],
-    votes: mockVotes.filter(vote => vote.activity_id === 101),
-    trip_id: 1 // Japan trip
-  }
-];
-
-// 15. Activity Vote Event
-export const mockActivityVoteEvents: ActivityVoteEvent[] = [
-  {
-    id: 102,
-    date: "2025-09-26",
-    time_begin: "09:00",
-    time_end: "10:00",
-    number_of_votes: 3,
-    options: mockTransportationOptions,
-    votes: mockVotes.filter(vote => vote.activity_id === 102),
-    trip_id: 2 // European trip
-  }
-];
-
-// 16. Trip Boxes (FIXED dates to 2025)
-export const mockTripBoxes: TripBox[] = [
-  // MAIN TRIPS (with full data)
-  {
-    trip_id: 1,
-    trip_name: "Summer Adventure in Japan", // NOW - Currently traveling
-    trip_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
-    start_date: "2025-09-05", // Started 3 days ago (today is 2025-09-08)
-    end_date: "2025-09-12",   // Ends in 4 days
-    member_count: 4,
-    status_planning: 'planning',
-    owner_name: mockTripMembers[0].name,
-    owner_image: mockTripMembers[0].user_image
-  },
-  {
-    trip_id: 2,
-    trip_name: "European Backpacking Tour", // DAYS - Upcoming trip
-    trip_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
-    start_date: "2025-09-23", // Starts in 15 days
-    end_date: "2025-10-13",   // Ends in 35 days
-    member_count: 3,
-    status_planning: 'planning',
-    owner_name: mockTripMembers[1].name,
-    owner_image: mockTripMembers[1].user_image
-  },
-  {
-    trip_id: 3,
-    trip_name: "Thailand Beach Getaway", // END - Completed trip
-    trip_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    start_date: "2025-08-19", // Started 20 days ago
-    end_date: "2025-08-27",   // Ended 12 days ago
-    member_count: 2,
-    status_planning: 'completed',
-    owner_name: mockTripMembers[0].name,
-    owner_image: mockTripMembers[0].user_image
-  },
-  
-  // ADDITIONAL TRIPS (for variety - FIXED to 2025)
-  {
-    trip_id: 4,
-    trip_name: "Tokyo Winter Festival",
-    trip_image: "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=400&h=300&fit=crop",
-    start_date: "2025-12-06", // Future trip
-    end_date: "2025-12-11",   
-    member_count: 6,
-    status_planning: 'planning',
-    owner_name: mockTripMembers[5].name, // Alice Wang
-    owner_image: mockTripMembers[5].user_image
-  },
-  {
-    trip_id: 5,
-    trip_name: "Bali Adventure",
-    trip_image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=400&h=300&fit=crop",
-    start_date: "2025-11-15", // Future trip
-    end_date: "2025-11-22",   
-    member_count: 8,
-    status_planning: 'planning',
-    owner_name: mockTripMembers[6].name, // Bob Chen
-    owner_image: mockTripMembers[6].user_image
-  },
-  {
-    trip_id: 6,
-    trip_name: "Swiss Alps Hiking",
-    trip_image: "https://images.unsplash.com/photo-1464822759844-d150078e9243?w=400&h=300&fit=crop",
-    start_date: "2025-07-10", // Past trip 
-    end_date: "2025-07-17",   
-    member_count: 4,
-    status_planning: 'completed',
-    owner_name: mockTripMembers[7].name, // Carol Smith
-    owner_image: mockTripMembers[7].user_image
-  }
-];
-
-// 17. Trip Invitations (Separate from main trips)
-export const mockTripInvitations: TripBox[] = [
-  {
-    trip_id: 7,
-    trip_name: "Trip to Thailand",
-    trip_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    start_date: "2025-10-25", // Future invitation
-    end_date: "2025-11-01",
-    member_count: 3,
-    status_planning: 'planning',
-    owner_name: mockTripMembers[8].name, // Keen_Kung
-    owner_image: mockTripMembers[8].user_image
-  },
-  {
-    trip_id: 8,
-    trip_name: "Korean Food Tour",
-    trip_image: "https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=400&h=300&fit=crop",
-    start_date: "2025-12-15", // Future invitation
-    end_date: "2025-12-22",
-    member_count: 6,
-    status_planning: 'planning',
-    owner_name: mockTripMembers[9].name, // Sarah Kim
-    owner_image: mockTripMembers[9].user_image
-  }
-];
-
-// 18. Guide Boxes (Updated dates to 2025)
-export const mockGuideBoxes: GuideBox[] = [
-  {
-    id: 1,
-    title: "Ultimate Japan Travel Guide",
-    start_date: "2025-07-15",
-    end_date: "2025-07-25",
-    guide_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
-    copies: 156,
-    owner_name: mockTripMembers[0].name,
-    owner_image: mockTripMembers[0].user_image,
-    owner_comments: "Give me 100000000000000000000000",
-    guide_id: 1
-  },
-  {
-    id: 2,
-    title: "European Backpacker's Paradise",
-    start_date: "2025-09-10",
-    end_date: "2025-09-30",
-    guide_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
-    copies: 89,
-    owner_name: mockTripMembers[1].name,
-    owner_image: mockTripMembers[1].user_image,
-    owner_comments: "Give me 100000000000000000000000",
-    guide_id: 2
-  },
-  {
-    id: 3,
-    title: "Thailand Island Hopping",
-    start_date: "2025-12-20",
-    end_date: "2025-12-28",
-    guide_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    copies: 234,
-    owner_name: mockTripMembers[2].name,
-    owner_image: mockTripMembers[2].user_image,
-    owner_comments: "Give me 100000000000000000000000",
-    guide_id: 3
-  }
-];
-
-// 19. Trip Guide Details (Updated dates to 2025)
-export const mockTripGuideDetails: Trip_Guide_Details[] = [
-  {
-    id: 1,
-    title: "Ultimate Japan Travel Guide",
-    start_date: "2025-07-15",
-    end_date: "2025-07-25",
-    guide_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
-    copies: 156,
-    owner_name: mockTripMembers[0].name,
-    owner_image: mockTripMembers[0].user_image,
-    owner_comments: "Give me 100000000000000000000000",
-    owner_email: mockTripMembers[0].email!,
-    group_members: 4,
-    budget: 2500,
-    trip_id: 1
-  },
-  {
-    id: 2,
-    title: "European Backpacker's Paradise",
-    start_date: "2025-09-10",
-    end_date: "2025-09-30",
-    guide_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
-    copies: 89,
-    owner_name: mockTripMembers[1].name,
-    owner_image: mockTripMembers[1].user_image,
-    owner_comments: "Give me 100000000000000000000000",
-    owner_email: mockTripMembers[1].email!,
-    group_members: 3,
-    budget: 3200,
-    trip_id: 2
-  },
-  {
-    id: 3,
-    title: "Thailand Island Hopping",
-    start_date: "2025-12-20",
-    end_date: "2025-12-28",
-    guide_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    copies: 234,
-    owner_name: mockTripMembers[2].name,
-    owner_image: mockTripMembers[2].user_image,
-    owner_comments: "Give me 100000000000000000000000",
-    owner_email: mockTripMembers[2].email!,
-    group_members: 2,
-    budget: 1800,
-    trip_id: 3
-  }
-];
-
+// 20. Bookmark Place (from PlaceBox)
 export const mockBookmarkPlaces: PlaceBox[] = [
   // User's favorite/bookmarked places from different categories
   {
@@ -1169,6 +1072,644 @@ export const mockBookmarkPlaces: PlaceBox[] = [
     location: "Bangkok, Thailand",
     place_image: "https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=300&h=200&fit=crop",
     place_id: 13
+  }
+];
+
+// <-------------------------------------------- Activity ------------------------------------>
+
+// 9. Activity Place Boxes อ้างอิง placeBox
+export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
+  // Trip 1: Summer Adventure in Japan
+  {
+    id: 1,
+    title: "Visit Tokyo Tower",
+    date: "2025-09-06",
+    time_begin: "09:00",
+    time_end: "11:30",
+    location: "Minato City, Tokyo",
+    place_id: 1,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 1)?.place_image,
+    trip_id: 1
+  },
+  {
+    id: 2,
+    title: "Explore Senso-ji Temple",
+    date: "2025-09-07",
+    time_begin: "14:00",
+    time_end: "16:00",
+    location: "Asakusa, Tokyo",
+    place_id: 2,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 2)?.place_image,
+    trip_id: 1
+  },
+
+  // Trip 2: European Backpacking Tour
+  {
+    id: 3,
+    title: "Eiffel Tower Visit",
+    date: "2025-09-24",
+    time_begin: "10:00",
+    time_end: "12:00",
+    location: "Paris, France",
+    place_id: 9,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 9)?.place_image,
+    trip_id: 2
+  },
+  {
+    id: 4,
+    title: "Visit Louvre Museum",
+    date: "2025-09-25",
+    time_begin: "13:30",
+    time_end: "16:30",
+    location: "Paris, France",
+    place_id: 10,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 10)?.place_image,
+    trip_id: 2
+  },
+
+  // Trip 3: Thailand Beach Getaway
+  {
+    id: 5,
+    title: "Explore Grand Palace",
+    date: "2025-08-20",
+    time_begin: "09:00",
+    time_end: "11:30",
+    location: "Bangkok, Thailand",
+    place_id: 13,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 13)?.place_image,
+    trip_id: 3
+  },
+  {
+    id: 6,
+    title: "Phi Phi Islands Tour",
+    date: "2025-08-21",
+    time_begin: "08:00",
+    time_end: "15:00",
+    location: "Krabi, Thailand",
+    place_id: 14,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 14)?.place_image,
+    trip_id: 3
+  },
+
+  // Trip 4: Tokyo Winter Festival
+  {
+    id: 7,
+    title: "Shibuya Crossing Walk",
+    date: "2025-12-07",
+    time_begin: "18:00",
+    time_end: "20:00",
+    location: "Shibuya City, Tokyo",
+    place_id: 3,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 3)?.place_image,
+    trip_id: 4
+  },
+  {
+    id: 8,
+    title: "Visit Meiji Shrine",
+    date: "2025-12-08",
+    time_begin: "09:30",
+    time_end: "11:30",
+    location: "Shibuya City, Tokyo",
+    place_id: 4,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 4)?.place_image,
+    trip_id: 4
+  },
+
+  // Trip 5: Bali Adventure
+  {
+    id: 9,
+    title: "Explore Ubud Market",
+    date: "2025-11-16",
+    time_begin: "10:00",
+    time_end: "12:00",
+    location: "Ubud, Bali",
+    place_id: 5, // ใช้แทน Tsukiji (mock ยังไม่มี Bali จริง)
+    place_image: mockPlaceBoxes.find(p => p.place_id === 5)?.place_image,
+    trip_id: 5
+  },
+  {
+    id: 10,
+    title: "Beach Walk at Kuta",
+    date: "2025-11-17",
+    time_begin: "16:00",
+    time_end: "18:00",
+    location: "Kuta, Bali",
+    place_id: 6, // ใช้ Fushimi Inari เป็น mock
+    place_image: mockPlaceBoxes.find(p => p.place_id === 6)?.place_image,
+    trip_id: 5
+  },
+
+  // Trip 6: Swiss Alps Hiking
+  {
+    id: 11,
+    title: "Zermatt Hiking Trail",
+    date: "2025-07-11",
+    time_begin: "09:00",
+    time_end: "15:00",
+    location: "Swiss Alps, Zermatt",
+    place_id: 7, // ใช้ Kiyomizu-dera เป็น mock
+    place_image: mockPlaceBoxes.find(p => p.place_id === 7)?.place_image,
+    trip_id: 6
+  },
+  {
+    id: 12,
+    title: "Glacier Viewpoint",
+    date: "2025-07-12",
+    time_begin: "10:00",
+    time_end: "14:00",
+    location: "Swiss Alps, Jungfrau",
+    place_id: 8,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 8)?.place_image,
+    trip_id: 6
+  },
+
+  // Trip 7: Trip to Thailand (Invitation)
+  {
+    id: 13,
+    title: "Wat Pho Temple Visit",
+    date: "2025-10-26",
+    time_begin: "09:30",
+    time_end: "11:00",
+    location: "Bangkok, Thailand",
+    place_id: 15,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 15)?.place_image,
+    trip_id: 7
+  },
+  {
+    id: 14,
+    title: "Grand Palace Tour",
+    date: "2025-10-27",
+    time_begin: "13:00",
+    time_end: "15:00",
+    location: "Bangkok, Thailand",
+    place_id: 13,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 13)?.place_image,
+    trip_id: 7
+  },
+
+  // Trip 8: Korean Food Tour (Invitation)
+  {
+    id: 15,
+    title: "Street Food at Myeongdong",
+    date: "2025-12-16",
+    time_begin: "17:00",
+    time_end: "20:00",
+    location: "Seoul, South Korea",
+    place_id: 1,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 1)?.place_image,
+    trip_id: 8
+  },
+  {
+    id: 16,
+    title: "Traditional Market Visit",
+    date: "2025-12-17",
+    time_begin: "11:00",
+    time_end: "13:00",
+    location: "Seoul, South Korea",
+    place_id: 2,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 2)?.place_image,
+    trip_id: 8
+  },
+
+  // Trip 9: Ultimate Japan Travel Guide
+  {
+    id: 17,
+    title: "Tsukiji Market Walk",
+    date: "2025-07-16",
+    time_begin: "08:00",
+    time_end: "10:00",
+    location: "Chuo City, Tokyo",
+    place_id: 5,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 5)?.place_image,
+    trip_id: 9
+  },
+  {
+    id: 18,
+    title: "Kyoto Fushimi Inari",
+    date: "2025-07-17",
+    time_begin: "09:00",
+    time_end: "12:00",
+    location: "Kyoto, Japan",
+    place_id: 6,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 6)?.place_image,
+    trip_id: 9
+  },
+
+  // Trip 10: European Backpacker's Paradise
+  {
+    id: 19,
+    title: "Colosseum Tour",
+    date: "2025-09-11",
+    time_begin: "10:00",
+    time_end: "12:30",
+    location: "Rome, Italy",
+    place_id: 11,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 11)?.place_image,
+    trip_id: 10
+  },
+  {
+    id: 20,
+    title: "Sagrada Familia Visit",
+    date: "2025-09-12",
+    time_begin: "14:00",
+    time_end: "16:00",
+    location: "Barcelona, Spain",
+    place_id: 12,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 12)?.place_image,
+    trip_id: 10
+  },
+
+  // Trip 11: Thailand Island Hopping
+  {
+    id: 21,
+    title: "Phi Phi Islands Snorkeling",
+    date: "2025-12-21",
+    time_begin: "09:00",
+    time_end: "15:00",
+    location: "Krabi, Thailand",
+    place_id: 14,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 14)?.place_image,
+    trip_id: 11
+  },
+  {
+    id: 22,
+    title: "Wat Pho Temple Tour",
+    date: "2025-12-22",
+    time_begin: "10:00",
+    time_end: "12:00",
+    location: "Bangkok, Thailand",
+    place_id: 15,
+    place_image: mockPlaceBoxes.find(p => p.place_id === 15)?.place_image,
+    trip_id: 11
+  }
+];
+
+
+// 10. Activity Event Boxes
+export const mockActivityEventBoxes: ActivityEventBox[] = [
+  {
+    id: 1,
+    title: "Travel to Hotel",
+    date: "2025-09-05",
+    time_begin: "16:00",
+    time_end: "17:30",
+    transportation: "Train",
+    Notes: mockNotes.filter(note => note.reference_id === 1 && note.reference_type === 'event'),
+    trip_id: 1 // Japan trip
+  },
+  {
+    id: 2,
+    title: "Lunch Break",
+    date: "2025-09-07",
+    time_begin: "12:00",
+    time_end: "13:30",
+    transportation: "Walk",
+    Notes: [],
+    trip_id: 1 // Japan trip
+  },
+  {
+    id: 3,
+    title: "Train to Amsterdam",
+    date: "2025-09-26",
+    time_begin: "09:00",
+    time_end: "12:00",
+    transportation: "Train",
+    Notes: [],
+    trip_id: 2 // European trip
+  },
+    {
+    id: 4,
+    title: "Train to Amsterdam",
+    date: "2025-07-16",
+    time_begin: "12:00",
+    time_end: "13:00",
+    transportation: "Train",
+    Notes: [],
+    trip_id: 9 // European trip
+  }
+];
+
+// <--------------------------------------------- Votes ----------------------------------------->
+
+// 11. Votes (FIXED with trip_id)
+export const mockVotes: Vote[] = [
+  {
+    id: 1,
+    user_id: 1,
+    activity_id: 101,
+    vote_type: 'place',
+    place_id: 1,
+    username: mockUserDetails[0].name,
+    trip_id: 1 // Japan trip
+  },
+  {
+    id: 2,
+    user_id: 2,
+    activity_id: 101,
+    vote_type: 'place',
+    place_id: 2,
+    username: mockUserDetails[1].name,
+    trip_id: 1 // Japan trip
+  },
+  {
+    id: 3,
+    user_id: 3,
+    activity_id: 101,
+    vote_type: 'place',
+    place_id: 1,
+    username: mockUserDetails[2].name,
+    trip_id: 1 // Japan trip
+  },
+  {
+    id: 4,
+    user_id: 1,
+    activity_id: 102,
+    vote_type: 'event',
+    event_id: 1,
+    username: mockUserDetails[0].name,
+    trip_id: 2 // European trip
+  },
+  {
+    id: 5,
+    user_id: 2,
+    activity_id: 102,
+    vote_type: 'event',
+    event_id: 2,
+    username: mockUserDetails[1].name,
+    trip_id: 2 // European trip
+  },
+  {
+    id: 6,
+    user_id: 3,
+    activity_id: 102,
+    vote_type: 'event',
+    event_id: 1,
+    username: mockUserDetails[2].name,
+    trip_id: 2 // European trip
+  }
+];
+
+// 12. Activity Vote Place
+export const mockActivityVotePlaces: ActivityVotePlace[] = [
+  {
+    id: 101,
+    date: "2025-09-09",
+    time_begin: "18:00",
+    time_end: "20:00",
+    number_of_votes: 3,
+    options: [
+      {
+        id: 6,
+        title: "Sushi Ichiban",
+        rating: 4.5,
+        review_count: 200,
+        location: "Ginza, Tokyo",
+        place_image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=200&fit=crop",
+        place_id: 6
+      },
+      {
+        id: 7,
+        title: "Ramen Yokocho",
+        rating: 4.2,
+        review_count: 150,
+        location: "Shinjuku, Tokyo",
+        place_image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=200&fit=crop",
+        place_id: 7
+      },
+      {
+        id: 8,
+        title: "Tempura Matsui",
+        rating: 4.7,
+        review_count: 180,
+        location: "Asakusa, Tokyo",
+        place_image: "https://images.unsplash.com/photo-1559314809-0f31657def5e?w=300&h=200&fit=crop",
+        place_id: 8
+      }
+    ],
+    votes: mockVotes.filter(vote => vote.activity_id === 101),
+    trip_id: 1 // Japan trip
+  }
+];
+
+// 13. Activity Vote Event
+export const mockActivityVoteEvents: ActivityVoteEvent[] = [
+  {
+    id: 102,
+    date: "2025-09-26",
+    time_begin: "09:00",
+    time_end: "10:00",
+    number_of_votes: 3,
+    options: mockTransportationOptions,
+    votes: mockVotes.filter(vote => vote.activity_id === 102),
+    trip_id: 2 // European trip
+  }
+];
+
+// <-------------------------- Trip ----------------------------------------->
+
+// 14. Trip Boxes (FIXED dates to 2025)
+export const mockTripBoxes: TripBox[] = [
+  // MAIN TRIPS (with full data)
+  {
+    trip_id: 1,
+    trip_name: "Summer Adventure in Japan", // NOW - Currently traveling
+    trip_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
+    start_date: "2025-09-05", // Started 3 days ago (today is 2025-09-08)
+    end_date: "2025-09-12",   // Ends in 4 days
+    member_count: 4,
+    status_planning: 'planning',
+    owner_name: mockTripMembers[0].name,
+    owner_image: mockTripMembers[0].user_image
+  },
+  {
+    trip_id: 2,
+    trip_name: "European Backpacking Tour", // DAYS - Upcoming trip
+    trip_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
+    start_date: "2025-09-23", // Starts in 15 days
+    end_date: "2025-10-13",   // Ends in 35 days
+    member_count: 3,
+    status_planning: 'planning',
+    owner_name: mockTripMembers[1].name,
+    owner_image: mockTripMembers[1].user_image
+  },
+  {
+    trip_id: 3,
+    trip_name: "Thailand Beach Getaway", // END - Completed trip
+    trip_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+    start_date: "2025-08-19", // Started 20 days ago
+    end_date: "2025-08-27",   // Ended 12 days ago
+    member_count: 2,
+    status_planning: 'completed',
+    owner_name: mockTripMembers[0].name,
+    owner_image: mockTripMembers[0].user_image
+  },
+  
+  // ADDITIONAL TRIPS (for variety - FIXED to 2025)
+  {
+    trip_id: 4,
+    trip_name: "Tokyo Winter Festival",
+    trip_image: "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=400&h=300&fit=crop",
+    start_date: "2025-12-06", // Future trip
+    end_date: "2025-12-11",   
+    member_count: 6,
+    status_planning: 'planning',
+    owner_name: mockTripMembers[5].name, // Alice Wang
+    owner_image: mockTripMembers[5].user_image
+  },
+  {
+    trip_id: 5,
+    trip_name: "Bali Adventure",
+    trip_image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=400&h=300&fit=crop",
+    start_date: "2025-11-15", // Future trip
+    end_date: "2025-11-22",   
+    member_count: 8,
+    status_planning: 'planning',
+    owner_name: mockTripMembers[6].name, // Bob Chen
+    owner_image: mockTripMembers[6].user_image
+  },
+  {
+    trip_id: 6,
+    trip_name: "Swiss Alps Hiking",
+    trip_image: "https://images.unsplash.com/photo-1464822759844-d150078e9243?w=400&h=300&fit=crop",
+    start_date: "2025-07-10", // Past trip 
+    end_date: "2025-07-17",   
+    member_count: 4,
+    status_planning: 'completed',
+    owner_name: mockTripMembers[7].name, // Carol Smith
+    owner_image: mockTripMembers[7].user_image
+  }
+];
+
+// 15. Trip Invitations (Separate from main trips)
+export const mockTripInvitations: TripBox[] = [
+  {
+    trip_id: 7,
+    trip_name: "Trip to Thailand",
+    trip_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+    start_date: "2025-10-25", // Future invitation
+    end_date: "2025-11-01",
+    member_count: 3,
+    status_planning: 'planning',
+    owner_name: mockTripMembers[8].name, // Keen_Kung
+    owner_image: mockTripMembers[8].user_image
+  },
+  {
+    trip_id: 8,
+    trip_name: "Korean Food Tour",
+    trip_image: "https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=400&h=300&fit=crop",
+    start_date: "2025-12-15", // Future invitation
+    end_date: "2025-12-22",
+    member_count: 6,
+    status_planning: 'planning',
+    owner_name: mockTripMembers[9].name, // Sarah Kim
+    owner_image: mockTripMembers[9].user_image
+  }
+];
+
+
+export const mockTripDetails: TripDetails[] = mockTripBoxes.map(trip => ({
+  trip_id: trip.trip_id,
+  trip_name: trip.trip_name,
+  trip_image: trip.trip_image,
+  start_date: trip.start_date,
+  end_date: trip.end_date,
+  copies: 1,
+  owner_name: trip.owner_name,
+  owner_image: trip.owner_image,
+  owner_email: `${trip.owner_name.toLowerCase().replace(" ", ".")}@example.com`,
+  group_members: trip.member_count,
+  budget: 1000 + trip.trip_id * 200, // mock budget
+  note: mockNotes.filter(n => n.trip_id === trip.trip_id)
+}));
+
+// <-------------------------------------- Guides --------------------------------------->
+
+// 16. Guide Boxes (Updated dates to 2025)
+export const mockGuideBoxes: GuideBox[] = [
+  {
+    id: 1,
+    title: "Ultimate Japan Travel Guide",
+    start_date: "2025-07-15",
+    end_date: "2025-07-25",
+    guide_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
+    copies: 156,
+    owner_name: mockTripMembers[0].name,
+    owner_image: mockTripMembers[0].user_image,
+    description: "I spend 10 days on this amazing journey and will tell everyone my plan here...",
+    trip_id: 9
+  },
+  {
+    id: 2,
+    title: "European Backpacker's Paradise",
+    start_date: "2025-09-10",
+    end_date: "2025-09-30",
+    guide_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
+    copies: 89,
+    owner_name: mockTripMembers[1].name,
+    owner_image: mockTripMembers[1].user_image,
+    description: "Discover the best routes and hidden gems across Europe with this comprehensive guide...",
+    trip_id: 10
+  },
+  {
+    id: 3,
+    title: "Thailand Island Hopping",
+    start_date: "2025-12-20",
+    end_date: "2025-12-28",
+    guide_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+    copies: 234,
+    owner_name: mockTripMembers[2].name,
+    owner_image: mockTripMembers[2].user_image,
+    description: "Explore the most beautiful islands in Thailand with insider tips and recommendations...",
+    trip_id: 11
+  }
+];
+
+// 17. Trip Guide Details (Updated dates to 2025)
+export const mockGuideDetails: GuideDetails[] = [
+  {
+    id: 1,
+    title: "Ultimate Japan Travel Guide",
+    start_date: "2025-07-15",
+    end_date: "2025-07-25",
+    guide_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
+    copies: 156,
+    owner_name: mockTripMembers[0].name,
+    owner_image: mockTripMembers[0].user_image,
+    description: "I spend 10 days on this amazing journey and will tell everyone my plan here...",
+    owner_email: mockTripMembers[0].email!,
+    group_members: 4,
+    budget: 2500,
+    trip_id: 9
+  },
+  {
+    id: 2,
+    title: "European Backpacker's Paradise",
+    start_date: "2025-09-10",
+    end_date: "2025-09-30",
+    guide_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
+    copies: 89,
+    owner_name: mockTripMembers[1].name,
+    owner_image: mockTripMembers[1].user_image,
+    description: "Discover the best routes and hidden gems across Europe with this comprehensive guide...",
+    owner_email: mockTripMembers[1].email!,
+    group_members: 3,
+    budget: 3200,
+    trip_id: 10
+  },
+  {
+    id: 3,
+    title: "Thailand Island Hopping",
+    start_date: "2025-12-20",
+    end_date: "2025-12-28",
+    guide_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+    copies: 234,
+    owner_name: mockTripMembers[2].name,
+    owner_image: mockTripMembers[2].user_image,
+    description: "Explore the most beautiful islands in Thailand with insider tips and recommendations...",
+    owner_email: mockTripMembers[2].email!,
+    group_members: 2,
+    budget: 1800,
+    trip_id: 11
   }
 ];
 

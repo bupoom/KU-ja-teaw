@@ -3,7 +3,6 @@ export default function GroupLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ title: "Group" }} />
-      <Stack.Screen name="request" options={{ title: "Requests" }} />
       <Stack.Screen name="search_friend" options={{ title: "Invite friend" }} />
     </Stack>
   );

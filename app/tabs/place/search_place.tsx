@@ -143,7 +143,7 @@ const SearchScreen: React.FC = () => {
                 <Feather name="search" size={20} color="#666" />
                 <TextInput
                     ref={searchInputRef}
-                    className="text-gray-400 ml-3 flex-1"
+                    className="text-black ml-3 flex-1"
                     placeholder="Search..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}

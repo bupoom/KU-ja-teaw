@@ -25,7 +25,7 @@ interface GuideBox {
   owner_name: string;
   owner_image: string;
   owner_comments: string;
-  guide_id: number;
+  trip_id: number;
 }
 
 const GuideBookmarkScreen = () => {
@@ -51,13 +51,13 @@ const GuideBookmarkScreen = () => {
   }, []);
 
   const handleGuidePress = (guide: GuideBox) => {
-    router.push(`/guides/${guide.guide_id}`);
-    console.log("Navigate to guide:", guide.guide_id);
+    router.push(`/guides/${guide.trip_id}`);
+    console.log("Navigate to guide:", guide.trip_id);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <StatusBar barStyle="light-content" backgroundColor="#075952" />
+      <StatusBar barStyle="light-content" backgroundColor="#284D44" />
 
       <View className="bg-green_2 pb-6 px-4 pt-20">
         <Text className="text-white text-[35px] font-sf-bold text-center pt-2">

@@ -102,7 +102,7 @@ const JoinTripScreen = () => {
         </View>
 
         {/* Next Button */}
-        <NextButton onPress={handleNext} disabled={isNextDisabled}/>
+        <NextButton onPress={handleNext} disabled={isNextDisabled} classname="mt-4"/>
       </View>
     </SafeAreaView>
   );
