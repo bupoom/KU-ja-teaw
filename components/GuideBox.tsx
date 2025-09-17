@@ -2,6 +2,7 @@ import { useRouter, usePathname } from "expo-router";
 import { View, Image, Text, TouchableOpacity, Alert } from "react-native";
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { calculateDuration } from "@/util/calculateDuration";
+import { truncateText } from "@/util/truncateText";
 
 // Interface matching your latest mockData
 interface GuideBoxProps {
@@ -13,7 +14,7 @@ interface GuideBoxProps {
   copies: number;
   owner_name: string;
   owner_image: string;
-  owner_comments: string;
+  description?: string;
   onRemove?: (id:number) => void;
 }
 
@@ -26,7 +27,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({
   copies,
   owner_name,
   owner_image,
-  owner_comments,
+  description,
   onRemove
 }) => {
   const pathname = usePathname();
@@ -65,16 +66,6 @@ const GuideBox: React.FC<GuideBoxProps> = ({
 
   const duration = calculateDuration(start_date, end_date);
 
-  // Generate sample description based on title
-  const generateDescription = (title: string): string => {
-    const descriptions = {
-      'Ultimate Japan Travel Guide': 'I spend 10 days on this amazing journey and will tell everyone my plan here...',
-      'European Backpacker\'s Paradise': 'Discover the best routes and hidden gems across Europe with this comprehensive guide...',
-      'Thailand Island Hopping': 'Explore the most beautiful islands in Thailand with insider tips and recommendations...'
-    };
-    return descriptions[title as keyof typeof descriptions] || `I spend ${duration} days on this peaceful place and will tell everyone my plan here...`;
-  };
-
   // Guide bookmark page layout
   if (pathname === '/tabs/guide' || pathname === '/tabs/guide/search_guide') {
     return (
@@ -92,12 +83,12 @@ const GuideBox: React.FC<GuideBoxProps> = ({
           
           {/* Guide Info */}
           <View className="flex-1 ml-5">
-            <View className="flex-row justify-between items-start">
+            <View className="flex-row justify-between items-start mb-1">
               <Text 
-                className="text-[16px] font-sf-semibold text-black leading-6"
+                className="text-lg font-sf-semibold text-black"
                 numberOfLines={1}
               >
-                {title.length > 20 ? title.substring(0, 20) + '...' : title}
+                {truncateText(title, 20)}
               </Text>
               {give_bookmark && (
                 <TouchableOpacity className="ml-2" onPress={handleUnbookmark}>
@@ -107,14 +98,14 @@ const GuideBox: React.FC<GuideBoxProps> = ({
             </View>
             
             {/* Stats Row */}
-            <View className="flex-row items-center">
+            <View className="flex-row items-center mb-2">
               <View className="flex-row items-center mr-4">
                 <Feather name="copy" size={15} color="#666" />
-                <Text className="text-[11px] text-dark_gray ml-1 font-sf-semibold">{copies} copied</Text>
+                <Text className="text-sm text-dark_gray ml-1 font-sf-semibold">{copies} copied</Text>
               </View>
               <View className="flex-row items-center">
                 <Feather name="calendar" size={15} color="#666" />
-                <Text className="text-[11px] text-dark_gray ml-1 font-sf-semibold">{duration} days</Text>
+                <Text className="text-sm text-dark_gray ml-1 font-sf-semibold">{duration} days</Text>
               </View>
             </View>
             
@@ -124,7 +115,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({
                 source={{ uri: owner_image }} 
                 className="w-5 h-5 rounded-full mr-2"
               />
-              <Text className="text-[11px] text-dark_gray ml-1 font-sf-semibold">{owner_name}</Text>
+              <Text className="text-sm text-dark_gray ml-1 font-sf-semibold">{owner_name}</Text>
             </View>
           </View>
         </View>
@@ -161,14 +152,14 @@ else if (pathname === '/tabs') {
       <View className="p-4 flex-1">
         {/* Title */}
         <Text 
-          className="text-lg font-bold text-black mb-2" 
+          className="text-xl font-bold text-black mb-2" 
           numberOfLines={2}
           style={{ 
             lineHeight: 22,
             height: 20,
           }}
         >
-          {title}
+          {truncateText(title, 30)}
         </Text>
         
         {/* Description */}
@@ -181,7 +172,7 @@ else if (pathname === '/tabs') {
           }}
           numberOfLines={2}
         >
-          {generateDescription(title)}
+          {description}
         </Text>
 
         {/* Author Section - ใช้ Spacer เพื่อดันลงด้านล่าง */}
@@ -193,7 +184,7 @@ else if (pathname === '/tabs') {
           />
           <View className="flex-1">
             <Text 
-              className="text-[14px] font-semibold text-gray-800"
+              className="text-base font-semibold text-gray-800"
               numberOfLines={1}
             >
               {owner_name}

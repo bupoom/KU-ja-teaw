@@ -1,6 +1,7 @@
 import { useRouter, usePathname } from "expo-router";
 import { View, Image, Text, TouchableOpacity, Alert } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
+import { truncateText } from "@/util/truncateText";
 
 // Interface matching your latest mockData
 interface PlaceBoxProps {
@@ -80,8 +81,8 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
           {/* Place Info */}
           <View className="flex-1 ml-5">
             <View className="flex-row justify-between items-start">
-              <Text className="text-[16px] font-sf-semibold text-black leading-6">
-                {title}
+              <Text className="text-lg font-sf-semibold text-black">
+                {truncateText(title, 20)}
               </Text>
               <TouchableOpacity className="ml-2" onPress={handleUnbookmark}>
                 {give_bookmark && (
@@ -91,11 +92,11 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
             </View>
 
             {/* Rating Row */}
-            <View className="flex-row items-center">
+            <View className="flex-row items-center mb-1">
               <View className="flex-row items-center">
                 <Ionicons name="star" size={15} color="#FFD700" />
               </View>
-              <Text className="text-[11px] text-dark_gray ml-2 font-sf-semibold">
+              <Text className="text-sm text-dark_gray ml-2 font-semibold">
                 {rating} ({review_count?.toLocaleString() || 0} Review)
               </Text>
             </View>
@@ -103,7 +104,7 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
             {/* Location Info */}
             <View className="flex-row items-center">
               <Feather name="map-pin" size={15} color="#666" />
-              <Text className="text-[11px] text-dark_gray ml-2 font-sf-semibold">
+              <Text className="text-sm text-dark_gray ml-2 font-semibold">
                 {location}
               </Text>
             </View>

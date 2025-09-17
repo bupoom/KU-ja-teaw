@@ -1,10 +1,14 @@
 import { Stack } from "expo-router";
 export default function GroupLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: "Group" }} />
-      <Stack.Screen name="request" options={{ title: "Requests" }} />
-      <Stack.Screen name="search_friend" options={{ title: "Invite friend" }} />
+    <Stack
+      screenOptions={{
+        headerShadowVisible: false,
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="search_friend" />
     </Stack>
   );
 }

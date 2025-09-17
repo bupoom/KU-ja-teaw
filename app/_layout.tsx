@@ -37,13 +37,13 @@ export default function IntroLayout() {
       <Stack.Screen
         name="places/[place_id]"
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="trips/[trip_id]"
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
     </Stack>

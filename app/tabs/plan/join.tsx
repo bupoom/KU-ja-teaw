@@ -26,6 +26,7 @@ const JoinTripScreen = () => {
     // Handle join trip logic here
     console.log("Trip Code:", tripCode);
     console.log("Password:", password);
+    router.push(`/plan/${password}`)
   };
 
   const isNextDisabled = !tripCode.trim() || !password.trim();
@@ -102,7 +103,7 @@ const JoinTripScreen = () => {
         </View>
 
         {/* Next Button */}
-        <NextButton onPress={handleNext} disabled={isNextDisabled}/>
+        <NextButton onPress={handleNext} disabled={isNextDisabled} classname="mt-4"/>
       </View>
     </SafeAreaView>
   );

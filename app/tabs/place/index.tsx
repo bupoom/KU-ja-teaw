@@ -48,7 +48,7 @@ const PlaceScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <StatusBar barStyle="light-content" backgroundColor="dark_grey"/>
+      <StatusBar barStyle="light-content" backgroundColor="#284D44" />
       
       <View className="bg-green_2 pb-6 px-4 pt-20">
         <Text className="text-white text-[35px] font-sf-bold text-center pt-2">

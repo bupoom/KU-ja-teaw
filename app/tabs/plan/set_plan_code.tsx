@@ -59,9 +59,8 @@ export default function SetTripCode() {
 
     //   const data = await res.json();
     //   const planId = String(data.plan_id);
-      const planId = "1"; // Placeholder plan ID
 
-      router.replace(`/tabs/plan/${planId}`);
+      router.replace(`/plan/${password}`);
     // } catch (e) {
     //   Alert.alert("Error", (e as Error).message);
     // } finally {

@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import StatusTag from './StatusTag';
 import { formatDateRange } from "@/util/formatDateRange";
+import { truncateText } from "@/util/truncateText";
 
 // Interface matching TripBox with additional invitation functions
 interface TripBox {
@@ -57,17 +58,17 @@ export default function TripInvitationBox({
       <View className="flex-row mb-2">
         <Image 
           source={{ uri: trip_image }} 
-          className="w-24 h-24 rounded-xl" 
+          className="w-20 h-20 rounded-xl" 
         />
         
         <View className="flex-1 ml-4 justify-between py-0">
           {/* Header with trip name and status */}
           <View className="flex-row justify-between">
             <Text 
-              className="text-[20px] font-semibold text-black flex-1 mr-5 leading-6" 
+              className="text-lg font-semibold text-black flex-1 mr-5 leading-6" 
               numberOfLines={1}
             >
-              {trip_name}
+              {truncateText(trip_name, 20)}
             </Text>
             <StatusTag
               text={status_planning === 'completed' ? 'Complete' : 'Planning'}
@@ -78,17 +79,17 @@ export default function TripInvitationBox({
           {/* Date and participants info */}
           <View className="flex-row items-center mt-1">
             <Feather name="calendar" size={16} color="#6B7280" />
-            <Text className="text-[12px] text-dark_gray ml-2 font-sf-semibold">
+            <Text className="text-sm text-dark_gray ml-2 font-sf-semibold">
               {formatDateRange(start_date, end_date)}
             </Text>
           </View>
           {/* Agent/Owner info */}
-          <View className="flex-row items-center mt-1">
+          <View className="flex-row items-center mt-2">
             <Image 
               source={{ uri: owner_image }} 
               className="w-6 h-6 rounded-full" 
             />
-            <Text className="text-[12px] text-dark_gray font-sf-semibold ml-1"> Agent: {owner_name}</Text>
+            <Text className="text-sm text-dark_gray font-sf-semibold ml-1"> Agent: {owner_name}</Text>
           </View>
         </View>
       </View>

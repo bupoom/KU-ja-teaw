@@ -14,13 +14,11 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import GuideBox from "@/components/GuideBox";
-import PlaceBox from "@/components/PlaceBox";
 import TripBox from "@/components/TripBox";
 import InviteBox from "@/components/InviteBox";
 import { 
   mockTripBoxes, 
   mockTripInvitations, 
-  mockBookmarkPlaces, 
   mockGuideBoxes 
 } from "@/mock/mockDataComplete";
 
@@ -47,8 +45,8 @@ interface GuideBox {
   copies: number;
   owner_name: string;
   owner_image: string;
-  owner_comments: string;
-  guide_id: number;
+  description?: string;
+  trip_id: number;
 }
 
 interface LoadingState {
@@ -63,7 +61,6 @@ export default function HomeScreen(): JSX.Element {
   // State Management
   const [currentTrip, setCurrentTrip] = useState<TripBox | null>(null);
   const [tripInvitations, setTripInvitations] = useState<TripBox[]>([]);
-  const [placesToVisit, setPlacesToVisit] = useState<PlaceBox[]>([]);
   const [guidePlans, setGuidePlans] = useState<GuideBox[]>([]);
   const [loading, setLoading] = useState<LoadingState>({
     currentTrip: false,
@@ -109,19 +106,6 @@ const fetchCurrentTrip = async (): Promise<void> => {
     }
   };
 
-  const fetchPlacesToVisit = async (): Promise<void> => {
-    setLoading((prev) => ({ ...prev, places: true }));
-    try {
-      // ใช้ bookmark places สำหรับแสดงใน home
-      setPlacesToVisit(mockBookmarkPlaces);
-    } catch (error) {
-      console.error("Failed to fetch places:", error);
-      setError("Failed to load places");
-    } finally {
-      setLoading((prev) => ({ ...prev, places: false }));
-    }
-  };
-
   const fetchGuidePlans = async (): Promise<void> => {
     setLoading((prev) => ({ ...prev, guidePlans: true }));
     try {
@@ -133,14 +117,6 @@ const fetchCurrentTrip = async (): Promise<void> => {
       setLoading((prev) => ({ ...prev, guidePlans: false }));
     }
   };
-
-  // -------------------------------- API Action Functions ------------------------
-  // const handleCurrentTripPress = (): void => {
-  //   if (currentTrip) {
-  //     router.push(`/trips/${currentTrip.trip_id}`);
-  //     router.push(`/tabs/plan/${currentTrip.trip_id}`)
-  //   }
-  // };
 
   const handleJoinTrip = async (trip: TripBox): Promise<void> => {
     Alert.alert("Success", "You have successfully joined the trip!", [
@@ -161,17 +137,12 @@ const fetchCurrentTrip = async (): Promise<void> => {
     setTripInvitations((prev) => prev.filter((inv) => inv.trip_id !== trip.trip_id));
   };
 
-  const handleGuidePress = (guide: GuideBox): void => {
-    router.push(`/guides/${guide.guide_id}`);
-  };
-
   const onRefresh = async (): Promise<void> => {
     setLoading((prev) => ({ ...prev, refreshing: true }));
     setError(null);
     await Promise.all([
       fetchCurrentTrip(),
       fetchTripInvitations(),
-      fetchPlacesToVisit(),
       fetchGuidePlans(),
     ]);
     setLoading((prev) => ({ ...prev, refreshing: false }));
@@ -183,7 +154,6 @@ const fetchCurrentTrip = async (): Promise<void> => {
       await Promise.all([
         fetchCurrentTrip(),
         fetchTripInvitations(),
-        fetchPlacesToVisit(),
         fetchGuidePlans(),
       ]);
     };
