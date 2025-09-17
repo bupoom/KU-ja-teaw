@@ -29,3 +29,8 @@ export const updateUserDetails = async (username: string, phone: string, profile
     throw error;
   }
 };
+
+
+export const getUserDetailById = async  (userId:string ) => {
+  
+}

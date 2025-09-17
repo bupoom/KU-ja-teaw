@@ -25,8 +25,6 @@ const REFRESH_TOKEN_KEY = 'refreshToken';
 const USER_DATA_KEY = 'userData';
 const TOKEN_EXPIRES_KEY = 'tokenExpires';
 
-const BASE_URL = "http://192.168.1.104:3000"
-
 export const AuthService = {
   /**
    * บันทึก tokens
@@ -219,17 +217,21 @@ export const AuthService = {
     try {
       console.log('🔄 Starting API login with Google token...');
       // TODO: เรียก login API
+      const BASE_URL = "http://10.0.2.2:3000";
+
       const response = await fetch(`${BASE_URL}/api/users/login`, {
         method: 'POST',
         headers: { 
+          'accept': 'application/json',
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.ACCESS_TOKEN_ID}`
         },
         body: JSON.stringify({ 
-          token_id: googleIdToken
+          idToken: googleIdToken
         })
       });
-      console.log('📡 Response status:', response.status);
+      console.log(' Response status:', response.status);
+      console.log(' data:', response.body);
       
       if (!response.ok) {
         throw new Error('Login failed');

@@ -15,7 +15,7 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 // import { API_CONFIG } from '@/service/serverAPI';
 import { AuthService } from '@/service/authService';
-import { updateUserDetails } from '@/service/ีuserServices';
+import { updateUserDetails } from '@/service/userServices';
 const ProfileSetupScreen = () => {
   const router = useRouter();
   // รับ parameters ที่ส่งมาจากหน้า Auth
