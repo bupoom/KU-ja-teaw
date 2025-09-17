@@ -111,7 +111,6 @@ interface Weather {
   weather_code: keyof typeof weatherCode; // 0–7
 }
 
-
 interface ActivityVotePlace {
   id: number;
   date: string;

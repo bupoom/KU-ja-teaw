@@ -1,9 +1,15 @@
-import { View, Text } from 'react-native'
+import { View, Text, SafeAreaView } from 'react-native'
+import PlanHeader from '@/components/PlanHeader'
+import { useLocalSearchParams } from 'expo-router'
+
 const index = () => {
+  const {plan_id} = useLocalSearchParams<{ plan_id: string }>();
+
   return (
-    <View>
-      <Text>index</Text>
-    </View>
+    <SafeAreaView>
+      <PlanHeader planId={plan_id}/>
+      <Text>Group</Text>
+    </SafeAreaView>
   )
 }
 export default index

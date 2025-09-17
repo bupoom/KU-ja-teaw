@@ -1,7 +1,10 @@
 import { Stack } from "expo-router";
 export default () => (
   <Stack
-    screenOptions={{ headerShown: false }}
+    screenOptions={{
+        headerShadowVisible: false,
+        headerShown: false,
+      }}
   >
     <Stack.Screen name="index" options={{ title: "Daily Trip" }}/>
     <Stack.Screen name="[event_detail_id]" options={{ title: "Event" }}/>

@@ -626,9 +626,9 @@ export default function TripDetail() {
                 />
 
                 <Text className="text-xl font-medium text-black ml-4">
-                  {selectedActivity
+                  {truncateText((selectedActivity
                     ? `${formatDate(selectedActivity.date)}: ${truncateText(selectedActivity.title)}`
-                    : "Activity Notes"}
+                    : "Activity Notes"), 30)}
                 </Text>
                 <TouchableOpacity
                   onPress={() => setShowActivityModal(false)}

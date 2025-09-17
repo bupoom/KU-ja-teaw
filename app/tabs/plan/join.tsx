@@ -26,6 +26,7 @@ const JoinTripScreen = () => {
     // Handle join trip logic here
     console.log("Trip Code:", tripCode);
     console.log("Password:", password);
+    router.push(`/plan/${password}`)
   };
 
   const isNextDisabled = !tripCode.trim() || !password.trim();
