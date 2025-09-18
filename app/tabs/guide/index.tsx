@@ -1,42 +1,37 @@
-import React, { useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StatusBar,
-  RefreshControl,
-  Alert,
-  FlatList,
-  SafeAreaView,
-} from "react-native";
+import GuideBox from "@/components/GuideBox";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import GuideBox from "@/components/GuideBox";
-import { mockGuideBoxes } from "@/mock/mockDataComplete";
-
-// Import interfaces
-interface GuideBox {
-  id: number;
-  title: string;
-  start_date: string;
-  end_date: string;
-  guide_image: string;
-  copies: number;
-  owner_name: string;
-  owner_image: string;
-  owner_comments: string;
-  trip_id: number;
-}
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { getBookmarkGuideList } from "@/service/APIserver/bookmarkService";
 
 const GuideBookmarkScreen = () => {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
-  const [guides, setGuides] = useState<GuideBox[]>(mockGuideBoxes);
+  const [guides, setGuides] = useState<GuideBox[]>([]);
 
+  useEffect(() => {
+    onRefresh()
+  }, []);
+  
+  
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    setGuides(mockGuideBoxes);
+    try {
+      const data = await getBookmarkGuideList();
+      setGuides(data);
+    } catch (error) {
+      console.error("Failed to load bookmark trips:", error);
+    }
     setRefreshing(false);
   }, []);
 
@@ -89,6 +84,7 @@ const GuideBookmarkScreen = () => {
             owner_image={item.owner_image}
             owner_comments={item.owner_comments}
             onRemove={handleRemoveGuides}
+            trip_id={item.trip_id}
           />
         )}
         keyExtractor={(item) => item.id.toString()}

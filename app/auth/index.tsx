@@ -54,6 +54,7 @@ const AuthScreen: React.FC = () => {
 
         // -- API KUJATEAW --
         const result = await AuthService.login(idToken);
+        console.log(result.user?.user_image)
         if (!result.success) {
           Alert.alert("Error", "Failed to find or create user.");
           return;

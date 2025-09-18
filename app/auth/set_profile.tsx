@@ -1,21 +1,20 @@
+import { Feather } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
+  Alert,
+  Image,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-  Modal,
-  ScrollView,
-  Alert,
-  Image,
+  View,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 // import { API_CONFIG } from '@/service/serverAPI';
-import { AuthService } from '@/service/authService';
-import { updateUserDetails } from '@/service/userServices';
+import { updateUserDetails } from '@/service/APIserver/userService';
 const ProfileSetupScreen = () => {
   const router = useRouter();
   // รับ parameters ที่ส่งมาจากหน้า Auth

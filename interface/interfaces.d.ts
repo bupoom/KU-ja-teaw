@@ -167,9 +167,11 @@ interface GuideBox {
   copies: number;
   owner_name: string;
   owner_image: string;
+  owner_comments: string;
   description?: string;
+  onRemove?: (id:number) => void;
   trip_id: number
-} // เเสดงหน้า search ของ guide bookmark
+}
 
 interface GuideDetails {
   id: number;

@@ -2,7 +2,7 @@ import axios from "axios";
 import { AuthService } from "./authService";
 
 const client = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.104:3000",
+  baseURL: process.env.EXPO_PUBLIC_API_URL || "http://10.0.2.2:3000",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -63,11 +63,5 @@ client.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const endpoints = {
-  auth: {
-    login: "/api/users/login"
-  }
-};
 
 export default client;
