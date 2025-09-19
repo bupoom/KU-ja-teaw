@@ -14,6 +14,7 @@ const GuideBox: React.FC<GuideBox> = ({
   copies,
   owner_name,
   owner_image,
+  owner_comments,
   description,
   onRemove
 }) => {

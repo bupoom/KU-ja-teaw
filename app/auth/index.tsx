@@ -59,7 +59,8 @@ const AuthScreen: React.FC = () => {
           Alert.alert("Error", "Failed to find or create user.");
           return;
         }
-        if (!result.newUser) { // User เก่า - บันทึกข้อมูลแล้วไปหน้าหลัก
+        if (result.newUser) { // User เก่า - บันทึกข้อมูลแล้วไปหน้าหลัก
+          Alert.alert("Welcome Back.")
           router.push('/tabs/(home)')
         } else {
           if (!result.user?.id) {

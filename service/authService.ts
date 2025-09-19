@@ -122,7 +122,7 @@ export const AuthService = {
 
       // เรียก API เพื่อ refresh token
       // TODO: แทนที่ด้วย API endpoint จริง
-      const response = await fetch('https://your-api-domain.com/api/auth/refresh', {
+      const response = await fetch('https://10.0.2.2/api/users/refresh-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -217,7 +217,7 @@ export const AuthService = {
     try {
       console.log('🔄 Starting API login with Google token...');
       // TODO: เรียก login API
-      // แตก รอก่อน
+      // // แตก รอก่อน
       // const BASE_URL = "http://10.0.2.2:3000";
 
       // const response = await fetch(`${BASE_URL}/api/users/login`, {
@@ -232,20 +232,20 @@ export const AuthService = {
       //   })
       // });
       const response = {
-        status: 201,
+        status: 201, // 200 : user ใหม่ 201 user เก่า
         json: () => {},
         body : {
           name: "OSHI",
           phone: "OSHI_PHONE",
           email: "OSHI@gmail.com",
           user_id: "OSHI",
-          profile_picture_link : "https://kfvtpdwnpkkrcsjnopax.supabase.co/storage/v1/object/sign/profiles/OSHI-oshi_profile.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9jNzc5MThkMC01MzZmLTRkNmItYjYwZS0zYmEyMTJjYzRhMmIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwcm9maWxlcy9PU0hJLW9zaGlfcHJvZmlsZS5qcGciLCJpYXQiOjE3NTgxMjI2NzMsImV4cCI6MTc1ODEyNjI3M30.Q2zIakavM376N93li6wy755IlcZDo5kEb9fqsjPbh0I",
+          profile_picture_link : "https://ih1.redbubble.net/image.5300710362.9150/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg",
           accessToken : "eyJhbGciOiJSUzI1NiIsImtpZCI6IjA3ZjA3OGYyNjQ3ZThjZDAxOWM0MGRhOTU2OWU0ZjUyNDc5OTEwOTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxMzUxMjY1MDM1ODUtbDJmMm9sYmRncnU4amhyb2tsdjV1ZTZmcm05NWs4dmcuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIxMzUxMjY1MDM1ODUtNmp0Z2NyNTd0dDdib3FrMzZjNHUwYzBiZTI0b2NvbGYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDYxMjE4OTk2OTgzMDgwNzUyNzQiLCJlbWFpbCI6ImJ1cG9vbTIwMDVAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiLguLRibHVlIGJ1cG9vbSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMSVIzZWg1RG5EYURCZG8wMzlfZ0RiZVJIYW9uNXJ6LTRlS2U2NThvcDc2c0ktY0ZZPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IuC4tGJsdWUiLCJmYW1pbHlfbmFtZSI6ImJ1cG9vbSIsImlhdCI6MTc1ODEyMDIyNCwiZXhwIjoxNzU4MTIzODI0fQ.RqvSYHwbr8bt2EXGX-D9DrLXr73Quo0mp3-4zgxIBz-x6hvBWuN-Zo0OjGqY1HsANN-3XgBlEOgntVox807vGk3VOyGo9Tr5N6sohB-VPQq7wVPaY08B5mnQJnQGUIXEcb_Y0AtpZ2_lMcW2C6mC7VTSUSwfsqGyk5b7ORG4hHuQHrgxaUqCXulFBAYer2jGUE1Xugq7-tznvRo3EArezd0zCneDK5lKRTr62NrdyaC27F3mBRhwKjZTXSahhld3gpIyqaxtNKJ6gPs8KbnTdXJoxsQ8U6QU9k4jMg0r5V2rxv3vEVirUwDSlFHLe9D2aK7a3ukllf3Tre2TfDIF2A",
           refreshToken : "eyJhbGciOiJSUzI1NiIsImtpZCI6IjA3ZjA3OGYyNjQ3ZThjZDAxOWM0MGRhOTU2OWU0ZjUyNDc5OTEwOTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxMzUxMjY1MDM1ODUtbDJmMm9sYmRncnU4amhyb2tsdjV1ZTZmcm05NWs4dmcuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIxMzUxMjY1MDM1ODUtNmp0Z2NyNTd0dDdib3FrMzZjNHUwYzBiZTI0b2NvbGYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDYxMjE4OTk2OTgzMDgwNzUyNzQiLCJlbWFpbCI6ImJ1cG9vbTIwMDVAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiLguLRibHVlIGJ1cG9vbSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMSVIzZWg1RG5EYURCZG8wMzlfZ0RiZVJIYW9uNXJ6LTRlS2U2NThvcDc2c0ktY0ZZPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IuC4tGJsdWUiLCJmYW1pbHlfbmFtZSI6ImJ1cG9vbSIsImlhdCI6MTc1ODEyMDIyNCwiZXhwIjoxNzU4MTIzODI0fQ.RqvSYHwbr8bt2EXGX-D9DrLXr73Quo0mp3-4zgxIBz-x6hvBWuN-Zo0OjGqY1HsANN-3XgBlEOgntVox807vGk3VOyGo9Tr5N6sohB-VPQq7wVPaY08B5mnQJnQGUIXEcb_Y0AtpZ2_lMcW2C6mC7VTSUSwfsqGyk5b7ORG4hHuQHrgxaUqCXulFBAYer2jGUE1Xugq7-tznvRo3EArezd0zCneDK5lKRTr62NrdyaC27F3mBRhwKjZTXSahhld3gpIyqaxtNKJ6gPs8KbnTdXJoxsQ8U6QU9k4jMg0r5V2rxv3vEVirUwDSlFHLe9D2aK7a3ukllf3Tre2TfDIF2A"
         },
         ok: true
-        
       }
+
       console.log(' Response status:', response.status);
       console.log(' data:', response.body);
       
@@ -269,7 +269,7 @@ export const AuthService = {
       await AuthService.saveTokens({
         accessToken:  response.body.accessToken,
         refreshToken: response.body.refreshToken,
-        expiresAt: Date.now() + 5 * 60 * 1000 
+        expiresAt: Date.now() + 5 * 60 * 1000
       });
 
       // บันทึกข้อมูล user
