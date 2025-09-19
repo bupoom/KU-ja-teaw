@@ -1712,4 +1712,3 @@ export const mockGuideDetails: GuideDetails[] = [
     trip_id: 11
   }
 ];
-

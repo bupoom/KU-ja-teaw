@@ -271,8 +271,6 @@ const ProfileScreen: React.FC = () => {
                       end_date={item.end_date}
                       member_count={item.member_count}
                       status_planning={item.status_planning}
-                      owner_name={item.owner_name}
-                      owner_image={item.owner_image}
                       onPress={section.title === 'END' ? handleEndTripPress : undefined}
                     />
                   )}

@@ -10,34 +10,20 @@ interface TripBox {
   owner_image: string;
 } // เเสดงในหน้า home เเละ user profile ใช้สำหรับ invite ด้วย
 
-// interface TripDetails {
-//   trip_id: number;
-//   trip_name: string;
-//   trip_image: string;
-//   start_date: string;
-//   end_date: string;
-//   copies?: number;
-//   owner_name: string;
-//   owner_image: string;
-//   owner_email: string;
-//   group_members: number;
-//   budget?: number;
-//   note?: Note[]
-// }
-//  แก้ให้รวม flight ด้วย
-interface TripDetails{
+interface TripDetails {
   trip_id: number;
-  title: string;
-  joined_people: number;
-  start_date: string; // ใช้ ISO string
+  trip_name: string;
+  trip_image: string;
+  start_date: string;
   end_date: string;
-  budget: number;
-  poster_image_link: string;
-  owner_detail: UserDetail;
-  members_detail: UserDetail[];
-  flight_detail: FlightDetail[];
+  copies?: number;
+  owner_name: string;
+  owner_image: string;
+  owner_email: string;
+  group_members: number;
+  budget?: number;
+  note?: Note[]
 }
-
 
 interface CreateTrip {
   trip_name: string; 
@@ -61,36 +47,17 @@ interface Note {
   trip_id: number;
 } // เเสดงในหน้า daily trip, placeDetails ที่เชื่อมกับ activityPlaceBox , activityEventBox
 
-// interface Flight {
-//   id: number;
-//   departure_airport: string;
-//   arrival_airport: string;
-//   departure_date: string;
-//   arrival_date: string;
-//   airline: string;
-//   departure_country: string;
-//   arrival_country: string;
-//   trip_id: number;
-// } // เเสดงในหน้า daily trip, tripDetails, guideDetails
-// แก้ 
 interface Flight {
-  flight_id: number;
-  depart: {
-    dep_date: string;     // เช่น "18/11/3222"
-    dep_time: string;     // เช่น "00:39"
-    dep_country: string;
-    dep_airp_code: string;
-  };
-  arrive: {
-    arr_date: string;     // เช่น "31/10/6558"
-    arr_time: string;     // เช่น "20:45"
-    arr_country: string;
-    arr_airp_code: string;
-  };
-  airl_name: string;
-}
-
-
+  id: number;
+  departure_airport: string;
+  arrival_airport: string;
+  departure_date: string;
+  arrival_date: string;
+  airline: string;
+  departure_country: string;
+  arrival_country: string;
+  trip_id: number;
+} // เเสดงในหน้า daily trip, tripDetails, guideDetails
 
 interface FileGroup {
   id: number;
@@ -200,11 +167,9 @@ interface GuideBox {
   copies: number;
   owner_name: string;
   owner_image: string;
-  owner_comments: string;
   description?: string;
-  onRemove?: (id:number) => void;
   trip_id: number
-}
+} // เเสดงหน้า search ของ guide bookmark
 
 interface GuideDetails {
   id: number;

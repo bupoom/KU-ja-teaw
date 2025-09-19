@@ -4,8 +4,21 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { calculateDuration } from "@/util/calculateDuration";
 import { truncateText } from "@/util/truncateText";
 
+// Interface matching your latest mockData
+interface GuideBoxProps {
+  id: number;
+  title: string;
+  start_date: string;
+  end_date: string;
+  guide_image: string;
+  copies: number;
+  owner_name: string;
+  owner_image: string;
+  description?: string;
+  onRemove?: (id:number) => void;
+}
 
-const GuideBox: React.FC<GuideBox> = ({
+const GuideBox: React.FC<GuideBoxProps> = ({
   id,
   title,
   start_date,
@@ -14,7 +27,6 @@ const GuideBox: React.FC<GuideBox> = ({
   copies,
   owner_name,
   owner_image,
-  owner_comments,
   description,
   onRemove
 }) => {

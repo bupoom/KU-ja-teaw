@@ -25,7 +25,7 @@ const AuthScreen: React.FC = () => {
   
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
+      webClientId: "999598547228-cgjn9gspjg2d1m2m2q3rp277ovl58qhb.apps.googleusercontent.com",
       profileImageSize: 150,
       offlineAccess: true,
     });

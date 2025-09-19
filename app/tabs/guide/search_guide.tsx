@@ -14,20 +14,6 @@ import { useRouter } from 'expo-router';
 import GuideBox from '@/components/GuideBox';
 import { mockGuideBoxes } from '@/mock/mockDataComplete';
 
-// Import interfaces
-interface GuideBox {
-  id: number;
-  title: string;
-  start_date: string;
-  end_date: string;
-  guide_image: string;
-  copies: number;
-  owner_name: string;
-  owner_image: string;
-  owner_comments: string;
-  guide_id: number;
-}
-
 //  สิ่งที่ต้องแก้ไขเพิ่มเติมคือ
 //  - ใส่ API Function 
 //  - ใส่ routing ไปยัง dynamic page นั้นๆ
@@ -105,8 +91,8 @@ const SearchGuideScreen: React.FC = () => {
 
   // Handle navigation to GuideDetails screen
   const handleGuidePress = (guide: GuideBox) => {
-    router.push(`./guides/${guide.guide_id}`);
-    console.log('Navigate to guide details:', guide.guide_id);
+    router.push(`./guides/${guide.id}`);
+    console.log('Navigate to guide details:', guide.id);
   };
 
   return (

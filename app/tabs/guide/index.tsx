@@ -82,9 +82,8 @@ const GuideBookmarkScreen = () => {
             copies={item.copies}
             owner_name={item.owner_name}
             owner_image={item.owner_image}
-            owner_comments={item.owner_comments}
+            description={item.description}
             onRemove={handleRemoveGuides}
-            trip_id={item.trip_id}
           />
         )}
         keyExtractor={(item) => item.id.toString()}
