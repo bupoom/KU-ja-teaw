@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import { getBookmarkGuideList } from "@/service/APIserver/bookmarkService";
 
 const GuideBookmarkScreen = () => {
   const router = useRouter();
@@ -27,7 +26,7 @@ const GuideBookmarkScreen = () => {
     setRefreshing(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
-      const data = await getBookmarkGuideList();
+      ?
       setGuides(data);
     } catch (error) {
       console.error("Failed to load bookmark trips:", error);
