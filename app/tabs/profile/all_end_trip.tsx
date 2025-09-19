@@ -18,18 +18,6 @@ import { mockTripBoxes } from '@/mock/mockDataComplete';
 import { calculateTripStatus } from '@/util/calculateTripStatus';
 import Header from '@/components/Header';
 
-// Interface definitions
-interface TripBox {
-  trip_id: number;
-  trip_name: string;
-  trip_image: string;
-  start_date: string;
-  end_date: string;
-  member_count: number;
-  status_planning: 'planning' | 'completed';
-  owner_name: string;
-  owner_image: string;
-}
 
 const AllEndTripsScreen: React.FC = () => {
   const router = useRouter();
@@ -153,8 +141,6 @@ const AllEndTripsScreen: React.FC = () => {
                 end_date={item.end_date}
                 member_count={item.member_count}
                 status_planning={item.status_planning}
-                owner_name={item.owner_name}
-                owner_image={item.owner_image}
               />
             </TouchableOpacity>
           )}

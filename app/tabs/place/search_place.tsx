@@ -15,43 +15,6 @@ import { mockPlaceBoxes } from '@/mock/mockDataComplete';
 import { useRouter } from 'expo-router';
 
 
-// Import interfaces
-interface PlaceBox {
-  id: number;
-  title: string;
-  rating?: number;
-  review_count?: number;
-  location: string;
-  place_image?: string;
-  place_id?: number;
-}
-
-interface PlaceDetails {
-  id: number;
-  title: string;
-  description?: string;
-  rating?: number;
-  review_count?: number;
-  location: string;
-  place_image?: string;
-  categories?: string[];
-  map_link?: string;
-  official_link?: string;
-  notes?: Note[];
-}
-
-interface Note {
-  id: number;
-  note_text: string;
-  user_profile: string;
-  user_name: string;
-  is_editable: boolean;
-  reference_id?: number;
-  reference_type?: 'place' | 'event';
-  created_at: string;
-  trip_id: number;
-}
-
 //  สิ่งที่ต้องแก้ไขเพิ่มเติมคือ
 //  - ใส่ API Function 
 //  - ใส่ routing ไปยังหน้านั้นๆ

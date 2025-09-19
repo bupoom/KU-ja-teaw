@@ -22,27 +22,6 @@ import {
 } from '@/mock/mockDataComplete';
 import { calculateTripStatus } from '@/util/calculateTripStatus';
 
-// Interface definitions
-interface UserDetails {
-  id: number;
-  name: string;
-  phone: string;
-  user_image: string;
-  email: string;
-}
-
-interface TripBox {
-  trip_id: number;
-  trip_name: string;
-  trip_image: string;
-  start_date: string;
-  end_date: string;
-  member_count: number;
-  status_planning: 'planning' | 'completed';
-  owner_name: string;
-  owner_image: string;
-}
-
 interface TripSection {
   title: string;
   trips: TripBox[];
@@ -271,8 +250,6 @@ const ProfileScreen: React.FC = () => {
                       end_date={item.end_date}
                       member_count={item.member_count}
                       status_planning={item.status_planning}
-                      owner_name={item.owner_name}
-                      owner_image={item.owner_image}
                       onPress={section.title === 'END' ? handleEndTripPress : undefined}
                     />
                   )}

@@ -13,21 +13,11 @@ import { useRouter } from 'expo-router';
 import PlaceBox from '@/components/PlaceBox';
 import { mockBookmarkPlaces } from '@/mock/mockDataComplete';
 
-// Interface definition
-interface PlaceBoxData {
-  id: number;
-  title: string;
-  rating?: number;
-  review_count?: number;
-  location: string;
-  place_image?: string;
-  place_id?: number;
-}
 
 const PlaceScreen = () => {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
-  const [places, setPlaces] = useState<PlaceBoxData[]>(mockBookmarkPlaces);
+  const [places, setPlaces] = useState<PlaceBox[]>(mockBookmarkPlaces);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

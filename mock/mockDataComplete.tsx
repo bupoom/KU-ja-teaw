@@ -44,35 +44,6 @@ export const mockUserDetails: UserDetails[] = [
   }
 ];
 
-// 3. Create Trip Data
-export const mockCreateTripData: CreateTrip[] = [
-  {
-    trip_name: "Summer Adventure in Japan",
-    trip_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
-    start_date: "2025-07-15",
-    end_date: "2025-07-25",
-    trip_code: "JP2025SUM",
-    trip_password: "sakura123"
-  },
-  {
-    trip_name: "European Backpacking Tour",
-    trip_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
-    start_date: "2025-09-10",
-    end_date: "2025-09-30",
-    trip_code: "EU2025BCK",
-    trip_password: "europa456"
-  },
-  {
-    trip_name: "Thailand Beach Getaway",
-    trip_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    start_date: "2025-12-20",
-    end_date: "2025-12-28",
-    trip_code: "TH2025BCH",
-    trip_password: "beach789"
-  }
-];
-
-
 // 4. Flight Data
 // เพิ่ม Flight Data สำหรับ Guide Trips
 export const mockFlights: Flight[] = [
@@ -324,7 +295,7 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     email: "michael.chen@email.com",
     phone: "+1-555-0125",
-    role: "editer",
+    role: "owner",
     trip_id: 2 // European Backpacking Tour
   },
   {
@@ -342,7 +313,7 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     email: "david.wilson@email.com",
     phone: "+1-555-0127",
-    role: "viewer",
+    role: "owner",
     trip_id: 3 // Thailand Beach Getaway
   },
   {

@@ -14,20 +14,6 @@ import { useRouter } from "expo-router";
 import GuideBox from "@/components/GuideBox";
 import { mockGuideBoxes } from "@/mock/mockDataComplete";
 
-// Import interfaces
-interface GuideBox {
-  id: number;
-  title: string;
-  start_date: string;
-  end_date: string;
-  guide_image: string;
-  copies: number;
-  owner_name: string;
-  owner_image: string;
-  owner_comments: string;
-  trip_id: number;
-}
-
 const GuideBookmarkScreen = () => {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
@@ -87,7 +73,7 @@ const GuideBookmarkScreen = () => {
             copies={item.copies}
             owner_name={item.owner_name}
             owner_image={item.owner_image}
-            owner_comments={item.owner_comments}
+            description={item.description}
             onRemove={handleRemoveGuides}
           />
         )}

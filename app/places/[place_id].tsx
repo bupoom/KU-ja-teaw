@@ -16,19 +16,6 @@ import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function placeDetail() {
-  interface PlaceDetails {
-    id: number;
-    title: string;
-    description?: string;
-    rating?: number;
-    review_count?: number;
-    location: string;
-    place_image?: string;
-    categories?: string[];
-    map_link?: string;
-    official_link?: string;
-    notes?: Note[];
-  }
 
   const { place_id } = useLocalSearchParams();
   const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();

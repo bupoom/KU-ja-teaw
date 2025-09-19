@@ -22,40 +22,6 @@ import {
   mockGuideBoxes 
 } from "@/mock/mockDataComplete";
 
-// Import interfaces
-interface TripBox {
-  trip_id: number;
-  trip_name: string;
-  trip_image: string;
-  start_date: string;
-  end_date: string;
-  member_count: number;
-  status_planning: 'planning' | 'completed';
-  owner_name: string;
-  owner_image: string;
-}
-
-interface GuideBox {
-  id: number;
-  title: string;
-  start_date: string;
-  end_date: string;
-  guide_image: string;
-  copies: number;
-  owner_name: string;
-  owner_image: string;
-  description?: string;
-  trip_id: number;
-}
-
-interface LoadingState {
-  currentTrip: boolean;
-  invitations: boolean;
-  places: boolean;
-  guidePlans: boolean;
-  refreshing: boolean;
-}
-
 export default function HomeScreen(): JSX.Element {
   // State Management
   const [currentTrip, setCurrentTrip] = useState<TripBox | null>(null);

@@ -16,8 +16,6 @@ interface TripBoxProps {
   end_date: string; // YYYY-MM-DD format
   member_count: number;
   status_planning: "planning" | "completed";
-  owner_name: string;
-  owner_image: string;
   onPress?: (trip_id: number) => void; // Optional custom navigation function
 }
 
@@ -29,8 +27,6 @@ const TripBox: React.FC<TripBoxProps> = ({
   end_date,
   member_count,
   status_planning,
-  owner_name,
-  owner_image,
   onPress, // Receive custom navigation function
 }) => {
   const pathname = usePathname();

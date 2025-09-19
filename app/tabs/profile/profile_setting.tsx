@@ -19,14 +19,6 @@ import Header from "@/components/Header";
 import { mockUserDetails } from "@/mock/mockDataComplete";
 import { Foundation } from "@expo/vector-icons";
 
-interface UserDetails {
-  id: number;
-  name: string;
-  phone: string;
-  user_image: string;
-  email: string;
-}
-
 const AccountScreen: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState<UserDetails | null>(null);

@@ -27,45 +27,8 @@ export default function SetTripCode() {
       Alert.alert("Missing password", "Please enter a password to continue.");
       return;
     }
-
     setSubmitting(true);
-    // try {
-    //   const formData = new FormData();
-    //   formData.append("name", name);
-    //   formData.append("startDate", start ?? "");
-    //   formData.append("endDate", end ?? "");
-    //   formData.append("password", password);
-    //   formData.append("tripCode", tripCode);
-
-    //   if (posterUri) {
-    //     const ext = posterUri.split(".").pop()?.toLowerCase() || "jpg";
-    //     const mimeType = ext === "png" ? "image/png" : "image/jpeg";
-    //     formData.append("poster", {
-    //       uri: posterUri,
-    //       name: `poster.${ext}`,
-    //       type: mimeType,
-    //     } as any);
-    //   }
-
-    //   const res = await fetch("https://api.example.com/plans", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //     body: formData,
-    //   });
-
-    //   if (!res.ok) throw new Error("Failed to create plan");
-
-    //   const data = await res.json();
-    //   const planId = String(data.plan_id);
-
       router.replace(`/plan/${password}`);
-    // } catch (e) {
-    //   Alert.alert("Error", (e as Error).message);
-    // } finally {
-    //   setSubmitting(false);
-    // }
   };
 
   return (
