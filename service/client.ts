@@ -4,11 +4,8 @@ import { AuthService } from "./authService";
 const localhost_URL = "http://10.0.2.2:3000" // localhost for dev
 
 const client = axios.create({
-    baseURL: process.env.EXPO_PUBLIC_API_URL || localhost_URL,
-    timeout: 10000,
-    headers: {
-        "Content-Type": "application/json",
-    },
+    baseURL: localhost_URL,
+    timeout: 10000
 });
 
 // Request interceptor - เปลี่ยน header ตาม accesstoken

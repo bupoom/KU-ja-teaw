@@ -60,3 +60,9 @@ interface Weather {
     date: string;
     weather_code: keyof typeof weatherCode; // 0–7
 }
+
+interface ImageFile {
+    uri: string;
+    type: string;
+    name: string;
+}

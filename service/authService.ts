@@ -24,6 +24,10 @@ const REFRESH_TOKEN_KEY = "refreshToken";
 const USER_DATA_KEY = "userData";
 const TOKEN_EXPIRES_KEY = "tokenExpires";
 
+// ******************************
+const NO_SERVER_WHILE_DEV = true;
+// ******************************
+
 export const AuthService = {
     saveTokens: async (tokenData: TokenData): Promise<void> => {
         try {
@@ -193,33 +197,27 @@ export const AuthService = {
         try {
             console.log("🔄 Starting API login at SERVER");
             const URL = "http://10.0.2.2:3000/api/users/login";
-            
-            let response: any;
+
             let data: any;
-            
-            if (process.env.NO_SERVER_WHILE_DEV) {
-                // Mock response for development
+            let newUser = false;
+
+            if (NO_SERVER_WHILE_DEV) {
+                // Mock response
                 data = {
                     name: "OSHI",
                     phone: "OSHI_PHONE",
                     email: "OSHI@gmail.com",
                     user_id: "OSHI",
-                    profile_picture_link: "https://ih1.redbubble.net/image.5300710362.9150/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg",
-                    token: {
-                        Access_token: "mock_access_token_here",
-                        Refresh_token: "mock_refresh_token_here",
-                    },
+                    profile_picture_link:
+                        "https://ih1.redbubble.net/image.5300710362.9150/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg",
+                    Access_token: "mock_access_token_here",
+                    Refresh_token: "mock_refresh_token_here",
                 };
-                
-                response = {
-                    status: 201, // 200: existing user, 201: new user
-                    ok: true,
-                };
-                
+                newUser = true;
                 console.log("📄 Using mock data for development");
             } else {
                 // Real API call
-                response = await fetch(URL, {
+                const response = await fetch(URL, {
                     method: "POST",
                     headers: {
                         accept: "application/json",
@@ -229,37 +227,27 @@ export const AuthService = {
                         idToken: googleIdToken,
                     }),
                 });
-                
-                console.log("📊 Response status:", response.status);
-                
-                if (!response.ok) {
-                    throw new Error("Login failed");
-                }
-                
-                data = await response.json();
-                console.log("📄 Response data received");
-            }
 
-            // Determine if user is new
-            let newUser = false;
-            switch (response.status) {
-                case 200:
-                    newUser = false;
-                    break;
-                case 201:
-                    newUser = true;
-                    break;
-                default:
-                    console.log("Unexpected status:", response.status);
+                console.log("📊 Response status:", response.status);
+
+                if (!response.ok) {
+                    throw new Error(`Login failed: ${response.statusText}`);
+                }
+
+                data = await response.json();
+                console.log("📄 Response data received" , data);
+
+                newUser = response.status === 201;
             }
 
             const DaysBeforeExpires = 5;
-            
-            // Save tokens
+
+            // ✅ Save tokens - ใช้โครงสร้างเดียวกัน
             await AuthService.saveTokens({
-                accessToken: data.token.Access_token,
-                refreshToken: data.token.Refresh_token,
-                expiresAt: Date.now() + DaysBeforeExpires * (24 * 60 * 60 * 1000),
+                accessToken: data.Access_token,
+                refreshToken: data.Refresh_token,
+                expiresAt:
+                    Date.now() + DaysBeforeExpires * (24 * 60 * 60 * 1000),
             });
 
             // Save user data
@@ -270,13 +258,12 @@ export const AuthService = {
                 profile_picture_link: data.profile_picture_link,
                 email: data.email,
             };
-            
+
             await AuthService.saveUserData(userData);
 
             return { success: true, user: userData, newUser: newUser };
-            
         } catch (error) {
-            console.error("❌ Login error:", error);
+            console.error("Login error:", error);
             return { success: false };
         }
     },

@@ -13,20 +13,30 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-// import { API_CONFIG } from '@/service/serverAPI';
 import { updateUserDetails } from "@/service/APIserver/userService";
+import * as ImagePicker from "expo-image-picker";
+
+// ✅ เพิ่ม interface สำหรับรูปภาพ
+interface ImageFile {
+    uri: string;
+    type: string;
+    name: string;
+}
+
 const ProfileSetupScreen = () => {
     const router = useRouter();
-    // รับ parameters ที่ส่งมาจากหน้า Auth
     const { userName, userEmail, userPhoto } = useLocalSearchParams<{
         userName?: string;
         userEmail?: string;
         userPhoto?: string;
     }>();
-    const [username, setUsername] = useState("");
+    
+    const [username, setUsername] = useState(userName || ""); // ✅ ใช้ค่าจาก Google เป็นค่าเริ่มต้น
     const [phoneNumber, setPhoneNumber] = useState("");
     const [agreedToPolicies, setAgreedToPolicies] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [profileImage, setProfileImage] = useState<string>(userPhoto || ""); // ✅ ใช้รูปจาก Google
+    const [selectedImageFile, setSelectedImageFile] = useState<ImageFile | null>(null); // ✅ เพิ่ม state สำหรับไฟล์
 
     const validatePhone = (text: string) => {
         const cleaned = text.replace(/[\s-\.]/g, "");
@@ -37,18 +47,56 @@ const ProfileSetupScreen = () => {
         return "";
     };
 
+    const requestPermissions = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+            Alert.alert(
+                "Permission Required",
+                "Sorry, we need camera roll permissions to change your profile picture."
+            );
+            return false;
+        }
+        return true;
+    };
+
+    const pickImage = async () => {
+        const hasPermission = await requestPermissions();
+        if (!hasPermission) return;
+
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+            });
+
+            if (!result.canceled && result.assets[0]) {
+                const asset = result.assets[0];
+                setProfileImage(asset.uri);
+                
+                // ✅ เก็บข้อมูลไฟล์สำหรับส่ง API
+                setSelectedImageFile({
+                    uri: asset.uri,
+                    type: 'image/jpeg',
+                    name: `profile_${Date.now()}.jpg`,
+                });
+            }
+        } catch (error) {
+            Alert.alert("Error", "Failed to pick image");
+            console.error("Error picking image:", error);
+        }
+    };
+
     const handleGetStart = async () => {
         const errorPhoneNumber = validatePhone(phoneNumber);
         if (!username.trim()) {
             Alert.alert("Error", "Please enter your username");
             return;
         }
-
         if (errorPhoneNumber) {
             Alert.alert("Error", errorPhoneNumber);
             return;
         }
-
         if (!agreedToPolicies) {
             Alert.alert(
                 "Error",
@@ -58,12 +106,25 @@ const ProfileSetupScreen = () => {
         }
 
         try {
-            const respose = await updateUserDetails(username, phoneNumber, "#"); // ในอนาคตอย่าลืม
-            console.log("Sending user data:", respose);
-            Alert.alert("signin-completely");
-            router.push("/tabs/(home)");
+            console.log("🔄 Updating user profile...");
+            
+            // ✅ ส่งรูปภาพที่เลือกไปด้วย (ถ้ามี)
+            const response = await updateUserDetails(
+                username.trim(), 
+                phoneNumber.trim(), 
+                selectedImageFile || undefined // ส่งรูปที่เลือกใหม่ หรือ undefined ถ้าไม่เลือก
+            );
+            
+            console.log("✅ Profile updated successfully:", response);
+            Alert.alert("Success", "Profile setup completed!", [
+                {
+                    text: "OK",
+                    onPress: () => router.push("/tabs/(home)")
+                }
+            ]);
+            
         } catch (error) {
-            console.error("Registration error:", error);
+            console.error("❌ Registration error:", error);
             Alert.alert("Error", "Network error. Please try again.");
         }
     };
@@ -78,7 +139,7 @@ const ProfileSetupScreen = () => {
                     Set up your profile
                 </Text>
 
-                {/* แสดงข้อมูลจาก Google (สำหรับ debug) */}
+                {/* แสดงข้อมูลจาก Google */}
                 {userName && (
                     <View className="mb-4 p-4 bg-gray-100 rounded-lg">
                         <Text className="text-sm text-gray-600">
@@ -93,21 +154,34 @@ const ProfileSetupScreen = () => {
                 {/* Profile Avatar */}
                 <View className="items-center mb-12">
                     <View className="relative">
-                        {userPhoto ? (
+                        {profileImage ? (
                             <Image
-                                source={{ uri: userPhoto }}
+                                source={{ uri: profileImage }}
                                 className="w-48 h-48 rounded-full"
                                 style={{ width: 192, height: 192 }}
+                                // ✅ เพิ่ม fallback กรณีโหลดรูปไม่ได้
+                                defaultSource={{ uri: 'https://via.placeholder.com/192x192/0f766e/ffffff?text=User' }}
                             />
                         ) : (
                             <View className="w-48 h-48 rounded-full bg-teal-900 items-center justify-center">
                                 <Feather name="user" size={120} color="white" />
                             </View>
                         )}
+                        
                         {/* Edit icon */}
-                        <TouchableOpacity className="absolute bottom-3 right-2 w-10 h-10 rounded-full bg-gray-600 items-center justify-center border-2 border-white">
+                        <TouchableOpacity
+                            className="absolute bottom-3 right-2 w-10 h-10 rounded-full bg-gray-600 items-center justify-center border-2 border-white"
+                            onPress={pickImage}
+                        >
                             <Feather name="edit-2" size={14} color="white" />
                         </TouchableOpacity>
+                        
+                        {/* ✅ แสดง indicator ว่าเลือกรูปใหม่แล้ว */}
+                        {selectedImageFile && (
+                            <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 items-center justify-center">
+                                <Feather name="check" size={12} color="white" />
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -134,7 +208,7 @@ const ProfileSetupScreen = () => {
                     <View>
                         <TextInput
                             className="w-full px-4 py-4 border border-gray-200 rounded-xl text-xl text-gray-900 mt-6"
-                            placeholder="PhoneNumber"
+                            placeholder="Phone Number"
                             placeholderTextColor="#9CA3AF"
                             value={phoneNumber}
                             onChangeText={setPhoneNumber}
@@ -160,7 +234,7 @@ const ProfileSetupScreen = () => {
                     }
                 >
                     <Text className="text-center text-white text-2xl font-semibold">
-                        Get Start
+                        Get Started
                     </Text>
                 </TouchableOpacity>
 
@@ -188,25 +262,23 @@ const ProfileSetupScreen = () => {
                         you have agree to our{" "}
                         <Text
                             className="text-blue-500 underline"
-                            onPress={() => {
-                                setModalVisible(true);
-                            }}
+                            onPress={() => setModalVisible(true)}
                         >
                             policies
                         </Text>
                     </Text>
                 </View>
 
-                {/* Modal for Policies */}
+                {/* Modal for Policies - เหมือนเดิม */}
                 <Modal
                     visible={modalVisible}
                     animationType="slide"
                     presentationStyle="pageSheet"
                     onRequestClose={() => setModalVisible(false)}
                 >
+                    {/* Modal content เหมือนเดิม... */}
                     <SafeAreaView className="flex-1 bg-white">
                         <View className="flex-1">
-                            {/* Modal Header */}
                             <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
                                 <Text className="text-xl font-bold text-gray-800">
                                     ข้อตกลงและเงื่อนไข
@@ -215,16 +287,12 @@ const ProfileSetupScreen = () => {
                                     onPress={() => setModalVisible(false)}
                                     className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
                                 >
-                                    <Feather
-                                        name="x"
-                                        size={20}
-                                        color="#374151"
-                                    />
+                                    <Feather name="x" size={20} color="#374151" />
                                 </TouchableOpacity>
                             </View>
 
-                            {/* Modal Content */}
                             <ScrollView className="flex-1 px-6 py-4">
+                                {/* Terms content... */}
                                 <Text className="text-lg font-semibold text-gray-800 mb-4">
                                     1. การยอมรับข้อตกลง
                                 </Text>
@@ -279,9 +347,9 @@ const ProfileSetupScreen = () => {
                                 <Text className="text-sm text-gray-500 text-center mb-6">
                                     อัปเดตล่าสุด: 4 กันยายน 2568
                                 </Text>
+                                {/* ... rest of terms ... */}
                             </ScrollView>
 
-                            {/* Modal Footer */}
                             <View className="px-6 pb-8 pt-4 border-t border-gray-200">
                                 <TouchableOpacity
                                     className="w-full py-4 bg-blue-500 rounded-xl"

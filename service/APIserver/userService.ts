@@ -1,36 +1,56 @@
 import client from "../client";
 
 const endpoints = {
-  auth: {
+  user: {
     getUserDetailById: "/api/users",
     updateUserDetails: "/api/users",
     getUserInvited: "/api/users/invited",
-  }
+  },
 };
 
-// export const updateUserDetails = async (username: string, phone: string, profile: File) => {
-export const updateUserDetails = async (username: string, phone: string, profile: string) => {
-    try {
-
+// =======================
+// PATCH: อัปเดต user details
+// =======================
+export const updateUserDetails = async (data: {
+  selectedImageFile?: string; // local uri ของรูป
+  username: string;
+  phoneNumber?: string;
+}) => {
+  try {
     const formData = new FormData();
-    formData.append("name", username);
-    formData.append("phone", phone);
-    formData.append("profile", profile);
 
-    const response = await client.patch(endpoints.auth.updateUserDetails, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    // ถ้ามีรูป ให้ append
+    if (data.selectedImageFile) {
+      formData.append("image", {
+        uri: data.selectedImageFile,
+        name: "photo.png",
+        type: "image/png",
+      } as any);
+    }
+
+    formData.append("name", data.username);
+    if (data.phoneNumber) formData.append("phone", data.phoneNumber);
+
+    const response = await client.patch(
+      endpoints.user.updateUserDetails,
+      formData);
 
     return response.data;
   } catch (error) {
-    console.error("Error updating data:", error);
+    console.error("Update user error:", error);
     throw error;
   }
 };
 
-
-export const getUserDetailById = async  (userId:string ) => {
-  
-}
+// =======================
+// GET: ดึง user details
+// =======================
+export const getUserDetails = async (): Promise<any> => {
+  try {
+    const response = await client.get(endpoints.user.getUserDetailById);
+    return response.data;
+  } catch (error) {
+    console.error("Error getting user details:", error);
+    throw error;
+  }
+};
