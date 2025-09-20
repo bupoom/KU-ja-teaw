@@ -5,7 +5,7 @@ import RoleTag from "./RoleTag";
 interface MemberBoxEndProps {
   user_name: string;
   user_image: string;
-  role: 'owner' | 'editer' | 'viewer'; // เพิ่ม type safety
+  role: 'owner' | 'editor' | 'viewer'; // เพิ่ม type safety
   phone?: string;
   email: string;
 }

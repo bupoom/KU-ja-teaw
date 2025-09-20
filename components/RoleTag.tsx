@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 
 interface RoleTagProps {
-  role: 'owner' | 'editer' | 'viewer';
+  role: 'owner' | 'editor' | 'viewer';
   onPress?: () => void;
   className?: string;
 }

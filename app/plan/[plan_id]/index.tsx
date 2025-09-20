@@ -10,13 +10,15 @@ import {
   Alert,
 } from "react-native";
 import { usePathname, useLocalSearchParams } from "expo-router";
+import * as DocumentPicker from "expo-document-picker"; // เปิดไฟล์จากเครื่อง
+import * as FileSystem from "expo-file-system"; // โหลดไฟล์ลงเครื่อง
+import * as IntentLauncher from "expo-intent-launcher"; // เอาไว้เปิดไฟล์
 import { useEffect, useState } from "react";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import Feather from "@expo/vector-icons/Feather";
 
-import { mockTripDetails } from "@/mock/mockDataComplete";
 import { mockNotes } from "@/mock/mockDataComplete";
 import { mockFileGroups } from "@/mock/mockDataComplete";
 import { mockFlights } from "@/mock/mockDataComplete";
@@ -33,6 +35,9 @@ const index = () => {
 
   // State management
   const [userRole, setUserRole] = useState<string>("");
+  const [userName, setUserName] = useState<string>(""); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
+  const [userUrl, setUserUrl] = useState<string>("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop"); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
+  const canEdit = userRole === "owner" || userRole === "editor"; // เอาไว้เช็คเงื่อนไข ว่าเเก้ไขได้ไหม
 
   // Note State
   const [overviewNotes, setOverviewNotes] = useState<Note[]>([]); // Note ทั้งหมด ในหน้า Overview
@@ -63,7 +68,11 @@ const index = () => {
   const [showArrivalDate, setShowArrivalDate] = useState(false);
   const [showArrivalTime, setShowArrivalTime] = useState(false);
 
-  const canEdit = userRole === "owner" || userRole === "editor"; // เอาไว้เช็คเงื่อนไข ว่าเเก้ไขได้ไหม
+  // File State
+  const [file, setFileGroup] = useState<FileGroup[]>([]);
+  const [isShowFile, setIsShowFile] = useState(true); // บอกว่าตอนนี้ชะโชว์ file หรือจะซ่อนไว้
+  const [isFileModalVisible, setIsFileModalVisible] = useState(false); // Modal สำหรับ upload file
+  const [selectedFile, setSelectedFile] = useState<any | null>(null); // เก็บไฟล์ที่เลือกไว้ก่อน confirm
 
   useEffect(() => {
     if (plan_id) {
@@ -74,6 +83,8 @@ const index = () => {
       );
       if (memberData) {
         setUserRole(memberData.role);
+        setUserName(memberData.name);
+        setUserUrl(memberData.user_image);
       }
 
       // Fetch overview notes
@@ -89,10 +100,16 @@ const index = () => {
         (flight) => flight.trip_id == parseInt(plan_id)
       );
       setFlights(flightData);
+
+      // Fetch File
+      const fileData = mockFileGroups.filter(
+        (file) => file.trip_id == parseInt(plan_id)
+      );
+      setFileGroup(fileData);
+
       console.log(`Current Path : ${pathName}`);
       console.log(`Plan Id : ${plan_id}`);
       console.log(`User Id : ${user_id} => Role : ${memberData?.role}`);
-      console.log(notes);
     }
   }, [plan_id]);
 
@@ -105,6 +122,23 @@ const index = () => {
   const commentNotes = overviewNotes.filter(
     (note) => note.refer_user_id !== user_id
   ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ไม่ตรง กับ user_id เรา
+
+  const handleAddNote = () => {
+    const newNote: Note = {
+      id: Math.max(...overviewNotes.map((n) => n.id), 0) + 1,
+      trip_id: parseInt(plan_id!),
+      refer_user_id: user_id,
+      reference_type: "overview",
+      note_text: "",
+      user_name: userName || "You",
+      user_profile: userUrl,
+      is_editable: true,
+      created_at: new Date().toISOString(), // current timestamp
+    };
+    setOverviewNotes((prev) => [...prev, newNote]);
+    setEditingNoteId(newNote.id);
+    setEditText("");
+  };
 
   const handleEditNote = (note: Note) => {
     if (note.refer_user_id === user_id) {
@@ -129,6 +163,7 @@ const index = () => {
   };
 
   // Flight management functions
+
   const resetFlightForm = () => {
     setFlightForm({
       departure_date: "",
@@ -280,6 +315,112 @@ const index = () => {
     return true;
   };
 
+  // File management functions
+
+  const formatFileSize = (sizeInMB: number) => {
+    if (sizeInMB < 1) {
+      return `${Math.round(sizeInMB * 1000)}KB`;
+    }
+    return `${sizeInMB.toFixed(1)}MB`;
+  };
+
+  const calculateTotalSize = () => {
+    const totalMB = file.reduce((sum, file) => sum + file.file_size_mb, 0);
+    return {
+      display: formatFileSize(totalMB), // สำหรับแสดงผล
+      value: totalMB, // สำหรับเปรียบเทียบ
+    };
+  };
+
+  const formatUploadDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear().toString().slice(-2)}`;
+  };
+
+  const handleDownloadFile = async (file: FileGroup) => {
+    try {
+      let localUri = "";
+
+      if (file.file_url.startsWith("http")) {
+        // ถ้าเป็นไฟล์ออนไลน์ → โหลดมาเก็บ local ก่อน
+        const fileUri = FileSystem.documentDirectory + file.file_name;
+        const downloadResumable = await FileSystem.downloadAsync(
+          file.file_url,
+          fileUri
+        );
+        localUri = downloadResumable.uri;
+      } else if (file.file_url.startsWith("file")) {
+        // ถ้าเป็น local file → ใช้ตรงๆ
+        localUri = file.file_url;
+      } else {
+        throw new Error("Unsupported file path");
+      }
+
+      console.log("Ready to open:", localUri);
+
+      const cUri = await FileSystem.getContentUriAsync(localUri);
+      await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+        data: cUri,
+        flags: 1,
+      });
+    } catch (error) {
+      console.error("Download error:", error);
+      Alert.alert("Error", "Failed to open file.");
+    }
+  };
+
+  const handleDeleteFile = (fileId: number) => {
+    Alert.alert("Delete File", "Are you sure you want to delete this file?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          setFileGroup((prev) => prev.filter((file) => file.id !== fileId));
+        },
+      },
+    ]);
+  };
+
+  const handleUploadFile = async () => {
+    if (canEdit) {
+      const result = await DocumentPicker.getDocumentAsync({});
+      if (result.canceled) return;
+
+      const picked = result.assets[0];
+      setSelectedFile({
+        uri: picked.uri,
+        name: picked.name,
+        size: picked.size ?? 0,
+        mimeType: picked.mimeType ?? "unknown",
+      });
+    }
+  };
+
+  const handleConfirmUpload = () => {
+    if (!selectedFile) {
+      Alert.alert("No File", "Please select a file before confirming.");
+      return;
+    }
+
+    const newFile: FileGroup = {
+      id: Math.max(...file.map((f) => f.id), 0) + 1,
+      file_name: selectedFile.name,
+      file_size_mb: selectedFile.size / (1024 * 1024), // แปลง byte → MB
+      file_url: selectedFile.uri,
+      uploaded_by: "You",
+      uploaded_date: new Date().toISOString(),
+      trip_id: parseInt(plan_id!),
+    };
+
+    setFileGroup((prev) => [...prev, newFile]);
+    setSelectedFile(null);
+    setIsFileModalVisible(false);
+  };
+
   // render items
 
   const renderNoteItem = (note: Note) => (
@@ -381,11 +522,66 @@ const index = () => {
     </TouchableOpacity>
   );
 
+  const renderFileItem = (fileItem: FileGroup) => (
+    <View
+      key={fileItem.id}
+      className="flex-row items-center py-3 border-b border-gray-100 last:border-b-0"
+    >
+      {/* File Name */}
+      <View className="flex-1 mr-3">
+        <Text className="text-sm font-medium text-gray-900 mb-1">
+          {fileItem.file_name}
+        </Text>
+        <Text className="text-xs text-gray-500">
+          {formatFileSize(fileItem.file_size_mb)}
+        </Text>
+      </View>
+
+      {/* Uploaded By */}
+      <View className="w-16 mr-3">
+        <Text className="text-xs text-gray-600 text-center">
+          {fileItem.uploaded_by}
+        </Text>
+      </View>
+
+      {/* Upload Date */}
+      <View className="w-16 mr-3">
+        <Text className="text-xs text-gray-600 text-center">
+          {formatUploadDate(fileItem.uploaded_date)}
+        </Text>
+      </View>
+
+      {/* Download Button */}
+      <TouchableOpacity
+        onPress={() => handleDownloadFile(fileItem)}
+        className="mr-2 p-1"
+      >
+        <Feather name="download" size={16} color="#6B7280" />
+      </TouchableOpacity>
+
+      {/* Delete Button - only show for file owner or editors */}
+      {canEdit && (
+        <TouchableOpacity
+          onPress={() => handleDeleteFile(fileItem.id)}
+          className="p-1"
+        >
+          <Feather name="trash-2" size={16} color="#EF4444" />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
   return (
     <View className="flex-1 bg-white">
-      <PlanHeader planId={plan_id!} />
+      <PlanHeader planId={plan_id!}/>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 50,
+        }}
+      >
         {/* Notes Section */}
         <View className="mx-4 mt-4 bg-white">
           {/* Notes Header */}
@@ -405,10 +601,32 @@ const index = () => {
           {/* Notes Content */}
           <View className="pb-4">
             {userNotes.length === 0 ? (
-              <View className="bg-gray-50 rounded-lg p-4">
-                <Text className="text-gray-500 text-center">
-                  You have no notes yet
-                </Text>
+              <View className="flex-col justify-center">
+                <View className="bg-white rounded-lg p-4 border border-gray_border">
+                  <View className="flex-row items-start">
+                    <Image
+                      source={{ uri: userUrl }}
+                      className="w-8 h-8 rounded-full mr-3"
+                    />
+                    <View className="flex-1">
+                      <Text className="font-medium text-gray-900 text-sm mb-1">
+                        {userName}
+                      </Text>
+                      <Text className="text-gray-500 text-sm">
+                        You have no notes yet
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  onPress={handleAddNote}
+                  className="bg-green_2 rounded-lg py-3 mt-3"
+                >
+                  <Text className="text-white text-center font-medium">
+                    Add Note
+                  </Text>
+                </TouchableOpacity>
               </View>
             ) : (
               userNotes.map((note) => renderNoteItem(note))
@@ -462,17 +680,81 @@ const index = () => {
 
         {/* Group File Section */}
         <View className="mx-4 mt-6 bg-white">
-          <TouchableOpacity className="flex-row items-center justify-between py-4">
-            <Text className="text-xl font-bold text-black ml-6">
+          <TouchableOpacity
+            className="flex-row items-center justify-between py-4"
+            onPress={() => setIsShowFile(!isShowFile)}
+          >
+            <Text className="text-xl font-bold text-black ml-4">
               Group File
             </Text>
-            <Feather name="chevron-down" size={24} color="#000" />
+            <Feather
+              name={isShowFile ? "chevron-down" : "chevron-up"}
+              size={24}
+              color="#000"
+            />
           </TouchableOpacity>
-          <View className="pb-4">
-            <View className="bg-gray-50 rounded-lg p-4">
-              <Text className="text-gray-500 text-center">Coming soon...</Text>
+
+          {isShowFile && (
+            <View className="pb-4">
+              {file.length === 0 ? (
+                <View className="bg-gray-50 rounded-lg p-4">
+                  <Text className="text-gray-500 text-center">
+                    No files uploaded yet
+                  </Text>
+                </View>
+              ) : (
+                <View className="bg-white rounded-lg border border-gray-200 p-4">
+                  {/* Table Header */}
+                  <View className="flex-row items-center py-2 border-b border-gray_border mb-2">
+                    <View className="flex-1 justify-center items-center">
+                      <Text className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                        File Name
+                      </Text>
+                    </View>
+                    <View className="w-16">
+                      <Text className="text-xs font-semibold text-gray-600 uppercase tracking-wide text-center">
+                        Up Load
+                      </Text>
+                    </View>
+                    <View className="w-16">
+                      <Text className="text-xs font-semibold text-gray-600 uppercase tracking-wide text-center">
+                        Date
+                      </Text>
+                    </View>
+                    <View className="w-18">
+                      <Text className="text-xs font-semibold text-gray-600 uppercase tracking-wide text-center">
+                        Download
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* File List */}
+                  {file.map((fileItem) => renderFileItem(fileItem))}
+
+                  {/* File Size Summary */}
+                  <View className="flex-row justify-end mt-3 pt-2 border-t border-gray-100">
+                    <Text className="text-xs text-gray-500">
+                      Size: {calculateTotalSize().display}
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              {/* Upload File Button - only show for owner/editor */}
+              {canEdit && calculateTotalSize().value < 49 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsFileModalVisible(true);
+                  }}
+                  className="bg-green_2 rounded-lg py-3 mt-3 mx-4"
+                >
+                  <Text className="text-white text-center font-medium">
+                    Upload File
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
-          </View>
+          )}
         </View>
       </ScrollView>
 
@@ -756,6 +1038,72 @@ const index = () => {
               </TouchableOpacity>
             )}
           </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* File Upload Modal */}
+      <Modal
+        visible={isFileModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SafeAreaView className="flex-1 bg-white">
+          {/* Modal Header */}
+          <View className="flex-row items-center justify-center p-4 border-b border-gray-200 relative">
+            <Text className="text-lg font-semibold text-gray-900">
+              Upload File
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setIsFileModalVisible(false);
+                setSelectedFile(null);
+              }}
+              className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center absolute top-4 right-4"
+            >
+              <Feather name="x" size={20} color="#6B7280" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Modal Content */}
+          <View className="flex-1 p-4">
+            <TouchableOpacity onPress={handleUploadFile}>
+              <View className="bg-gray-50 rounded-lg p-8 items-center justify-center mb-6">
+                <Feather
+                  name="upload-cloud"
+                  size={48}
+                  color="#6B7280"
+                  className="mb-4"
+                />
+                <Text className="text-gray-500 text-center mb-2">
+                  {selectedFile ? selectedFile.name : "Select files to upload"}
+                </Text>
+                {selectedFile && (
+                  <Text className="text-xs text-gray-400 text-center">
+                    {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                  </Text>
+                )}
+                {!selectedFile && (
+                  <>
+                    <Text className="text-xs text-gray-400 text-center">
+                      Supported formats: PDF, DOC, DOCX, JPG, PNG
+                    </Text>
+                    <Text className="text-xs text-gray-400 text-center">
+                      Overall Maximum file size: 50MB
+                    </Text>
+                  </>
+                )}
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleConfirmUpload}
+              className="bg-green_2 rounded-lg py-4"
+            >
+              <Text className="text-white text-center font-medium text-lg">
+                Confirm Upload
+              </Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
       </Modal>
     </View>

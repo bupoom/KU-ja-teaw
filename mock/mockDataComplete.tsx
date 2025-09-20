@@ -1671,6 +1671,9 @@ export const mockTripDetails: TripDetails[] = mockTripBoxes.map(trip => ({
   owner_image: trip.owner_image,
   owner_email: `${trip.owner_name.toLowerCase().replace(" ", ".")}@example.com`,
   group_members: trip.member_count,
+  status_plan: trip.status_planning,
+  trip_code: "PoomJaTaiLai",
+  trip_password: "WTF",
   budget: 1000 + trip.trip_id * 200, // mock budget
   note: mockNotes.filter(n => n.trip_id === trip.trip_id)
 }));

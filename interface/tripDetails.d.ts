@@ -9,6 +9,9 @@ interface TripDetails {
   owner_image: string;
   owner_email: string;
   group_members: number;
+  status_plan: string;
+  trip_password: string;
+  trip_code: string;
   budget?: number;
   note?: Note[]
 }
