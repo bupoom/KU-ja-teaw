@@ -5,9 +5,9 @@ frontend
 
 API problem
 1. กุ login ไม่ได้
-2.  /api/trips/by-user ไม่มี status ว่าอันไหน เสร็จแล้ว  => เช็คว่าเลยวันที่ จบ trips แล้วรึยัง
+2. /api/trips/by-user ไม่มี status ว่าอันไหน เสร็จแล้ว  => เช็คว่าเลยวันที่ จบ trips แล้วรึยัง
 3. ในหน้า home ต้องการ trips แนะนำ ต้องสุ่มมาหรือ 
 4. tripsDetail ไม่มี copies ว่ากี่อันแล้ว
+5. serach function
 
 Data baseproblem
-1.ไม่จำนวน copies ของ trips ให้ backend

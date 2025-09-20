@@ -4,35 +4,33 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { calculateDuration } from "@/util/calculateDuration";
 import { truncateText } from "@/util/truncateText";
 
-// Interface matching your latest mockData
+// Define GuideBox interface
+
 interface GuideBoxProps {
-  id: number;
-  title: string;
-  start_date: string;
-  end_date: string;
-  guide_image: string;
-  copies: number;
-  owner_name: string;
-  owner_image: string;
-  description?: string;
-  onRemove?: (id:number) => void;
+  guideData: GuideBox;
+  onRemove?: (id: number) => void;
 }
 
 const GuideBox: React.FC<GuideBoxProps> = ({
-  id,
-  title,
-  start_date,
-  end_date,
-  guide_image,
-  copies,
-  owner_name,
-  owner_image,
-  description,
+  guideData,
   onRemove
 }) => {
   const pathname = usePathname();
   const router = useRouter();
   const give_bookmark = pathname === '/tabs/guide';
+  
+  const {
+    id,
+    title,
+    start_date,
+    end_date,
+    guide_image,
+    copies,
+    owner_name,
+    owner_image,
+    description,
+    trip_id,
+  } = guideData;
 
   const handleUnbookmark = () => {
     Alert.alert(
@@ -47,7 +45,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({
           text: "Remove",
           style: "destructive",
           onPress: () => {
-            // กด Remove เเล้วจะไปใช้ function onremove ที่หน้า place bookmark
+            // กด Remove แล้วจะไปใช้ function onremove ที่หน้า place bookmark
             if (onRemove) {
               onRemove(id);
             }
@@ -61,7 +59,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({
 
   const handleGuideBoxPress = (): void => {
     console.log(`id: ${id}`)
-    router.push(`/guides/${id}`);
+    router.push(`/dynamicPage/guides/${id.toString()}`);
   };
 
   const duration = calculateDuration(start_date, end_date);
@@ -124,83 +122,83 @@ const GuideBox: React.FC<GuideBoxProps> = ({
   } 
   
   // Home page layout (matching the design in your image)
-else if (pathname === '/tabs') {
-  return (
-    <TouchableOpacity 
-      className="mb-6 bg-white rounded-xl shadow-sm overflow-hidden mr-4"
-      onPress={handleGuideBoxPress}
-      activeOpacity={0.8}
-      style={{
-        width: 280,
-        height: 340,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 2,
-      }}
-    >
-      {/* Main Image */}
-      <Image 
-        source={{ uri: guide_image }} 
-        className="w-full rounded-t-xl"
-        style={{ height: 180 }}
-        resizeMode="cover"
-      />
+  else if (pathname === '/tabs') {
+    return (
+      <TouchableOpacity 
+        className="mb-6 bg-white rounded-xl shadow-sm overflow-hidden mr-4"
+        onPress={handleGuideBoxPress}
+        activeOpacity={0.8}
+        style={{
+          width: 280,
+          height: 340,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 2,
+        }}
+      >
+        {/* Main Image */}
+        <Image 
+          source={{ uri: guide_image }} 
+          className="w-full rounded-t-xl"
+          style={{ height: 180 }}
+          resizeMode="cover"
+        />
 
-      {/* Content Container */}
-      <View className="p-4 flex-1">
-        {/* Title */}
-        <Text 
-          className="text-xl font-bold text-black mb-2" 
-          numberOfLines={2}
-          style={{ 
-            lineHeight: 22,
-            height: 20,
-          }}
-        >
-          {truncateText(title, 30)}
-        </Text>
-        
-        {/* Description */}
-        <Text 
-          className="text-sm text-gray-600 mb-1"
-          style={{ 
-            lineHeight: 18,
-            height: 54,
-            textAlign: 'left',
-          }}
-          numberOfLines={2}
-        >
-          {description}
-        </Text>
+        {/* Content Container */}
+        <View className="p-4 flex-1">
+          {/* Title */}
+          <Text 
+            className="text-xl font-bold text-black mb-2" 
+            numberOfLines={2}
+            style={{ 
+              lineHeight: 22,
+              height: 20,
+            }}
+          >
+            {truncateText(title, 30)}
+          </Text>
+          
+          {/* Description */}
+          <Text 
+            className="text-sm text-gray-600 mb-1"
+            style={{ 
+              lineHeight: 18,
+              height: 54,
+              textAlign: 'left',
+            }}
+            numberOfLines={2}
+          >
+            {description}
+          </Text>
 
-        {/* Author Section - ใช้ Spacer เพื่อดันลงด้านล่าง */}
-        <View className="flex-row items-center">
-          <Image 
-            source={{ uri: owner_image }} 
-            className="w-12 h-12 rounded-full mr-5"
-            resizeMode="cover"
-          />
-          <View className="flex-1">
-            <Text 
-              className="text-base font-semibold text-gray-800"
-              numberOfLines={1}
-            >
-              {owner_name}
-            </Text>
-            <Text 
-              className="text-xs text-gray-500"
-              numberOfLines={1}
-            >
-              {copies} References
-            </Text>
+          {/* Author Section - ใช้ Spacer เพื่อดันลงด้านล่าง */}
+          <View className="flex-row items-center">
+            <Image 
+              source={{ uri: owner_image }} 
+              className="w-12 h-12 rounded-full mr-5"
+              resizeMode="cover"
+            />
+            <View className="flex-1">
+              <Text 
+                className="text-base font-semibold text-gray-800"
+                numberOfLines={1}
+              >
+                {owner_name}
+              </Text>
+              <Text 
+                className="text-xs text-gray-500"
+                numberOfLines={1}
+              >
+                {copies} References
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
-}
+      </TouchableOpacity>
+    );
+  }
 
   return null;
 };

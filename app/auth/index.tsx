@@ -25,7 +25,7 @@ const AuthScreen: React.FC = () => {
   
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: "999598547228-cgjn9gspjg2d1m2m2q3rp277ovl58qhb.apps.googleusercontent.com",
+      webClientId: "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
       profileImageSize: 150,
       offlineAccess: true,
     });
@@ -54,7 +54,7 @@ const AuthScreen: React.FC = () => {
 
         // -- API KUJATEAW --
         const result = await AuthService.login(idToken);
-        console.log(result.user?.user_image)
+        console.log(result.user?.profile_picture_link)
         if (!result.success) {
           Alert.alert("Error", "Failed to find or create user.");
           return;
@@ -63,15 +63,15 @@ const AuthScreen: React.FC = () => {
           Alert.alert("Welcome Back.")
           router.push('/tabs/(home)')
         } else {
-          if (!result.user?.id) {
+          if (!result.user?.user_id) {
             Alert.alert("Error", "Invalid user data received.");
             return;
           }
           const userData: UserDetails = {
-            id: result.user.id,      
+            user_id: result.user.user_id,      
             name: result.user.name,  
             phone: result.user.phone,
-            user_image: result.user.user_image,
+            profile_picture_link: result.user.profile_picture_link,
             email: result.user.email,
           };
 

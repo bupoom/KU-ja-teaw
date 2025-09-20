@@ -15,66 +15,36 @@ export const mockTransportationOptions: TransportationOption[] = [
 // 2. User Details
 export const mockUserDetails: UserDetails[] = [
   {
-    id: 1,
+    user_id: "1",
     name: "John Smith",
     phone: "+1-555-0123",
-    user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    profile_picture_link: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     email: "john.smith@email.com"
   },
   {
-    id: 2,
+    user_id: "2",
     name: "Sarah Johnson",
     phone: "+1-555-0124",
-    user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop&crop=face",
+    profile_picture_link: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop&crop=face",
     email: "sarah.johnson@email.com"
   },
   {
-    id: 3,
+    user_id: "3",
     name: "Michael Chen",
     phone: "+1-555-0125",
-    user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    profile_picture_link: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     email: "michael.chen@email.com"
   },
   {
-    id: 4,
+    user_id: "4",
     name: "Emily Davis",
     phone: "+1-555-0126",
-    user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    profile_picture_link: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     email: "emily.davis@email.com"
   }
 ];
 
-// 3. Create Trip Data
-export const mockCreateTripData: CreateTrip[] = [
-  {
-    trip_name: "Summer Adventure in Japan",
-    trip_image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop",
-    start_date: "2025-07-15",
-    end_date: "2025-07-25",
-    trip_code: "JP2025SUM",
-    trip_password: "sakura123"
-  },
-  {
-    trip_name: "European Backpacking Tour",
-    trip_image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop",
-    start_date: "2025-09-10",
-    end_date: "2025-09-30",
-    trip_code: "EU2025BCK",
-    trip_password: "europa456"
-  },
-  {
-    trip_name: "Thailand Beach Getaway",
-    trip_image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-    start_date: "2025-12-20",
-    end_date: "2025-12-28",
-    trip_code: "TH2025BCH",
-    trip_password: "beach789"
-  }
-];
-
-
 // 4. Flight Data
-// เพิ่ม Flight Data สำหรับ Guide Trips
 export const mockFlights: Flight[] = [
   // --- ของเดิม ---
   {
@@ -190,7 +160,6 @@ export const mockFlights: Flight[] = [
     trip_id: 11
   }
 ];
-
 
 // 5. File Groups
 export const mockFileGroups: FileGroup[] = [
@@ -324,7 +293,7 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     email: "michael.chen@email.com",
     phone: "+1-555-0125",
-    role: "editer",
+    role: "owner",
     trip_id: 2 // European Backpacking Tour
   },
   {
@@ -342,7 +311,7 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     email: "david.wilson@email.com",
     phone: "+1-555-0127",
-    role: "viewer",
+    role: "owner",
     trip_id: 3 // Thailand Beach Getaway
   },
   {
@@ -435,14 +404,13 @@ export const mockWeathers: Weather[] = [
 ];
 
 // <---------------------------------- Note ---------------------------->
-
 // 8. Notes
 export const mockNotes: Note[] = [
   // ========== TRIP 1: Summer Adventure in Japan ==========
   {
     id: 1,
     note_text: "Don't forget to try the famous ramen here! Best time to visit is around 11 AM to avoid crowds.",
-    user_profile: mockUserDetails[0].user_image,
+    user_profile: mockUserDetails[0].profile_picture_link,
     user_name: mockUserDetails[0].name, // John Smith
     is_editable: true,
     refer_user_id: 1, // John Smith in trip_id 1
@@ -454,7 +422,7 @@ export const mockNotes: Note[] = [
   {
     id: 2,
     note_text: "Bring comfortable walking shoes. The temple grounds are quite large.",
-    user_profile: mockUserDetails[1].user_image,
+    user_profile: mockUserDetails[1].profile_picture_link,
     user_name: mockUserDetails[1].name, // Sarah Johnson
     is_editable: false,
     refer_user_id: 2, // Sarah Johnson in trip_id 1
@@ -466,7 +434,7 @@ export const mockNotes: Note[] = [
   {
     id: 5,
     note_text: "Amazing street food! Try the takoyaki from the vendor on the left side.",
-    user_profile: mockUserDetails[1].user_image,
+    user_profile: mockUserDetails[1].profile_picture_link,
     user_name: mockUserDetails[1].name, // Sarah Johnson
     is_editable: true,
     refer_user_id: 2,
@@ -478,7 +446,7 @@ export const mockNotes: Note[] = [
   {
     id: 6,
     note_text: "Perfect spot for cherry blossom viewing in spring season.",
-    user_profile: mockUserDetails[2].user_image,
+    user_profile: mockUserDetails[2].profile_picture_link,
     user_name: mockUserDetails[2].name, // Michael Chen (ไม่ใช่ member trip 1 → assign owner แทน)
     is_editable: false,
     refer_user_id: 1, // Fallback ให้ John Smith (owner)
@@ -490,7 +458,7 @@ export const mockNotes: Note[] = [
   {
     id: 7,
     note_text: "Overall trip highlight: Japan’s culture mix of tradition and modern life.",
-    user_profile: mockUserDetails[0].user_image,
+    user_profile: mockUserDetails[0].profile_picture_link,
     user_name: mockUserDetails[0].name,
     is_editable: true,
     refer_user_id: 1,
@@ -501,7 +469,7 @@ export const mockNotes: Note[] = [
   {
     id: 8,
     note_text: "Budget seems on track, keep checking transport costs.",
-    user_profile: mockUserDetails[1].user_image,
+    user_profile: mockUserDetails[1].profile_picture_link,
     user_name: mockUserDetails[1].name,
     is_editable: true,
     refer_user_id: 2,
@@ -514,7 +482,7 @@ export const mockNotes: Note[] = [
   {
     id: 3,
     note_text: "Remember to book train tickets in advance during peak season.",
-    user_profile: mockUserDetails[2].user_image,
+    user_profile: mockUserDetails[2].profile_picture_link,
     user_name: mockUserDetails[2].name, // Michael Chen
     is_editable: true,
     refer_user_id: 3, // Michael Chen in trip_id 2
@@ -526,7 +494,7 @@ export const mockNotes: Note[] = [
   {
     id: 9,
     note_text: "Trip overview: Backpacking requires lightweight packing.",
-    user_profile: mockUserDetails[2].user_image,
+    user_profile: mockUserDetails[2].profile_picture_link,
     user_name: mockUserDetails[2].name,
     is_editable: true,
     refer_user_id: 3,
@@ -537,7 +505,7 @@ export const mockNotes: Note[] = [
   {
     id: 10,
     note_text: "Double-check visa requirements for Schengen countries.",
-    user_profile: mockUserDetails[1].user_image,
+    user_profile: mockUserDetails[1].profile_picture_link,
     user_name: mockUserDetails[1].name, // Sarah Johnson (ไม่ใช่ member trip 2 → assign owner แทน)
     is_editable: false,
     refer_user_id: 3, // Michael Chen (owner trip 2)
@@ -550,7 +518,7 @@ export const mockNotes: Note[] = [
   {
     id: 4,
     note_text: "The sunset view from here is absolutely stunning! Arrive by 6 PM.",
-    user_profile: mockUserDetails[0].user_image,
+    user_profile: mockUserDetails[0].profile_picture_link,
     user_name: mockUserDetails[0].name, // John Smith
     is_editable: true,
     refer_user_id: 1, // John Smith in trip_id 3
@@ -562,7 +530,7 @@ export const mockNotes: Note[] = [
   {
     id: 11,
     note_text: "Beach trip was relaxing, weather was perfect.",
-    user_profile: mockUserDetails[0].user_image,
+    user_profile: mockUserDetails[0].profile_picture_link,
     user_name: mockUserDetails[0].name,
     is_editable: true,
     refer_user_id: 1,
@@ -573,7 +541,7 @@ export const mockNotes: Note[] = [
   {
     id: 12,
     note_text: "Expenses lower than expected, mainly food and local transport.",
-    user_profile: mockUserDetails[2].user_image,
+    user_profile: mockUserDetails[2].profile_picture_link,
     user_name: mockUserDetails[2].name, // Michael Chen (ไม่ใช่ member trip 3 → assign David Wilson)
     is_editable: false,
     refer_user_id: 5, // David Wilson (viewer trip 3)
@@ -586,7 +554,7 @@ export const mockNotes: Note[] = [
   {
     id: 13,
     note_text: "Expect cold weather during the festival.",
-    user_profile: mockUserDetails[1].user_image,
+    user_profile: mockUserDetails[1].profile_picture_link,
     user_name: mockUserDetails[1].name, // Sarah Johnson (ไม่ใช่ member trip 4 → assign owner)
     is_editable: true,
     refer_user_id: 6, // Alice Wang (owner trip 4)
@@ -597,7 +565,7 @@ export const mockNotes: Note[] = [
   {
     id: 14,
     note_text: "Plan for festival tickets early.",
-    user_profile: mockUserDetails[2].user_image,
+    user_profile: mockUserDetails[2].profile_picture_link,
     user_name: mockUserDetails[2].name, // Michael Chen
     is_editable: false,
     refer_user_id: 6, // Alice Wang
@@ -610,7 +578,7 @@ export const mockNotes: Note[] = [
   {
     id: 15,
     note_text: "Adventure activities may require pre-booking.",
-    user_profile: mockUserDetails[0].user_image,
+    user_profile: mockUserDetails[0].profile_picture_link,
     user_name: mockUserDetails[0].name, // John Smith
     is_editable: true,
     refer_user_id: 7, // Bob Chen (owner trip 5)
@@ -621,7 +589,7 @@ export const mockNotes: Note[] = [
   {
     id: 16,
     note_text: "Remember to carry local currency for small vendors.",
-    user_profile: mockUserDetails[1].user_image,
+    user_profile: mockUserDetails[1].profile_picture_link,
     user_name: mockUserDetails[1].name, // Sarah Johnson
     is_editable: false,
     refer_user_id: 7, // Bob Chen
@@ -634,7 +602,7 @@ export const mockNotes: Note[] = [
   {
     id: 17,
     note_text: "Hiking conditions were safe, but some trails steep.",
-    user_profile: mockUserDetails[2].user_image,
+    user_profile: mockUserDetails[2].profile_picture_link,
     user_name: mockUserDetails[2].name, // Michael Chen
     is_editable: true,
     refer_user_id: 8, // Carol Smith (owner trip 6)
@@ -645,7 +613,7 @@ export const mockNotes: Note[] = [
   {
     id: 18,
     note_text: "Overall great team spirit during the hike.",
-    user_profile: mockUserDetails[0].user_image,
+    user_profile: mockUserDetails[0].profile_picture_link,
     user_name: mockUserDetails[0].name,
     is_editable: false,
     refer_user_id: 8, // Carol Smith
@@ -656,7 +624,6 @@ export const mockNotes: Note[] = [
 ];
 
 // <-------------------- Place ----------------------------------->
-
 // 18. Place Boxes (5 places)
 export const mockPlaceBoxes: PlaceBox[] = [
   {
@@ -1344,7 +1311,6 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
   }
 ];
 
-
 // 10. Activity Event Boxes
 export const mockActivityEventBoxes: ActivityEventBox[] = [
   {
@@ -1390,7 +1356,6 @@ export const mockActivityEventBoxes: ActivityEventBox[] = [
 ];
 
 // <--------------------------------------------- Votes ----------------------------------------->
-
 // 11. Votes (FIXED with trip_id)
 export const mockVotes: Vote[] = [
   {
@@ -1506,7 +1471,6 @@ export const mockActivityVoteEvents: ActivityVoteEvent[] = [
 ];
 
 // <-------------------------- Trip ----------------------------------------->
-
 // 14. Trip Boxes (FIXED dates to 2025)
 export const mockTripBoxes: TripBox[] = [
   // MAIN TRIPS (with full data)
@@ -1606,7 +1570,6 @@ export const mockTripInvitations: TripBox[] = [
   }
 ];
 
-
 export const mockTripDetails: TripDetails[] = mockTripBoxes.map(trip => ({
   trip_id: trip.trip_id,
   trip_name: trip.trip_name,
@@ -1623,7 +1586,6 @@ export const mockTripDetails: TripDetails[] = mockTripBoxes.map(trip => ({
 }));
 
 // <-------------------------------------- Guides --------------------------------------->
-
 // 16. Guide Boxes (Updated dates to 2025)
 export const mockGuideBoxes: GuideBox[] = [
   {

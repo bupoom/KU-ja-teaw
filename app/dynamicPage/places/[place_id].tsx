@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-export default function placeDetail() {
+export default function PlaceDetail() {
   interface PlaceDetails {
     id: number;
     title: string;
