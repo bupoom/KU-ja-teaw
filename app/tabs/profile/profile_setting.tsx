@@ -36,7 +36,7 @@ const AccountScreen: React.FC = () => {
 
       // Use mock data
       const userData = {
-        id: 1,
+        id: "1",
         name: "Mr.Terrific",
         phone: "0654105555",
         email: "terrific@example.com",

@@ -15,34 +15,96 @@ export const mockTransportationOptions: TransportationOption[] = [
 // 2. User Details
 export const mockUserDetails: UserDetails[] = [
   {
-    id: 1,
+    id: "1",
     name: "John Smith",
     phone: "+1-555-0123",
-    user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    email: "john.smith@email.com"
+    user_image:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    email: "john.smith@email.com",
   },
   {
-    id: 2,
+    id: "2",
     name: "Sarah Johnson",
     phone: "+1-555-0124",
-    user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop&crop=face",
-    email: "sarah.johnson@email.com"
+    user_image:
+      "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop&crop=face",
+    email: "sarah.johnson@email.com",
   },
   {
-    id: 3,
+    id: "3",
+    name: "Chris Lee",
+    phone: "+1-555-0131",
+    user_image:
+      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=150&h=150&fit=crop&crop=face",
+    email: "chris.lee@email.com",
+  },
+  {
+    id: "4",
     name: "Michael Chen",
     phone: "+1-555-0125",
-    user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    email: "michael.chen@email.com"
+    user_image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    email: "michael.chen@email.com",
   },
   {
-    id: 4,
+    id: "5",
     name: "Emily Davis",
     phone: "+1-555-0126",
-    user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    email: "emily.davis@email.com"
-  }
+    user_image:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    email: "emily.davis@email.com",
+  },
+  {
+    id: "6",
+    name: "David Wilson",
+    phone: "+1-555-0127",
+    user_image:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+    email: "david.wilson@email.com",
+  },
+  {
+    id: "7",
+    name: "Alice Wang",
+    phone: "+1-555-0128",
+    user_image:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+    email: "alice.wang@email.com",
+  },
+  {
+    id: "8",
+    name: "Bob Chen",
+    phone: "+1-555-0129",
+    user_image:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+    email: "bob.chen@email.com",
+  },
+  {
+    id: "9",
+    name: "Carol Smith",
+    phone: "+1-555-0130",
+    user_image:
+      "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop",
+    email: "carol.smith@email.com",
+  },
+  {
+    id: "10",
+    name: "Keen_Kung",
+    phone: "+66-812-345-678",
+    user_image:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop",
+    email: "keen.kung@email.com",
+  },
+  {
+    id: "11",
+    name: "Sarah Kim",
+    phone: "+82-10-1234-5678",
+    user_image:
+      "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop",
+    email: "sarah.kim@email.com",
+  },
 ];
+
+
 
 // 4. Flight Data
 // เพิ่ม Flight Data สำหรับ Guide Trips
@@ -269,7 +331,7 @@ export const mockNotifications: NotificationBox[] = [
   }
 ];
 
-// 7. Trip Members (Added new members)
+// 7. Trip Members
 export const mockTripMembers: TripMember[] = [
   {
     id: 1,
@@ -286,11 +348,20 @@ export const mockTripMembers: TripMember[] = [
     user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop&crop=face",
     email: "sarah.johnson@email.com",
     phone: "+1-555-0124",
-    role: "editer",
+    role: "editor",
     trip_id: 1
   },
   {
     id: 3,
+    name: "Chris Lee",
+    user_image: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=150&h=150&fit=crop&crop=face",
+    email: "chris.lee@email.com",
+    phone: "+1-555-0131",
+    role: "viewer",
+    trip_id: 1
+  },
+  {
+    id: 4,
     name: "Michael Chen",
     user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     email: "michael.chen@email.com",
@@ -299,7 +370,7 @@ export const mockTripMembers: TripMember[] = [
     trip_id: 2 // European Backpacking Tour
   },
   {
-    id: 4,
+    id: 5,
     name: "Emily Davis",
     user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     email: "emily.davis@email.com",
@@ -308,7 +379,7 @@ export const mockTripMembers: TripMember[] = [
     trip_id: 2
   },
   {
-    id: 5,
+    id: 6,
     name: "David Wilson",
     user_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     email: "david.wilson@email.com",
@@ -317,7 +388,7 @@ export const mockTripMembers: TripMember[] = [
     trip_id: 3 // Thailand Beach Getaway
   },
   {
-    id: 6,
+    id: 7,
     name: "Alice Wang",
     user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
     email: "alice.wang@email.com",
@@ -326,7 +397,7 @@ export const mockTripMembers: TripMember[] = [
     trip_id: 4 // Tokyo Winter Festival
   },
   {
-    id: 7,
+    id: 8,
     name: "Bob Chen",
     user_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
     email: "bob.chen@email.com",
@@ -335,7 +406,7 @@ export const mockTripMembers: TripMember[] = [
     trip_id: 5 // Bali Adventure
   },
   {
-    id: 8,
+    id: 9,
     name: "Carol Smith",
     user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop",
     email: "carol.smith@email.com",
@@ -344,7 +415,7 @@ export const mockTripMembers: TripMember[] = [
     trip_id: 6 // Swiss Alps Hiking
   },
   {
-    id: 9,
+    id: 10,
     name: "Keen_Kung",
     user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop",
     email: "keen.kung@email.com",
@@ -353,14 +424,14 @@ export const mockTripMembers: TripMember[] = [
     trip_id: 7 // Trip to Thailand (Invitation)
   },
   {
-    id: 10,
+    id: 11,
     name: "Sarah Kim",
     user_image: "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop",
     email: "sarah.kim@email.com",
     phone: "+82-10-1234-5678",
     role: "owner",
     trip_id: 8 // Korean Food Tour (Invitation)
-  }
+  },
 ];
 
 export const mockWeathers: Weather[] = [
@@ -479,6 +550,17 @@ export const mockNotes: Note[] = [
     reference_type: 'overview',
     created_at: "2025-09-08T21:00:00",
     trip_id: 1
+  },
+  {
+  id: 19,
+  note_text: "Enjoying the trip so far, great mix of activities and relaxation.",
+  user_profile: mockUserDetails[2].user_image, // Michael Chen
+  user_name: mockUserDetails[2].name,
+  is_editable: false,
+  refer_user_id: 3, // Michael Chen
+  reference_type: "overview",
+  created_at: "2025-09-08T22:00:00",
+  trip_id: 1
   },
 
   // ========== TRIP 2: European Backpacking Tour ==========

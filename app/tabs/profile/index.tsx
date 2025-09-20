@@ -42,7 +42,7 @@ const ProfileScreen: React.FC = () => {
     // Note: When properties have the same name, the later ones override the earlier ones
     // So name: 'Mr.Terrific' will override name: 'John Smith' from mockUserDetails[0]
     return {
-      id: 1,
+      id: "1",
       name: 'Mr.Terrific', // This will override mockUserDetails[0].name
       phone: 'Tel. 0654105555', // This will override mockUserDetails[0].phone  
       email: 'terrific@example.com', // This will override mockUserDetails[0].email

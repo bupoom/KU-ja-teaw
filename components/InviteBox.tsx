@@ -89,7 +89,7 @@ export default function TripInvitationBox({
               source={{ uri: owner_image }} 
               className="w-6 h-6 rounded-full" 
             />
-            <Text className="text-sm text-dark_gray font-sf-semibold ml-1"> Agent: {owner_name}</Text>
+            <Text className="text-sm text-dark_gray font-sf-semibold ml-1"> Owner: {owner_name}</Text>
           </View>
         </View>
       </View>

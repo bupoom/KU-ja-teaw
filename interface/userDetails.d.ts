@@ -1,5 +1,5 @@
 interface UserDetails {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   user_image: string;

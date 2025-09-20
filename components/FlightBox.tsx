@@ -1,18 +1,9 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { formatDateTime } from "@/util/formatDateTime";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { formatDateRange } from "@/util/formatDateRange";
+import { formatTimeRange } from "@/util/formatTimeRange";
 
-interface Flight {
-  id: number;
-  departure_airport: string;
-  arrival_airport: string;
-  departure_date: string;
-  arrival_date: string;
-  airline: string;
-  departure_country: string;
-  arrival_country: string;
-  trip_id: number;
-}
 
 export const FlightBox: React.FC<Flight> = ({
   id,
@@ -23,44 +14,42 @@ export const FlightBox: React.FC<Flight> = ({
   airline,
   departure_country,
   arrival_country,
-  trip_id,
 }) => {
-  const departureDateTime = formatDateTime(departure_date);
-  const arrivalDateTime = formatDateTime(arrival_date);
-
   return (
-    <View className="border-2 border-gray_border rounded-xl p-4 mb-4">
-      {/* Airport Codes and Countries */}
-      <View className="flex-row justify-between items-start mb-1">
-        <View className="flex-1">
-          <Text className="text-base font-bold text-black">
-            {departure_airport}
-          </Text>
-          <Text className="text-gray-600 text-sm font-sf-light">
-            {departure_country}
-          </Text>
-        </View>
-
-        <View className="flex-1 items-end mb-1">
-          <Text className="text-base font-bold text-black">
-            {arrival_airport}
-          </Text>
-          <Text className="text-gray-600 text-sm font-sf-light">
-            {arrival_country}
-          </Text>
-        </View>
-      </View>
-
-      <View className="flex-row justify-between items-center mb-1">
-        <Text className="text-xs font-medium text-black">
-          {departureDateTime.date} - {arrivalDateTime.date}
+    <View className="bg-white rounded-lg p-4 border border-gray_border mb-3">
+      {/* Airport Codes */}
+      <View className="flex-row items-center justify-between mb-3">
+        <Text className="text-lg font-bold text-gray-900 mr-2">
+          {departure_airport}
         </Text>
-        <Text className="text-xs font-medium text-black">{airline}</Text>
+        <Feather name="arrow-right" size={16} color="#6B7280" />
+        <Text className="text-lg font-bold text-gray-900 ml-2">
+          {arrival_airport}
+        </Text>
       </View>
 
-      <Text className="text-xs font-medium text-black">
-        {departureDateTime.time} - {arrivalDateTime.time}
-      </Text>
+      {/* Countries */}
+      <View className="flex-row justify-between mb-2">
+        <Text className="text-sm text-gray-600">{departure_country}</Text>
+        <Text className="text-sm text-gray-600">{arrival_country}</Text>
+      </View>
+
+      {/* Date + Time */}
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className="text-sm font-medium text-gray-900">
+          {formatDateRange(departure_date, arrival_date)}
+        </Text>
+        <Text className="text-sm font-medium text-gray-900">
+          {formatTimeRange(departure_date, arrival_date)}
+        </Text>
+      </View>
+
+      {/* Airline */}
+      <View className="bg-gray-50 rounded-lg p-2">
+        <Text className="text-sm font-medium text-gray-900 text-center">
+          {airline}
+        </Text>
+      </View>
     </View>
   );
 };
