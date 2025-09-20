@@ -1,11 +1,11 @@
 // components/TripBox.tsx
-import { useRouter, usePathname } from "expo-router";
-import { View, Image, Text, TouchableOpacity } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import StatusTag from "./StatusTag";
-import CountdownTag from "./CountdownTag";
-import { formatDateRange } from "@/util/formatDateRange";
+import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 import { truncateText } from "@/util/truncateText";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import CountdownTag from "./common/CountdownTag";
+import StatusTag from "./common/StatusTag";
 
 // ใช้ interface ซ้ำ
 interface TripBoxProps {
@@ -17,7 +17,6 @@ const TripBox: React.FC<TripBoxProps> = ({
     tripData,
     onPress, // Receive custom navigation function
 }) => {
-    const pathname = usePathname();
     const router = useRouter();
     const handleTripPress = (): void => {
         console.log(`trip_id: ${trip_id}`);
@@ -37,8 +36,6 @@ const TripBox: React.FC<TripBoxProps> = ({
         end_date,
         member_count,
         status_planning,
-        owner_name,
-        owner_image
     } = tripData; 
 
     return (

@@ -191,48 +191,58 @@ export const AuthService = {
         googleIdToken: string
     ): Promise<{ success: boolean; user?: UserDetails; newUser?: boolean }> => {
         try {
-            console.log("... Starting API login  at SERVER");
+            console.log("🔄 Starting API login at SERVER");
             const URL = "http://10.0.2.2:3000/api/users/login";
-            // const response = await fetch(URL, {
-            //     method: "POST",
-            //     headers: {
-            //         accept: "application/json",
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify({
-            //         idToken: googleIdToken,
-            //     }),
-            // });
-            // console.log("📊 Response status:", response.status);
-            // if (!response.ok) {
-            //     throw new Error("Login failed");
-            // }
-
-            // const data = await response.json();
-            const mockResponse = {
-                status: 201, // 200 : user ใหม่ 201 user เก่า
-                json: () => {},
-                body: {
+            
+            let response: any;
+            let data: any;
+            
+            if (process.env.NO_SERVER_WHILE_DEV) {
+                // Mock response for development
+                data = {
                     name: "OSHI",
                     phone: "OSHI_PHONE",
                     email: "OSHI@gmail.com",
                     user_id: "OSHI",
-                    profile_picture_link:
-                        "https://ih1.redbubble.net/image.5300710362.9150/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg",
+                    profile_picture_link: "https://ih1.redbubble.net/image.5300710362.9150/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.jpg",
                     token: {
-						Access_token:
-                        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjA3ZjA3OGYyNjQ3ZThjZDAxOWM0MGRhOTU2OWU0ZjUyNDc5OTEwOTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxMzUxMjY1MDM1ODUtbDJmMm9sYmRncnU4amhyb2tsdjV1ZTZmcm05NWs4dmcuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIxMzUxMjY1MDM1ODUtNmp0Z2NyNTd0dDdib3FrMzZjNHUwYzBiZTI0b2NvbGYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDYxMjE4OTk2OTgzMDgwNzUyNzQiLCJlbWFpbCI6ImJ1cG9vbTIwMDVAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiLguLRibHVlIGJ1cG9vbSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMSVIzZWg1RG5EYURCZG8wMzlfZ0RiZVJIYW9uNXJ6LTRlS2U2NThvcDc2c0ktY0ZZPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IuC4tGJsdWUiLCJmYW1pbHlfbmFtZSI6ImJ1cG9vbSIsImlhdCI6MTc1ODEyMDIyNCwiZXhwIjoxNzU4MTIzODI0fQ.RqvSYHwbr8bt2EXGX-D9DrLXr73Quo0mp3-4zgxIBz-x6hvBWuN-Zo0OjGqY1HsANN-3XgBlEOgntVox807vGk3VOyGo9Tr5N6sohB-VPQq7wVPaY08B5mnQJnQGUIXEcb_Y0AtpZ2_lMcW2C6mC7VTSUSwfsqGyk5b7ORG4hHuQHrgxaUqCXulFBAYer2jGUE1Xugq7-tznvRo3EArezd0zCneDK5lKRTr62NrdyaC27F3mBRhwKjZTXSahhld3gpIyqaxtNKJ6gPs8KbnTdXJoxsQ8U6QU9k4jMg0r5V2rxv3vEVirUwDSlFHLe9D2aK7a3ukllf3Tre2TfDIF2A",
-						Refresh_token:
-                        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjA3ZjA3OGYyNjQ3ZThjZDAxOWM0MGRhOTU2OWU0ZjUyNDc5OTEwOTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxMzUxMjY1MDM1ODUtbDJmMm9sYmRncnU4amhyb2tsdjV1ZTZmcm05NWs4dmcuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIxMzUxMjY1MDM1ODUtNmp0Z2NyNTd0dDdib3FrMzZjNHUwYzBiZTI0b2NvbGYuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDYxMjE4OTk2OTgzMDgwNzUyNzQiLCJlbWFpbCI6ImJ1cG9vbTIwMDVAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiLguLRibHVlIGJ1cG9vbSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NMSVIzZWg1RG5EYURCZG8wMzlfZ0RiZVJIYW9uNXJ6LTRlS2U2NThvcDc2c0ktY0ZZPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IuC4tGJsdWUiLCJmYW1pbHlfbmFtZSI6ImJ1cG9vbSIsImlhdCI6MTc1ODEyMDIyNCwiZXhwIjoxNzU4MTIzODI0fQ.RqvSYHwbr8bt2EXGX-D9DrLXr73Quo0mp3-4zgxIBz-x6hvBWuN-Zo0OjGqY1HsANN-3XgBlEOgntVox807vGk3VOyGo9Tr5N6sohB-VPQq7wVPaY08B5mnQJnQGUIXEcb_Y0AtpZ2_lMcW2C6mC7VTSUSwfsqGyk5b7ORG4hHuQHrgxaUqCXulFBAYer2jGUE1Xugq7-tznvRo3EArezd0zCneDK5lKRTr62NrdyaC27F3mBRhwKjZTXSahhld3gpIyqaxtNKJ6gPs8KbnTdXJoxsQ8U6QU9k4jMg0r5V2rxv3vEVirUwDSlFHLe9D2aK7a3ukllf3Tre2TfDIF2A",
-					}
-                },
-                ok: true,
-            };
-			const mockData = await mockResponse.body;
-            console.log("📄 Response data:", mockData);
+                        Access_token: "mock_access_token_here",
+                        Refresh_token: "mock_refresh_token_here",
+                    },
+                };
+                
+                response = {
+                    status: 201, // 200: existing user, 201: new user
+                    ok: true,
+                };
+                
+                console.log("📄 Using mock data for development");
+            } else {
+                // Real API call
+                response = await fetch(URL, {
+                    method: "POST",
+                    headers: {
+                        accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        idToken: googleIdToken,
+                    }),
+                });
+                
+                console.log("📊 Response status:", response.status);
+                
+                if (!response.ok) {
+                    throw new Error("Login failed");
+                }
+                
+                data = await response.json();
+                console.log("📄 Response data received");
+            }
 
+            // Determine if user is new
             let newUser = false;
-            switch (mockResponse.status) {
+            switch (response.status) {
                 case 200:
                     newUser = false;
                     break;
@@ -240,29 +250,31 @@ export const AuthService = {
                     newUser = true;
                     break;
                 default:
-                    console.log("Unexpected status:", mockResponse.status);
+                    console.log("Unexpected status:", response.status);
             }
 
-            const DaysBeforeExpries = 5;
-            // บันทึก tokens
+            const DaysBeforeExpires = 5;
+            
+            // Save tokens
             await AuthService.saveTokens({
-                accessToken: mockData.token.Access_token,
-                refreshToken: mockData.token.Refresh_token,
-                expiresAt:
-                    Date.now() + DaysBeforeExpries * (24 * 60 * 60 * 1000),
+                accessToken: data.token.Access_token,
+                refreshToken: data.token.Refresh_token,
+                expiresAt: Date.now() + DaysBeforeExpires * (24 * 60 * 60 * 1000),
             });
 
-            // บันทึกข้อมูล user
+            // Save user data
             const userData: UserDetails = {
-                user_id: mockData.user_id,
-                name: mockData.name,
-                phone: mockData.phone,
-                profile_picture_link: mockData.profile_picture_link,
-                email: mockData.email,
+                user_id: data.user_id,
+                name: data.name,
+                phone: data.phone,
+                profile_picture_link: data.profile_picture_link,
+                email: data.email,
             };
+            
             await AuthService.saveUserData(userData);
 
             return { success: true, user: userData, newUser: newUser };
+            
         } catch (error) {
             console.error("❌ Login error:", error);
             return { success: false };

@@ -1,15 +1,15 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StatusBar,
-  SafeAreaView,
+    SafeAreaView,
+    StatusBar,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import Header from '../../../components/Header';
+import Header from '../../../components/common/Header';
 
-const select_create_join = () => {
+const PlanIndex = () => {
   const router = useRouter();
   const [selectedCard, setSelectedCard] = useState("");
 
@@ -100,4 +100,4 @@ const select_create_join = () => {
   );
 };
 
-export default select_create_join;
+export default PlanIndex;

@@ -26,7 +26,7 @@
 // }
 
 // interface CreateTrip {
-//   trip_name: string; 
+//   trip_name: string;
 //   trip_image: string;
 //   start_date: string;
 //   end_date: string;

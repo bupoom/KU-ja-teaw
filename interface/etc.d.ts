@@ -37,10 +37,10 @@ interface NotificationBox {
 } // เเสดงหน้า notification ใน daily trip
 
 interface LoadingState {
-    current_trip: boolean;
+    currentTrip: boolean;
     invitations: boolean;
     places: boolean;
-    guide_plans: boolean;
+    guidePlans: boolean;
     refreshing: boolean;
 }
 

@@ -20,4 +20,4 @@ interface PlaceDetails {
     map_link?: string;
     official_link?: string;
     notes?: Note[];
-} // เเสดงหน้า details ของ place ตอนกดเข้าไปจาก place bookmark กับ หน้า daily trip
+} // เเสดงหน้า details ของ place ตอนกดเข้าไปจาก place bookmark กับ หน้า dailytrip
