@@ -9,7 +9,7 @@ export default function PlanLayout() {
         <Tabs.Screen name="index" />
         <Tabs.Screen name="daily_trip" />
         <Tabs.Screen name="group" />
-        <Tabs.Screen name="setting_plan" />1
+        <Tabs.Screen name="setting_plan" />
       </Tabs>
   );
 }

@@ -25,43 +25,6 @@ import { organizeActivitiesByDay } from "@/util/organizedActivityByDay";
 import { formatDate } from "@/util/formatDate";
 import { formatDateRange } from "@/util/formatDateRange";
 
-
-
-interface Flight {
-  id: number;
-  departure_airport: string;
-  arrival_airport: string;
-  departure_date: string;
-  arrival_date: string;
-  airline: string;
-  departure_country: string;
-  arrival_country: string;
-  trip_id: number;
-}
-
-interface ActivityPlaceBox {
-  id: number;
-  title: string;
-  date: string;
-  time_begin: string;
-  time_end: string;
-  location: string;
-  place_id?: number;
-  place_image?: string;
-  trip_id: number;
-}
-
-interface ActivityEventBox {
-  id: number;
-  title: string;
-  date: string;
-  time_begin: string;
-  time_end: string;
-  transportation?: string;
-  Notes?: Note[];
-  trip_id: number;
-}
-
 interface DailyActivity {
   date: string;
   activities: (ActivityPlaceBox | ActivityEventBox)[];

@@ -11,6 +11,6 @@ export default () => (
     <Stack.Screen name="[place_detail_id]" options={{ title: "Place" }}/>
     <Stack.Screen name="map" options={{ title: "Map" }}/>
     <Stack.Screen name="notification" options={{ title: "Notifications" }}/>
-    <Stack.Screen name="select_add_type" options={{ title: "Add to Trip" }}/>
+    <Stack.Screen name="select_type_add" options={{ title: "Add to Trip" }}/>
   </Stack>
 );

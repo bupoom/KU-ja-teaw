@@ -15,20 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-export default function PlaceDetail() {
-  interface PlaceDetails {
-    id: number;
-    title: string;
-    description?: string;
-    rating?: number;
-    review_count?: number;
-    location: string;
-    place_image?: string;
-    categories?: string[];
-    map_link?: string;
-    official_link?: string;
-    notes?: Note[];
-  }
+export default function placeDetail() {
 
   const { place_id } = useLocalSearchParams();
   const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();
