@@ -11,6 +11,10 @@ interface TripDetails {
     group_members: number;
     budget?: number;
     note?: Note[];
+    // เพิ่มส่วนนี้มาน่ะครับ
+    trip_status: "planning" | "completed";
+    trip_code: string;
+    trip_password: string;
 }
 
 interface TripBox {

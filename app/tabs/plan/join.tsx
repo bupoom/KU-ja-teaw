@@ -53,7 +53,7 @@ const JoinTripScreen = () => {
                 {/* Form Section */}
                 <View className="space-y-6">
                     {/* Trip Code Input */}
-                    <View>
+                    <View className="mb-2">
                         <Text className="text-black font-sf-semibold mb-3 text-base">
                             Trip Code
                         </Text>
@@ -66,9 +66,9 @@ const JoinTripScreen = () => {
                             placeholderTextColor="dark_gray"
                             maxLength={8}
                         />
-                        <Text className="text-right text-dark_gray text-sm font-sf mt-2">
+                        {/* <Text className="text-right text-dark_gray text-sm font-sf mt-2">
                             {tripCode.length}/8 characters
-                        </Text>
+                        </Text> */}
                     </View>
 
                     {/* Password Input */}
@@ -107,9 +107,9 @@ const JoinTripScreen = () => {
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                        <Text className="text-right text-dark_gray text-sm font-sf mt-2">
+                        {/* <Text className="text-right text-dark_gray text-sm font-sf mt-2">
                             {password.length}/20 characters
-                        </Text>
+                        </Text> */}
                     </View>
                 </View>
 

@@ -378,6 +378,16 @@ export const mockTripMembers: TripMember[] = [
         role: "owner",
         trip_id: 8, // Korean Food Tour (Invitation)
     },
+    {
+        id: 11,
+        name: "Oshi Smitch",
+        user_image:
+            "https://images.unsplash.com/photo-1494790108755-2616b2e11881?w=150&h=150&fit=crop&crop=face",
+        email: "oshi.smitch@email.com",
+        phone: "+1-555-0124",
+        role: "viewer",
+        trip_id: 1,
+    },
 ];
 
 export const mockWeathers: Weather[] = [
@@ -1716,6 +1726,9 @@ export const mockTripDetails: TripDetails[] = mockTripBoxes.map(trip => ({
     group_members: trip.member_count,
     budget: 1000 + trip.trip_id * 200, // mock budget
     note: mockNotes.filter(n => n.trip_id === trip.trip_id),
+    trip_status: trip.status_planning,
+    trip_code: `TRIP${trip.trip_id}CODE`,
+    trip_password: `pass${trip.trip_id}`,
 }));
 
 // <-------------------------------------- Guides --------------------------------------->
