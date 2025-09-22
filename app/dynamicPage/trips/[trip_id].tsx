@@ -562,7 +562,6 @@ export default function TripDetail() {
                 <CustomButton
                     onPress={handleShareModal}
                     title="Shared Trip"
-                    isShared
                 />
             </ScrollView>
 
