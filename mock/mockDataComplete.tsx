@@ -1603,6 +1603,17 @@ export const mockActivityVoteEvents: ActivityVoteEvent[] = [
         votes: mockVotes.filter(vote => vote.activity_id === 102),
         trip_id: 2, // European trip
     },
+    {
+        id: 103,
+        date: "2025-09-08",
+        time_begin: "09:00",
+        time_end: "10:00",
+        number_of_votes: 3,
+        options: mockTransportationOptions,
+        votes: mockVotes.filter(vote => vote.activity_id === 103),
+        trip_id: 2, // European trip
+    },
+
 ];
 
 // <-------------------------- Trip ----------------------------------------->

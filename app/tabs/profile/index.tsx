@@ -253,7 +253,8 @@ const ProfileScreen: React.FC = () => {
                                             : section.trips
                                     }
                                     renderItem={({ item }) => (
-                                        <TripBox tripData={item} />
+                                        <TripBox tripData={item} 
+                                        onPress={section.title === "END" ? () => handleEndTripPress(item.trip_id) : undefined}/>
                                     )}
                                     keyExtractor={item =>
                                         item.trip_id.toString()
