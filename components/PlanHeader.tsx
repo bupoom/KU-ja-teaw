@@ -11,7 +11,7 @@ interface TripHeaderProps {
   planId: string;
 }
 
-export default function PlanHeader({ planId }: TripHeaderProps) {
+export default function PlanHeader({ planId}: TripHeaderProps) {
   const router = useRouter();
   const segments = useSegments() as string[];
 
