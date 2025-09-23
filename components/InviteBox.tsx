@@ -1,69 +1,92 @@
-// components/TripInvitationBox.tsx
+import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
+import { truncateText } from "@/util/truncateText";
+import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import Feather from "@expo/vector-icons/Feather";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import StatusTag from "./common/StatusTag";
 
-type InviteDetails = TripDetails & {
-  onPressCard?: (trip: TripDetails) => void;
-  onJoin?: (trip: TripDetails) => void;
-  onReject?: (trip: TripDetails) => void;
-}; // อันี้คือเอา structure มาจาก interface TripDetails เเล้วมาเพิ่มค่า onPressCard, onJoin, onReject
 
-export default function InviteBox({
-  id,
-  title,
-  image,
-  dateRange,
-  participantsCount,
-  creator,
-  creator_image,
-  status,
-  onPressCard,
-  onJoin,
-  onReject,
-}: InviteDetails) {
-  return (
-    <TouchableOpacity
-      className="bg-white rounded-xl p-4 mb-4 mx-4 shadow-sm border border-gray-100"
-      onPress={() => onPressCard?.({ id, title, image, dateRange, participantsCount, creator, creator_image, status })}
-      activeOpacity={0.8}
-    >
-      <View className="flex-row">
-        <Image source={{ uri: image }} className="w-20 h-20 rounded-lg mr-3" />
-        <View className="flex-1">
-          <Text className="text-lg font-semibold text-black mb-1">{title}</Text>
+type InviteDetails = TripBox & {
+    onPressCard?: (trip: TripBox) => void;
+    onJoin?: (trip: TripBox) => void;
+    onReject?: (trip: TripBox) => void;
+};
 
-          <View className="flex-row items-center mb-1">
-            <Feather name="calendar" size={14} color="#666" />
-            <Text className="text-sm text-gray-600 ml-1 mr-3">{dateRange}</Text>
-            <Feather name="users" size={14} color="#666" />
-            <Text className="text-sm text-gray-600 ml-1">{participantsCount} participants</Text>
-          </View>
+export default function TripInvitationBox(Invite: InviteDetails) {
+    return (
+        <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray_border">
+            <View className="flex-row mb-2">
+                <Image
+                    source={{ uri: Invite.trip_image }}
+                    className="w-20 h-20 rounded-xl"
+                />
 
-          <View className="flex-row items-center">
-            <Image source={{ uri: creator_image }} className="w-6 h-6 rounded-full mr-3" />
-            <Text className="text-sm text-gray-600">{creator}</Text>
-          </View>
+                <View className="flex-1 ml-4 justify-between py-0">
+                    {/* Header with trip name and status */}
+                    <View className="flex-row justify-between">
+                        <Text
+                            className="text-lg font-semibold text-black flex-1 mr-5 leading-6"
+                            numberOfLines={1}
+                        >
+                            {truncateText(Invite.trip_name, 20)}
+                        </Text>
+                        <StatusTag
+                            text={
+                                Invite.status_planning === "completed"
+                                    ? "Complete"
+                                    : "Planning"
+                            }
+                            bg={
+                                Invite.status_planning === "completed"
+                                    ? "#10B981"
+                                    : "#F59E0B"
+                            }
+                        />
+                    </View>
+
+                    {/* Date and participants info */}
+                    <View className="flex-row items-center mt-1">
+                        <Feather name="calendar" size={16} color="#6B7280" />
+                        <Text className="text-sm text-dark_gray ml-2 font-sf-semibold">
+                            {formatDateRange(Invite.start_date, Invite.end_date)}
+                        </Text>
+                    </View>
+                    {/* Agent/Owner info */}
+                    <View className="flex-row items-center mt-2">
+                        <Image
+                            source={{ uri: Invite.owner_image }}
+                            className="w-6 h-6 rounded-full"
+                        />
+                        <Text className="text-sm text-dark_gray font-sf-semibold ml-1">
+                            {" "}
+                            Owner: {Invite.owner_name}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* Action buttons */}
+            <View className="flex-row mt-3 gap-2">
+                <TouchableOpacity
+                    onPress={() => Invite.onJoin?.(Invite)}
+                    className="flex-1 bg-green_2 py-2 rounded-lg"
+                    activeOpacity={0.7}
+                >
+                    <Text className="text-white text-center font-medium">
+                        JOIN
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => Invite.onReject?.(Invite)}
+                    className="flex-1 border border-gray-300 py-2 rounded-lg"
+                    activeOpacity={0.7}
+                >
+                    <Text className="text-gray-700 text-center font-medium">
+                        Reject
+                    </Text>
+                </TouchableOpacity>
+            </View>
         </View>
-      </View>
-
-      <View className="flex-row mt-3 gap-2">
-        <TouchableOpacity
-          onPress={() => onJoin?.({ id, title, image, dateRange, participantsCount, creator, creator_image, status })}
-          className="flex-1 bg-green_2 py-2 rounded-lg"
-          activeOpacity={0.7}
-        >
-          <Text className="text-white text-center font-medium">JOIN</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => onReject?.({ id, title, image, dateRange, participantsCount, creator, creator_image, status })}
-          className="flex-1 border border-gray-300 py-2 rounded-lg"
-          activeOpacity={0.7}
-        >
-          <Text className="text-gray-700 text-center font-medium">Reject</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
+    );
 }

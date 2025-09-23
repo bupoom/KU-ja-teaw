@@ -1,15 +1,15 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StatusBar,
-  SafeAreaView,
+    SafeAreaView,
+    StatusBar,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import Header from '../../../components/Header';
+import Header from '../../../components/common/Header';
 
-const select_create_join = () => {
+const PlanIndex = () => {
   const router = useRouter();
   const [selectedCard, setSelectedCard] = useState("");
 
@@ -45,7 +45,7 @@ const select_create_join = () => {
       />
 
       {/* Content */}
-      <View className="flex-1 px-5 pt-10 mt-10 mb-6">
+      <View className="flex-1 px-5 pt-10 mt-6 mb-6">
         {/* Create Trip Card */}
         <TouchableOpacity 
           className={`rounded-xl p-6 mb-5 shadow-sm border-2 w-[95%] h-[120px] mx-auto ${
@@ -100,4 +100,4 @@ const select_create_join = () => {
   );
 };
 
-export default select_create_join;
+export default PlanIndex;

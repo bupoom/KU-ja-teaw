@@ -1,89 +1,84 @@
-import React, { useState , useCallback} from 'react';
-import { 
-  View, 
-  Text,
-  ScrollView, 
-  TouchableOpacity, 
-  StatusBar,
-  RefreshControl,
-  Alert,
-  FlatList
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import GuideBox , { MockDataGuides } from '@/components/GuideBox'
-    //  MockDataGuides คือข้อมูลจำลองอยู่ใน file /components/GuideBox
-    //  สิ่งที่ต้องแก้ไขเพิ่มเติมคือ
-    //  - ใส่ API Function 
-    //  - ใส่ routing ไปยัง dynamic page นั้นๆ
+import GuideBox from "@/components/GuideBox";
+import { mockGuideBoxes } from "@/mock/mockDataComplete";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
+import {
+    FlatList,
+    RefreshControl,
+    SafeAreaView,
+    StatusBar,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 const GuideBookmarkScreen = () => {
-  const route = useRouter()
-  const [refreshing, setRefreshing] = useState(false);
+    const router = useRouter();
+    const [refreshing, setRefreshing] = useState(false);
+    const [guides, setGuides] = useState<GuideBox[]>(mockGuideBoxes);
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    // awiat fetch ข้อมูลใหม่
-    Alert.alert('รีเฟรซแล้ว');
-    setRefreshing(false);
-  }, []);
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setGuides(mockGuideBoxes);
+        setRefreshing(false);
+    }, []);
 
-  const handleSearch = () => {
-    route.push('/tabs/guide/search_guide')
-  }
-  
-  return (
-    <View className="flex-1 bg-gray-50">
-      <StatusBar barStyle="dark-content" backgroundColor="#075952" />
-      
-      {/* Header */}
-      <View className="bg-teal-700 pt-12 pb-6 px-4 rounded-b-3xl">
-        <Text className="text-white text-2xl py-3 font-bold text-center">Guide Bookmark</Text>
-      </View>
-      {/* Search Bar */}
-      <View className="px-4 -mt-6 mb-6">
-        < View className="bg-white rounded-full p-7 shadow-sm border border-gray-200" >
-          <TouchableOpacity 
-            onPress={handleSearch}
-            className="bg-white flex-row items-center"
-          >
-            <Feather name="search" size={20} color="#666" className="mr-3" />
-            <Text className='text-gray-400'> Search...</Text>
-          </TouchableOpacity>
-        </View>
-        <View className='mt-4 w-10/16 border-hairline border-s border-gray-300' />
-      </View>
-      
-      {/* Bookmarked Guides List */}
-      <ScrollView 
-        className="flex-1 px-3"
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      > 
-        <FlatList
-          data={MockDataGuides}
-          renderItem={({ item }) => (
-            <TouchableOpacity>
-              <GuideBox {...item} />
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          className="pb-5"
-          scrollEnabled={false}
-        />
+    const handleSearch = () => {
+        router.push("/tabs/guide/search_guide");
+    };
+    
+    return (
+        <SafeAreaView className="flex-1 bg-white">
+            <StatusBar barStyle="light-content" backgroundColor="#284D44" />
 
-        {/* Empty State or Load More */}
-        <View className="items-center py-8">
-          <Text className="text-gray-400 text-sm">No more bookmarks</Text>
-        </View>
+            <View className="bg-green_2 pb-6 px-4 pt-20">
+                <Text className="text-white text-[35px] font-sf-bold text-center pt-2">
+                    Guide Bookmark
+                </Text>
+            </View>
 
-        {/* Bottom spacing for tab bar */}
-        <View className="h-20" />
-      </ScrollView>
-    </View>
-  );
+            <View className="px-4 py-4 bg-white">
+                <TouchableOpacity
+                    onPress={handleSearch}
+                    className="flex-row items-center bg-gray-50 rounded-full px-4 py-3 border border-gray_border"
+                >
+                    <Feather name="search" size={20} color="#666" />
+                    <Text className="text-gray-400 ml-3 flex-1">Search...</Text>
+                </TouchableOpacity>
+            </View>
+
+            <FlatList
+                data={guides}
+                renderItem={({ item }) => <GuideBox guideData={item} />}
+                keyExtractor={item => item.id.toString()}
+                className="flex-1 bg-white mb-20"
+                contentContainerStyle={{
+                    paddingHorizontal: 16,
+                    paddingBottom: 20,
+                }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
+                ListEmptyComponent={() => (
+                    <View className="items-center py-16">
+                        <Feather name="bookmark" size={48} color="#d1d5db" />
+                        <Text className="text-gray-500 mt-4 text-lg">
+                            No bookmarks yet
+                        </Text>
+                        <Text className="text-gray-400 mt-2 text-center px-8">
+                            Start bookmarking guides to see them here!
+                        </Text>
+                    </View>
+                )}
+            />
+        </SafeAreaView>
+    );
 };
 
 export default GuideBookmarkScreen;

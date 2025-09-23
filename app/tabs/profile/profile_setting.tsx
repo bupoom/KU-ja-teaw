@@ -1,109 +1,256 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
-import React, { useState } from 'react'
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+// app/(tabs)/profile/profile_setting.tsx
+import Header from "@/components/common/Header";
+import { mockUserDetails } from "@/mock/mockDataComplete";
+import { Feather, Foundation } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    SafeAreaView,
+    StatusBar,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
-const EditProfile = () => {
+const AccountScreen: React.FC = () => {
     const router = useRouter();
-    const [name, setName] = useState('Oshi');
-    const [phoneNumber, setPhoneNumber] = useState('0877788877');
+    const [user, setUser] = useState<UserDetails | null>(null);
+    const [name, setName] = useState<string>("");
+    const [phone, setPhone] = useState<string>("");
+    const [profileImage, setProfileImage] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(true);
+    const [saving, setSaving] = useState<boolean>(false);
 
-    const handleSave = () => {
-        // Validation
+    // Load user data
+    const loadUserData = async () => {
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Use mock data
+            const userData = {
+                user_id: "1",
+                name: "Mr.Terrific",
+                phone: "0654105555",
+                email: "terrific@example.com",
+                profile_picture_link: mockUserDetails[0].profile_picture_link,
+            };
+
+            setUser(userData);
+            setName(userData.name);
+            setPhone(userData.phone);
+            setProfileImage(userData.profile_picture_link);
+        } catch (error) {
+            Alert.alert("Error", "Failed to load user data");
+            console.error("Error loading user data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Request permissions
+    const requestPermissions = async () => {
+        const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+            Alert.alert(
+                "Permission Required",
+                "Sorry, we need camera roll permissions to change your profile picture."
+            );
+            return false;
+        }
+        return true;
+    };
+
+    // Pick image from gallery only
+    const pickImage = async () => {
+        const hasPermission = await requestPermissions();
+        if (!hasPermission) return;
+
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+            });
+
+            if (!result.canceled && result.assets[0]) {
+                setProfileImage(result.assets[0].uri);
+            }
+        } catch (error) {
+            Alert.alert("Error", "Failed to pick image");
+            console.error("Error picking image:", error);
+        }
+    };
+
+    // Format phone number to keep only digits and limit to 10
+    const handlePhoneChange = (text: string) => {
+        // Remove all non-digit characters
+        const cleanedText = text.replace(/\D/g, "");
+
+        // Limit to 10 digits
+        const limitedText = cleanedText.slice(0, 10);
+
+        setPhone(limitedText);
+    };
+
+    // Validate phone number
+    const validatePhone = (phoneNumber: string): boolean => {
+        return phoneNumber.length === 10 && /^\d{10}$/.test(phoneNumber);
+    };
+
+    // Save user data
+    const handleSave = async () => {
         if (!name.trim()) {
-            Alert.alert("Error", "Please enter your name");
-            return;
-        }
-        if (!phoneNumber.trim()) {
-            Alert.alert("Error", "Please enter your phone number");
+            Alert.alert("Error", "Name cannot be empty");
             return;
         }
 
-        // Save logic here
-        Alert.alert("Success", "Profile updated successfully!");
-        // Save API here console.log("Profile saved:", { name, phoneNumber });
-        Alert.alert(name);
-        Alert.alert(phoneNumber);
-        router.back()
+        if (!phone.trim()) {
+            Alert.alert("Error", "Phone number cannot be empty");
+            return;
+        }
+
+        if (!validatePhone(phone)) {
+            Alert.alert("Error", "Phone number must be exactly 10 digits");
+            return;
+        }
+
+        setSaving(true);
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            console.log("Saving user data:", {
+                name: name.trim(),
+                phone: phone.trim(),
+                profileImage,
+            });
+
+            Alert.alert("Success", "Profile updated successfully", [
+                { text: "OK", onPress: () => router.back() },
+            ]);
+        } catch (error) {
+            Alert.alert("Error", "Failed to save profile");
+            console.error("Error saving profile:", error);
+        } finally {
+            setSaving(false);
+        }
     };
 
-    const handleEditAvatar = () => {
-        Alert.alert(
-            "Edit Avatar",
-            "Choose an option",
-            [
-                {
-                    text: "Camera",
-                    onPress: () => console.log("Open camera")
-                },
-                {
-                    text: "Gallery",
-                    onPress: () => console.log("Open gallery")
-                },
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                }
-            ]
+    const handleBackPress = () => {
+        router.back();
+    };
+
+    useEffect(() => {
+        loadUserData();
+    }, []);
+
+    if (loading) {
+        return (
+            <SafeAreaView className="flex-1 bg-white">
+                <StatusBar barStyle="dark-content" />
+                <Header title="Account" onBackPress={handleBackPress} />
+                <View className="flex-1 justify-center items-center">
+                    <ActivityIndicator size="large" color="#059669" />
+                    <Text className="mt-4 text-gray-600">Loading...</Text>
+                </View>
+            </SafeAreaView>
         );
-    };
+    }
 
     return (
-        <View className="flex-1 bg-gray-50">
-            <View className="px-6 mt-12">
-                {/* Avatar Section */}
-                <View className="items-center mb-8">
-                    <View className="relative">
-                        {/* Avatar Circle */}
-                        <View className="w-24 h-24 bg-gray-300 rounded-full items-center justify-center">
-                            <Ionicons name="person" size={40} color="#666" />
-                        </View>
-                        
-                        {/* Edit Button */}
-                        <TouchableOpacity 
-                            onPress={handleEditAvatar}
-                            className="absolute -bottom-1 -right-1 w-8 h-8 bg-gray-400 rounded-full items-center justify-center"
+        <SafeAreaView className="flex-1 bg-white">
+            <StatusBar barStyle="dark-content" />
+            <Header title="Account" onBackPress={handleBackPress} />
+
+            <View className="flex-1">
+                {/* Profile Image Section with Gradient Background */}
+                <View className="items-center px-4 justify-center mt-10">
+                    <View className="relative mb-4 w-40 h-40">
+                        {profileImage ? (
+                            <Image
+                                source={{ uri: profileImage }}
+                                className="w-40 h-40 rounded-full border-4 border-white shadow-lg"
+                            />
+                        ) : (
+                            <Feather name="user" size={48} color="white" />
+                        )}
+                        <TouchableOpacity
+                            onPress={pickImage}
+                            className="absolute -bottom-0 -right-2 w-9 h-9 bg-white rounded-full border-2 border-white items-center justify-center shadow-lg"
                         >
-                            <Ionicons name="pencil" size={16} color="white" />
+                            <Foundation
+                                name="pencil"
+                                size={18}
+                                color="#374151"
+                            />
                         </TouchableOpacity>
                     </View>
-                    
-                    <Text className="text-gray-600 text-sm mt-2">Edit your avatar pic</Text>
                 </View>
 
-                {/* Name Field */}
-                <View className="mb-6">
-                    <Text className="text-gray-800 text-base font-medium mb-2">Name</Text>
-                    <TextInput
-                        value={name}
-                        onChangeText={setName}
-                        placeholder="Enter your name"
-                        className="bg-white border border-gray-200 rounded-lg px-4 py-3 text-base"
-                    />
-                </View>
+                {/* Form Section with White Background */}
+                <View className="flex-1 px-6 bg-white mt-6">
+                    {/* Form Fields */}
+                    <View className="space-y-6 mt-8">
+                        {/* Name Field */}
+                        <View>
+                            <Text className="text-black font-medium text-base mb-3">
+                                Name
+                            </Text>
+                            <TextInput
+                                value={name}
+                                onChangeText={setName}
+                                placeholder="Enter your name"
+                                placeholderTextColor="#9CA3AF"
+                                className="w-full px-4 py-4 border border-gray-300 rounded-lg text-gray-500 text-base bg-white"
+                                autoCapitalize="words"
+                                returnKeyType="next"
+                            />
+                        </View>
 
-                {/* Phone Number Field */}
-                <View className="mb-8">
-                    <Text className="text-gray-800 text-base font-medium mb-2">Phone Number</Text>
-                    <TextInput
-                        value={phoneNumber}
-                        onChangeText={setPhoneNumber}
-                        placeholder="Enter your phone number"
-                        keyboardType="phone-pad"
-                        className="bg-white border border-gray-200 rounded-lg px-4 py-3 text-base"
-                    />
-                </View>
+                        {/* Phone Number Field */}
+                        <View>
+                            <Text className="text-black font-medium text-base mb-3">
+                                Phone Number
+                            </Text>
+                            <TextInput
+                                value={phone}
+                                onChangeText={handlePhoneChange}
+                                placeholder="Enter your phone number"
+                                placeholderTextColor="#9CA3AF"
+                                className="w-full px-4 py-4 border border-gray-300 rounded-lg text-gray-500 text-base bg-white"
+                                keyboardType="numeric"
+                                returnKeyType="done"
+                                maxLength={10}
+                            />
+                            <Text className="text-gray-500 text-sm mt-2 text-right">
+                                {phone.length}/10 digits
+                            </Text>
+                        </View>
+                    </View>
 
-                {/* Save Button */}
-                <TouchableOpacity 
-                    onPress={handleSave}
-                    className="bg-green-700 rounded-lg py-4 items-center"
-                >
-                    <Text className="text-white text-base font-semibold">Save</Text>
-                </TouchableOpacity>
+                    {/* Save Button */}
+                    <TouchableOpacity
+                        onPress={handleSave}
+                        disabled={saving}
+                        className={`w-full py-4 rounded-lg mt-8 mb-8 ${
+                            saving ? "bg-gray-300" : "bg-green_2"
+                        }`}
+                    >
+                        <Text className="text-white font-semibold text-base text-center">
+                            Save
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
-    )
-}
+        </SafeAreaView>
+    );
+};
 
-export default EditProfile
+export default AccountScreen;
