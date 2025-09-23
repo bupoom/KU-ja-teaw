@@ -14,6 +14,8 @@ import PlaceBox from "@/components/PlaceBox";
 import { mockPlaceBoxes } from "@/mock/mockDataComplete";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
+import { Stack } from "expo-router";
+
 
 //  สิ่งที่ต้องแก้ไขเพิ่มเติมคือ
 //  - ใส่ API Function
@@ -97,8 +99,10 @@ const SearchScreen: React.FC = () => {
 
     // Handle navigation to PlaceDetails screen
     const handlePlacePress = (place: PlaceBox) => { 
-        router.push("/plan/[plan_id]/daily_trip/(modals)/add_place/[place_detail]");
-        };
+        router.push(
+            `/plan/${plan_id}/daily_trip/(modals)/add_place/${place.id}`
+        );
+    };
 
     return (
         <SafeAreaView className="h-full bg-white py-14">
