@@ -1,12 +1,6 @@
 import client from "../client";
 import { Image } from "react-native";
-const endpoints = {
-    user: {
-        getUserDetailById: "/api/users",
-        updateUserDetails: "/api/users",
-        getUserInvited: "/api/users/invited",
-    },
-};
+import { endpoints } from "../config";
 
 export const updateUserDetails = async (data: {
     selectedImageFile?: {
@@ -44,20 +38,27 @@ export const updateUserDetails = async (data: {
 
         const response = await client.patch(
             endpoints.user.updateUserDetails,
-            formData, { headers: {"Content-Type": "multipart/form-data",},}
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
         );
         return response.data;
     } catch (error) {
         console.error("Response data:", error);
         throw error;
     }
-};
+}; 
 
-export const getUserDetailById = async (Userid : string) => {
+export const getUserDetailById = async (userId?: string) => {
     try {
-        console.log("fetch user by id: ", Userid);
-        const response = await client.get(`${endpoints.user.updateUserDetails}/${Userid}`,);
-        return response.data;
+        let response: UserDetails ;
+        if (!userId) {
+            console.log("fetch owner user details ");
+            response = (await client.get(`${endpoints.user.getUserDetail}`)).data;
+        } else {
+            console.log("fetch user by id: ", userId);
+            response = (await client.get(`${endpoints.user.getUserDetail}/${userId}`)).data;
+        }
+        return response;
     } catch (error) {
         console.error("Response data:", error);
         throw error;

@@ -7,17 +7,6 @@ export interface TokenData {
     expiresAt?: number; // timestamp เมื่อ access token หมดอายุ
 }
 
-// ------------------ อธิบาย function ทั้งหมด ----------------------------------
-// saveTokens() → เก็บ access_token , refresh_token
-// getAccessToken() → อ่าน access token ซึ่งเรียกใช้จาก getValidAccessToken เท่านั้นนะไอโอชิ หรือกรที่เข้ามาอ่าน
-// getRefreshToken() → อ่าน refresh token
-// isAccessTokenExpired() → เช็คหมดอายุหรือยังตาม exp date
-// getValidAccessToken() → ขอ token ที่ใช้ได้ (auto-refresh)
-// refreshAccessToken() → ขอ token ใหม่
-// isLoggedIn() → เช็ค login status
-// login() → เข้าสู่ระบบ
-// logout() → ออกจากระบบ
-
 // Keys สำหรับเก็บข้อมูลใน SecureStore
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
@@ -80,7 +69,8 @@ export const AuthService = {
             const now = Date.now();
 
             // เผื่อเวลา 5 นาที ก่อนหมดอายุจริง
-            return expiresAt - 5 * 60 * 1000 <= now;
+            const timeBeforeExpire = Number(process.env.TIME_BEFORE_TOKEN_EXPIRE) || 5; // default 5 นาที
+            return expiresAt - timeBeforeExpire * 60 * 1000 <= now;
         } catch (error) {
             console.error("Error checking token expiration:", error);
             return true;
@@ -106,6 +96,7 @@ export const AuthService = {
     },
     refreshAccessToken: async (): Promise<boolean> => {
         try {
+            console.log("refreshing API..");
             const refreshToken = await AuthService.getRefreshToken();
             if (!refreshToken) {
                 console.log("No refresh token available");
@@ -115,9 +106,9 @@ export const AuthService = {
             // เรียก API เพื่อ refresh token
             // TODO: แทนที่ด้วย API endpoint จริง
             const response = await fetch(
-                "https://10.0.2.2/api/users/refresh-token",
+                `${process.env.BASE_URL}/api/users/refresh-token`,
                 {
-                    method: "POST",
+                    method: "get",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${refreshToken}`,
@@ -137,7 +128,7 @@ export const AuthService = {
                 refreshToken: data.refreshToken || refreshToken, // บาง API ให้ refresh token ใหม่ด้วย
                 expiresAt: data.expiresAt || Date.now() + 30 * 60 * 1000, // default 30 นาที
             });
-
+            console.log("Finished Refreshing API..");
             return true;
         } catch (error) {
             console.error("Error refreshing access token:", error);
@@ -195,7 +186,6 @@ export const AuthService = {
         googleIdToken: string
     ): Promise<{ success: boolean; user?: UserDetails; newUser?: boolean }> => {
         try {
-
             let data: any;
             let newUser = false;
 
@@ -215,11 +205,10 @@ export const AuthService = {
                 newUser = true;
                 console.log("📄 Using mock data for development");
             } else {
-                // Real API call
-                //const URL = `${process.env.BASE_URL}/api/users/login`;
-                const URL = `http://10.0.2.2:3000/api/users/login`;
-                
                 console.log("🔄 Starting API login at SERVER");
+
+                const URL = `${process.env.BASE_URL}/api/users/login`;
+                console.log("url : " , URL)
                 const response = await fetch(URL, {
                     method: "POST",
                     headers: {
@@ -230,15 +219,13 @@ export const AuthService = {
                         idToken: googleIdToken,
                     }),
                 });
-
                 console.log("📊 Response status:", response.status);
-
                 if (!response.ok) {
                     throw new Error(`Login failed: ${response.statusText}`);
                 }
 
                 data = await response.json();
-                console.log("📄 Response data received" , data);
+                console.log("📄 Response data received", data);
 
                 newUser = response.status === 201;
             }

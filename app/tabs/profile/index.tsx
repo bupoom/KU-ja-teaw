@@ -1,5 +1,5 @@
 import TripBox from "@/components/TripBox";
-import { mockTripBoxes } from "@/mock/mockDataComplete";
+import { mockTripBoxes, mockUserDetails } from "@/mock/mockDataComplete";
 import { calculateTripStatus } from "@/util/calculationFunction/calculateTripStatus";
 import { Feather, Foundation } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";

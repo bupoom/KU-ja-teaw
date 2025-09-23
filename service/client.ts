@@ -1,16 +1,18 @@
 import axios from "axios";
 import { AuthService } from "./authService";
 
-const localhost_URL = "http://10.0.2.2:3000" // localhost for dev
-
 const client = axios.create({
-    baseURL: localhost_URL,
+    baseURL: process.env.BASE_URL,
     timeout: 10000
 });
 
 // Request interceptor - เปลี่ยน header ตาม accesstoken
 client.interceptors.request.use(async config => {
-    try {
+    try { 
+        const refresh_token_success = await AuthService.refreshAccessToken();
+        if (refresh_token_success) {
+            console.log( "sucess", refresh_token_success)
+        }
         const token = await AuthService.getValidAccessToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -22,7 +24,7 @@ client.interceptors.request.use(async config => {
     }
 });
 
-// Response interceptor - ถ้า ถ้า
+// Response interceptor
 client.interceptors.response.use(
     response => response,
     async error => {
