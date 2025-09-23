@@ -229,7 +229,7 @@ export const mockNotifications: NotificationBox[] = [
         message:
             "Please vote for dinner location on Day 3 of Japan Adventure trip",
         created_at: "2025-09-07T14:30:00",
-        notification_type: "vote",
+        // notification_type: "vote",
         trip_id: 1, // Japan trip
     },
     {
@@ -237,7 +237,7 @@ export const mockNotifications: NotificationBox[] = [
         title: "New Member Joined",
         message: "Michael Chen joined your European Backpacking trip",
         created_at: "2025-09-06T10:15:00",
-        notification_type: "member",
+        // notification_type: "member",
         trip_id: 2, // European trip
     },
     {
@@ -246,7 +246,7 @@ export const mockNotifications: NotificationBox[] = [
         message:
             "Your flight JL061 departure time has been changed to 11:30 AM",
         created_at: "2025-09-05T16:45:00",
-        notification_type: "flight",
+        // notification_type: "flight",
         trip_id: 1, // Japan trip
     },
     {
@@ -255,7 +255,7 @@ export const mockNotifications: NotificationBox[] = [
         message:
             "Don't forget to pack your passport! Japan trip starts tomorrow",
         created_at: "2025-09-04T09:00:00",
-        notification_type: "reminder",
+        // notification_type: "reminder",
         trip_id: 1, // Japan trip
     },
     {
@@ -263,7 +263,7 @@ export const mockNotifications: NotificationBox[] = [
         title: "Activity Added",
         message: "Sarah Johnson added 'Visit Louvre Museum' to Day 2 itinerary",
         created_at: "2025-09-03T19:20:00",
-        notification_type: "activity",
+        // notification_type: "activity",
         trip_id: 2, // European trip
     },
     {
@@ -271,7 +271,7 @@ export const mockNotifications: NotificationBox[] = [
         title: "Budget Update",
         message: "European trip budget has been updated to $3,200 per person",
         created_at: "2025-09-02T12:15:00",
-        notification_type: "budget",
+        // notification_type: "budget",
         trip_id: 2, // European trip
     },
 ];
@@ -822,7 +822,7 @@ export const mockPlaceDetails: PlaceDetails[] = [
         id: 1,
         title: "Tokyo Tower",
         description:
-            "Tokyo Tower is a communications and observation tower in the Sumida district of Tokyo, Japan. At 333 meters tall, it was the tallest structure in Japan from its completion in 1958 until 2012.",
+            "Tokyo Tower is a communications and observation tower in the Sumida district of Tokyo, Japan...",
         rating: 4.3,
         review_count: 15420,
         location: "Minato City, Tokyo",
@@ -831,6 +831,8 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Tourist Attraction", "Observation Deck", "Tower"],
         map_link: "https://maps.google.com/?q=Tokyo+Tower",
         official_link: "https://www.tokyotower.co.jp/en.html",
+        latitude: 35.6586,
+        longitude: 139.7454,
         notes: mockNotes.filter(
             note => note.reference_id === 1 && note.reference_type === "place"
         ),
@@ -839,7 +841,7 @@ export const mockPlaceDetails: PlaceDetails[] = [
         id: 2,
         title: "Senso-ji Temple",
         description:
-            "Sensō-ji is an ancient Buddhist temple located in Asakusa, Tokyo, Japan. It is Tokyo's oldest temple, and one of its most significant.",
+            "Sensō-ji is an ancient Buddhist temple located in Asakusa, Tokyo...",
         rating: 4.6,
         review_count: 28350,
         location: "Asakusa, Tokyo",
@@ -848,6 +850,8 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Temple", "Religious Site", "Cultural Heritage"],
         map_link: "https://maps.google.com/?q=Senso-ji+Temple",
         official_link: "https://www.senso-ji.jp/",
+        latitude: 35.7148,
+        longitude: 139.7967,
         notes: mockNotes.filter(
             note => note.reference_id === 2 && note.reference_type === "place"
         ),
@@ -856,7 +860,7 @@ export const mockPlaceDetails: PlaceDetails[] = [
         id: 3,
         title: "Shibuya Crossing",
         description:
-            "Shibuya Crossing is a popular scramble crossing in Shibuya, Tokyo, Japan. It is located in front of the Shibuya Station Hachikō exit and stops vehicles in all directions to allow pedestrians to inundate the entire intersection.",
+            "Shibuya Crossing is a popular scramble crossing in Shibuya...",
         rating: 4.4,
         review_count: 32100,
         location: "Shibuya City, Tokyo",
@@ -865,6 +869,8 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Tourist Attraction", "Street", "Urban Experience"],
         map_link: "https://maps.google.com/?q=Shibuya+Crossing",
         official_link: "https://www.shibuya-scramble-square.com/",
+        latitude: 35.6595,
+        longitude: 139.7005,
         notes: mockNotes.filter(
             note => note.reference_id === 3 && note.reference_type === "place"
         ),
@@ -873,7 +879,7 @@ export const mockPlaceDetails: PlaceDetails[] = [
         id: 4,
         title: "Meiji Shrine",
         description:
-            "Meiji Shrine is a Shinto shrine in Shibuya, Tokyo, that is dedicated to the deified spirits of Emperor Meiji and his wife, Empress Shōken. The shrine is located in a forest of 120,000 trees of 365 different species.",
+            "Meiji Shrine is a Shinto shrine in Shibuya, Tokyo...",
         rating: 4.5,
         review_count: 19800,
         location: "Shibuya City, Tokyo",
@@ -882,13 +888,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Shrine", "Religious Site", "Nature", "Cultural Heritage"],
         map_link: "https://maps.google.com/?q=Meiji+Shrine",
         official_link: "https://www.meijijingu.or.jp/en/",
+        latitude: 35.6764,
+        longitude: 139.6993,
         notes: [],
     },
     {
         id: 5,
         title: "Tsukiji Outer Market",
         description:
-            "The Tsukiji Outer Market is a district in Chūō, Tokyo, Japan, between the Tsukiji and Ginza districts. It is the site of the Tsukiji fish market, famous for its tuna auctions and fresh seafood.",
+            "The Tsukiji Outer Market is a district in Chūō, Tokyo...",
         rating: 4.2,
         review_count: 12450,
         location: "Chuo City, Tokyo",
@@ -897,13 +905,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Market", "Food", "Cultural Experience"],
         map_link: "https://maps.google.com/?q=Tsukiji+Outer+Market",
         official_link: "https://www.tsukiji.or.jp/english/",
+        latitude: 35.6655,
+        longitude: 139.7708,
         notes: [],
     },
     {
         id: 6,
         title: "Fushimi Inari Shrine",
         description:
-            "Fushimi Inari Taisha is the head shrine of the kami Inari, located in Fushimi-ku, Kyoto, Kyoto Prefecture, Japan. The shrine sits at the base of a mountain also named Inari which is 233 metres above sea level, and includes trails up the mountain to many smaller shrines.",
+            "Fushimi Inari Taisha is the head shrine of the kami Inari...",
         rating: 4.7,
         review_count: 45200,
         location: "Kyoto, Japan",
@@ -912,13 +922,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Shrine", "Religious Site", "Hiking", "Cultural Heritage"],
         map_link: "https://maps.google.com/?q=Fushimi+Inari+Shrine",
         official_link: "http://inari.jp/en/",
+        latitude: 34.9671,
+        longitude: 135.7727,
         notes: [],
     },
     {
         id: 7,
         title: "Kiyomizu-dera Temple",
         description:
-            "Kiyomizu-dera, officially Otowa-san Kiyomizu-dera, is an independent Buddhist temple in eastern Kyoto. The temple is part of the Historic Monuments of Ancient Kyoto UNESCO World Heritage Site.",
+            "Kiyomizu-dera is an independent Buddhist temple in eastern Kyoto...",
         rating: 4.5,
         review_count: 33100,
         location: "Kyoto, Japan",
@@ -932,13 +944,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         ],
         map_link: "https://maps.google.com/?q=Kiyomizu-dera+Temple",
         official_link: "https://www.kiyomizudera.or.jp/en/",
+        latitude: 34.9949,
+        longitude: 135.7850,
         notes: [],
     },
     {
         id: 8,
         title: "Osaka Castle",
         description:
-            "Osaka Castle is a Japanese castle in Chūō-ku, Osaka, Japan. The castle is one of Japan's most famous landmarks and it played a major role in the unification of Japan during the sixteenth century of the Azuchi-Momoyama period.",
+            "Osaka Castle is a Japanese castle in Chūō-ku, Osaka...",
         rating: 4.3,
         review_count: 28900,
         location: "Osaka, Japan",
@@ -952,14 +966,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         ],
         map_link: "https://maps.google.com/?q=Osaka+Castle",
         official_link: "https://www.osakacastle.net/english/",
+        latitude: 34.6873,
+        longitude: 135.5259,
         notes: [],
     },
-    // European Places (9-12)
     {
         id: 9,
         title: "Eiffel Tower",
         description:
-            "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. It is named after the engineer Gustave Eiffel, whose company designed and built the tower.",
+            "The Eiffel Tower is a wrought-iron lattice tower in Paris...",
         rating: 4.4,
         review_count: 125000,
         location: "Paris, France",
@@ -968,13 +983,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Tower", "Tourist Attraction", "Landmark", "Architecture"],
         map_link: "https://maps.google.com/?q=Eiffel+Tower",
         official_link: "https://www.toureiffel.paris/en",
+        latitude: 48.8584,
+        longitude: 2.2945,
         notes: [],
     },
     {
         id: 10,
         title: "Louvre Museum",
         description:
-            "The Louvre, or the Louvre Museum, is the world's most-visited museum, and a historic landmark in Paris, France. It is the home of some of the best-known works of art, including the Mona Lisa and the Venus de Milo.",
+            "The Louvre is the world's most-visited museum in Paris...",
         rating: 4.6,
         review_count: 98500,
         location: "Paris, France",
@@ -988,13 +1005,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         ],
         map_link: "https://maps.google.com/?q=Louvre+Museum",
         official_link: "https://www.louvre.fr/en",
+        latitude: 48.8606,
+        longitude: 2.3376,
         notes: [],
     },
     {
         id: 11,
         title: "Colosseum",
         description:
-            "The Colosseum is an oval amphitheatre in the centre of the city of Rome, Italy, just east of the Roman Forum. It is the largest amphitheatre ever built, measuring approximately 189 meters long, 156 meters wide and 50 meters high.",
+            "The Colosseum is an oval amphitheatre in the centre of Rome...",
         rating: 4.5,
         review_count: 87300,
         location: "Rome, Italy",
@@ -1008,13 +1027,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         ],
         map_link: "https://maps.google.com/?q=Colosseum+Rome",
         official_link: "https://parcocolosseo.it/en/",
+        latitude: 41.8902,
+        longitude: 12.4922,
         notes: [],
     },
     {
         id: 12,
         title: "Sagrada Familia",
         description:
-            "The Basílica de la Sagrada Família, also known as the Sagrada Família, is a large unfinished Roman Catholic minor basilica in the Eixample district of Barcelona, Catalonia, Spain.",
+            "The Basílica de la Sagrada Família is a large unfinished basilica...",
         rating: 4.7,
         review_count: 76400,
         location: "Barcelona, Spain",
@@ -1028,14 +1049,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         ],
         map_link: "https://maps.google.com/?q=Sagrada+Familia",
         official_link: "https://sagradafamilia.org/en/",
+        latitude: 41.4036,
+        longitude: 2.1744,
         notes: [],
     },
-    // Thailand Places (13-15)
     {
         id: 13,
         title: "Grand Palace",
         description:
-            "The Grand Palace is a complex of buildings at the heart of Bangkok, Thailand. The palace has been the official residence of the Kings of Siam since 1782.",
+            "The Grand Palace is a complex of buildings at the heart of Bangkok...",
         rating: 4.4,
         review_count: 42100,
         location: "Bangkok, Thailand",
@@ -1049,13 +1071,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         ],
         map_link: "https://maps.google.com/?q=Grand+Palace+Bangkok",
         official_link: "https://www.royalgrandpalace.th/en/home",
+        latitude: 13.7500,
+        longitude: 100.4913,
         notes: [],
     },
     {
         id: 14,
         title: "Phi Phi Islands",
         description:
-            "The Phi Phi Islands are an island group in Thailand between the large island of Phuket and the Straits of Malacca coast of Thailand. The islands are administratively part of Krabi Province.",
+            "The Phi Phi Islands are an island group in Thailand...",
         rating: 4.6,
         review_count: 35800,
         location: "Krabi, Thailand",
@@ -1064,13 +1088,15 @@ export const mockPlaceDetails: PlaceDetails[] = [
         categories: ["Beach", "Island", "Nature", "Snorkeling"],
         map_link: "https://maps.google.com/?q=Phi+Phi+Islands",
         official_link: "https://www.phiphi.phuket.com/",
+        latitude: 7.7407,
+        longitude: 98.7784,
         notes: [],
     },
     {
         id: 15,
         title: "Wat Pho Temple",
         description:
-            "Wat Pho, also spelled Wat Po, is a Buddhist temple complex in the Phra Nakhon District, Bangkok, Thailand. It is on Rattanakosin Island, directly south of the Grand Palace.",
+            "Wat Pho is a Buddhist temple complex in Bangkok, Thailand...",
         rating: 4.5,
         review_count: 29200,
         location: "Bangkok, Thailand",
@@ -1084,9 +1110,13 @@ export const mockPlaceDetails: PlaceDetails[] = [
         ],
         map_link: "https://maps.google.com/?q=Wat+Pho+Temple",
         official_link: "https://www.watpho.com/",
+        latitude: 13.7467,
+        longitude: 100.4930,
         notes: [],
     },
 ];
+
+
 // 20. Bookmark Place (from PlaceBox)
 export const mockBookmarkPlaces: PlaceBox[] = [
     // User's favorite/bookmarked places from different categories

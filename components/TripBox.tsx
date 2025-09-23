@@ -78,7 +78,7 @@ const TripBox: React.FC<TripBoxProps> = ({
                         <View className="flex-row items-center">
                             <Feather name="users" size={16} color="#6B7280" />
                             <Text className="text-dark_gray text-sm ml-2 font-sf-semibold">
-                                {member_count} Person Joined
+                                {member_count} Person
                             </Text>
                         </View>
 

@@ -23,51 +23,39 @@ import map from "./map";
 
 const DailyTripsIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
+
+  const [numOfNotifications, setNumOfNotifications] = useState("");
+  const [newNotifications, setNewNotifications] = useState(true);
+
+  //Animation State
   const [showSelectAdd, setShowSelectAdd] = useState(false);
   const [showSelectNotiMap, setShowSelectNotiMap] = useState(false);
   const [isListOpen, setIsListOpen] = useState(false); // เพิ่ม state สำหรับเช็คสถานะของปุ่ม list
+  const [isAddOpen, setIsAddOpen] = useState(false); // เพิ่ม state สำหรับเช็คสถานะของปุ่ม add
   const slideAnim = useRef(new Animated.Value(0)).current;
   const listSlideAnim = useRef(new Animated.Value(0)).current; // เพิ่ม animation สำหรับ list
 
   const handleAddPress = () => {
+    setIsAddOpen(true);
     setShowSelectAdd(true);
     Animated.spring(slideAnim, {
       toValue: 1,
       useNativeDriver: true,
-      tension: 100,
-      friction: 8,
     }).start();
+    console.log("Add Button clicked");
   };
 
-  const closeModal = () => {
+  const closeAddPress = () => {
+    setIsAddOpen(false);
     Animated.spring(slideAnim, {
       toValue: 0,
       useNativeDriver: true,
-      tension: 100,
-      friction: 8,
-    }).start(() => {
-      setShowSelectAdd(false);
-    });
+    }).start();
+
+    setTimeout(() => setShowSelectAdd(false), 100);
+    console.log("Class Add Button clicked");
   };
 
-  const handleAddPlace = () => {
-    console.log("Add Place clicked");
-    closeModal();
-    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_place/select_time`);
-  };
-
-  const handleAddEvent = () => {
-    console.log("Add Event clicked");
-    closeModal();
-    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_event/select_time`);
-  };
-
-  const handleAddVote = () => {
-    console.log("Add Vote clicked");
-    closeModal();
-    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type`);
-  };
-  
   const handleListPress = () => {
     setIsListOpen(true);
     setShowSelectNotiMap(true); // เปิด container เลย
@@ -77,17 +65,35 @@ const DailyTripsIndex = () => {
     }).start();
     console.log("List view clicked");
   };
-  
+
   const handleCloseList = () => {
     setIsListOpen(false); // icon กลับทันที
     Animated.spring(listSlideAnim, {
       toValue: 0,
       useNativeDriver: true,
     }).start();
-    
-    console.log("Close List view clicked");
+
     // ปิด container เร็วขึ้น ไม่ต้องรอ animation
     setTimeout(() => setShowSelectNotiMap(false), 100);
+    console.log("Close List view clicked");
+  };
+
+  const handleAddPlace = () => {
+    console.log("Add Place clicked");
+    closeAddPress();
+    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_place/select_time`);
+  };
+
+  const handleAddEvent = () => {
+    console.log("Add Event clicked");
+    closeAddPress();
+    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_event/select_time`);
+  };
+
+  const handleAddVote = () => {
+    console.log("Add Vote clicked");
+    closeAddPress();
+    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type`);
   };
 
   const handleMapPress = () => {
@@ -105,7 +111,7 @@ const DailyTripsIndex = () => {
   // Animation for Add Button
   const optionTranslateY = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [200, 0],
+    outputRange: [150, 0],
   }); // Slide up effect ของ 3 ปุ่ม Add
 
   const buttonRotation = slideAnim.interpolate({
@@ -142,16 +148,21 @@ const DailyTripsIndex = () => {
         {isListOpen ? (
           <AntDesign name="close" size={24} color="black" />
         ) : (
-          <Feather name="list" size={24} color="black" />
+          <View>
+            <Feather name="list" size={24} color="black" />
+            {newNotifications && (
+              <View className="absolute top-0 right-0 w-2 h-2 bg-super_red rounded-full" />
+            )}
+          </View>
         )}
       </TouchableOpacity>
 
       {/* Show Options Add*/}
       {showSelectAdd && (
-        <View className="absolute inset-0 bg-black/20">
+        <View className="absolute inset-0 bg-black/0">
           <TouchableOpacity
             className="flex-1"
-            onPress={closeModal}
+            onPress={closeAddPress}
             activeOpacity={1}
           >
             <View className="absolute bottom-28 right-4">
@@ -160,14 +171,14 @@ const DailyTripsIndex = () => {
                   transform: [{ translateY: optionTranslateY }],
                 }}
               >
-                {/* Add Vote Option */}
+                {/* Add Place Option */}
                 <Animated.View
                   style={{
                     transform: [
                       {
                         translateY: slideAnim.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [60, 0],
+                          outputRange: [20, 0],
                         }),
                       },
                     ],
@@ -176,16 +187,12 @@ const DailyTripsIndex = () => {
                 >
                   <TouchableOpacity
                     className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
-                    onPress={handleAddVote}
+                    onPress={handleAddPlace}
                   >
                     <Text className="text-base mr-3 text-gray-800 font-medium">
-                      Add Vote
+                      Add Place
                     </Text>
-                    <MaterialIcons
-                      name="how-to-vote"
-                      size={24}
-                      color="#284D44"
-                    />
+                    <Ionicons name="location" size={24} color="#284D44" />
                   </TouchableOpacity>
                 </Animated.View>
 
@@ -218,14 +225,14 @@ const DailyTripsIndex = () => {
                   </TouchableOpacity>
                 </Animated.View>
 
-                {/* Add Place Option */}
+                {/* Add Vote Option */}
                 <Animated.View
                   style={{
                     transform: [
                       {
                         translateY: slideAnim.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [20, 0],
+                          outputRange: [60, 0],
                         }),
                       },
                     ],
@@ -233,13 +240,17 @@ const DailyTripsIndex = () => {
                   }}
                 >
                   <TouchableOpacity
-                    className="flex-row items-center justify-end w-48 py-3 px-4 mb-4 bg-white rounded-lg shadow-lg border border-gray-200"
-                    onPress={handleAddPlace}
+                    className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
+                    onPress={handleAddVote}
                   >
                     <Text className="text-base mr-3 text-gray-800 font-medium">
-                      Add Place
+                      Add Vote
                     </Text>
-                    <Ionicons name="location" size={24} color="#284D44" />
+                    <MaterialIcons
+                      name="how-to-vote"
+                      size={24}
+                      color="#284D44"
+                    />
                   </TouchableOpacity>
                 </Animated.View>
               </Animated.View>
@@ -252,23 +263,49 @@ const DailyTripsIndex = () => {
       {showSelectNotiMap && (
         <View className="absolute inset-0 bg-white/0">
           <TouchableOpacity className="flex-1" activeOpacity={1}>
-            <View className="absolute bottom-12 left-10 flex-row items-center gap-2">
-              {/* Close Button - ยังคงอยู่ที่เดิม */}
-              <TouchableOpacity
-                className="w-16 h-16 bg-white rounded-full border border-gray_border items-center justify-center"
-                onPress={handleCloseList}
-              >
-                <AntDesign name="close" size={24} color="black" />
-              </TouchableOpacity>
-
-              {/* Map Button - เลื่อนออกมาทางขวา */}
+            <View className="absolute bottom-12 left-10 flex-col items-center justify-center gap-2">
+              {/* Notification Button */}
               <Animated.View
                 style={{
                   transform: [
                     {
-                      translateX: listSlideAnim.interpolate({
+                      translateY: listSlideAnim.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [-80, 0], // เลื่อนจากซ้ายมาขวา
+                        outputRange: [160, 0],
+                      }),
+                    },
+                  ],
+                  opacity: listSlideAnim,
+                }}
+              >
+                <TouchableOpacity
+                  className="w-16 h-16 bg-white rounded-full border border-gray_border items-center justify-center"
+                  onPress={() => {
+                    handleNotificationPress();
+                    setNewNotifications(false); // reset noti เมื่อกด
+                  }}
+                >
+                  <View>
+                    <Ionicons
+                      name="notifications-outline"
+                      size={24}
+                      color="black"
+                    />
+                    {newNotifications && (
+                      <View className="absolute top-0 right-0 w-2 h-2 bg-super_red rounded-full" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              </Animated.View>
+
+              {/* Map Button - เด้งจากด้านล่างขึ้นมา */}
+              <Animated.View
+                style={{
+                  transform: [
+                    {
+                      translateY: listSlideAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [80, 0], // เริ่มต่ำกว่าเดิม 80px แล้วเลื่อนขึ้นมา
                       }),
                     },
                   ],
@@ -283,31 +320,13 @@ const DailyTripsIndex = () => {
                 </TouchableOpacity>
               </Animated.View>
 
-              {/* Notification Button - เลื่อนออกมาทางขวา ช้ากว่า Map */}
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      translateX: listSlideAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [-160, 0], // เลื่อนจากซ้ายมาขวา ระยะไกลกว่า
-                      }),
-                    },
-                  ],
-                  opacity: listSlideAnim,
-                }}
+              {/* Close Button - ยังคงอยู่ที่เดิม */}
+              <TouchableOpacity
+                className="w-16 h-16 bg-white rounded-full border border-gray_border items-center justify-center"
+                onPress={handleCloseList}
               >
-                <TouchableOpacity
-                  className="w-16 h-16 bg-white rounded-full border border-gray_border items-center justify-center"
-                  onPress={handleNotificationPress}
-                >
-                  <Ionicons
-                    name="notifications-outline"
-                    size={24}
-                    color="black"
-                  />
-                </TouchableOpacity>
-              </Animated.View>
+                <AntDesign name="close" size={24} color="black" />
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         </View>

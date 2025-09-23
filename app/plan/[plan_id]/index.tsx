@@ -117,10 +117,10 @@ const PlanIndex = () => {
     }
   }, [plan_id]);
 
-  useEffect(() => {
-    console.log("Updated overviewNotes:", overviewNotes);
-    console.log("Updated commentNotes:", commentNotes);
-  }, [overviewNotes]);
+  // useEffect(() => {
+  //   console.log("Updated overviewNotes:", overviewNotes);
+  //   console.log("Updated commentNotes:", commentNotes);
+  // }, [overviewNotes]);
 
   // Note management functions
 
