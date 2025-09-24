@@ -7,7 +7,7 @@ type Props = {
   onSave: (id: number, text: string) => void;
 };
 
-export default function NoteItem({ note, userId, onSave }: Props) {
+export default function NoteItem({ note, userId, onSave}: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(note.note_text);
 
@@ -19,7 +19,6 @@ export default function NoteItem({ note, userId, onSave }: Props) {
           <Text className="font-medium text-gray-900 text-sm mb-1">
             {note.user_name}
           </Text>
-
           {isEditing ? (
             <View>
               <TextInput
@@ -49,10 +48,12 @@ export default function NoteItem({ note, userId, onSave }: Props) {
             </View>
           ) : (
             <TouchableOpacity
-              onPress={() => note.refer_user_id === userId && setIsEditing(true)}
+              disabled={note.refer_user_id !== userId}
+              onPress={() => setIsEditing(true)}
+              className="border border-gray_border mt-2 p-2 rounded-lg"
             >
               <Text className="text-gray-700 text-sm leading-5">
-                {note.note_text}
+                {note.note_text || "Tab to add a note..."}
               </Text>
             </TouchableOpacity>
           )}

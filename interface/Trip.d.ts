@@ -9,11 +9,12 @@ interface TripDetails {
     owner_image: string;
     owner_email: string;
     group_members: number;
-    status_plan: string;
-    trip_password: string;
-    trip_code: string;
     budget?: number;
     note?: Note[];
+    // เพิ่มส่วนนี้มาน่ะครับ
+    trip_status: "planning" | "completed";
+    trip_code: string;
+    trip_password: string;
 }
 
 interface TripBox {

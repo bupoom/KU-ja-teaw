@@ -46,6 +46,12 @@ export default function IntroLayout() {
                     headerShown: false,
                 }}
             />
+            <Stack.Screen
+                name="plan/[plan_id]"
+                options={{
+                    headerShown: false,
+                }}
+            />
         </Stack>
     );
 }

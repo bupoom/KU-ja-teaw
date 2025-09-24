@@ -17,6 +17,16 @@ const TripBox: React.FC<TripBoxProps> = ({
     tripData,
     onPress, // Receive custom navigation function
 }) => {
+    const {
+        trip_id,
+        trip_name,
+        trip_image,
+        start_date,
+        end_date,
+        member_count,
+        status_planning,
+    } = tripData;
+
     const router = useRouter();
     const handleTripPress = (): void => {
         console.log(`trip_id: ${trip_id}`);
@@ -28,19 +38,9 @@ const TripBox: React.FC<TripBoxProps> = ({
             router.push(`/plan/${trip_id}`);
         }
     };
-	const {
-        trip_id,
-        trip_name,
-        trip_image,
-        start_date,
-        end_date,
-        member_count,
-        status_planning,
-    } = tripData; 
 
     return (
         <TouchableOpacity
-            key={trip_id}
             onPress={handleTripPress}
             className="bg-white rounded-2xl p-4 mb-3 shadow-sm border border-gray_border"
             activeOpacity={0.7}
@@ -78,7 +78,7 @@ const TripBox: React.FC<TripBoxProps> = ({
                         <View className="flex-row items-center">
                             <Feather name="users" size={16} color="#6B7280" />
                             <Text className="text-dark_gray text-sm ml-2 font-sf-semibold">
-                                {member_count} Person Joined
+                                {member_count} Person
                             </Text>
                         </View>
 

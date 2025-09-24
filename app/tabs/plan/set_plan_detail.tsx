@@ -128,19 +128,18 @@ export default function SetPlanDetail() {
                 </Text>
 
                 {/* Trip Name */}
-                <View className="bg-white border border-gray_border rounded-2xl p-4 mt-5 mb-4">
+                <View className="bg-white border border-gray_border rounded-lg p-4 mt-5 mb-4">
                     <Text className="text-black font-sf-semibold mb-2 text-[16px]">
                         Trip Name
                     </Text>
 
-                    {/* ทำให้ขนาด/ขอบเหมือนปุ่มเลือกวัน: border + rounded-2xl + px-4 py-3 */}
-                    <View className="border border-gray_border rounded-2xl px-4">
+                    <View className="border border-gray_border rounded-lg px-4">
                         <TextInput
                             value={name}
                             onChangeText={setName}
                             placeholder="Enter Your Trip Name"
                             maxLength={MAX_NAME}
-                            className="text-black"
+                            className="text-black font-medium"
                         />
                     </View>
 
@@ -150,7 +149,7 @@ export default function SetPlanDetail() {
                 </View>
 
                 {/* Date Duration */}
-                <View className="bg-white border border-gray_border rounded-2xl p-4 mb-4">
+                <View className="bg-white border border-gray_border rounded-lg p-4 mb-4">
                     <Text className="text-black font-sf-semibold mb-2 text-[16px]">
                         Date Duration
                     </Text>
@@ -159,7 +158,7 @@ export default function SetPlanDetail() {
                         {/* Start */}
                         <TouchableOpacity
                             onPress={() => setShowStart(true)}
-                            className="flex-1 border border-gray_border rounded-2xl px-4 py-3 flex-row items-center"
+                            className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center"
                             activeOpacity={0.8}
                         >
                             <Feather
@@ -177,7 +176,7 @@ export default function SetPlanDetail() {
                         {/* End */}
                         <TouchableOpacity
                             onPress={() => setShowEnd(true)}
-                            className="flex-1 border border-gray_border rounded-2xl px-4 py-3 flex-row items-center"
+                            className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center"
                             activeOpacity={0.8}
                         >
                             <Feather
@@ -186,7 +185,7 @@ export default function SetPlanDetail() {
                                 color="#9CA3AF"
                             />
                             <Text
-                                className={`ml-2 ${endDate ? "text-black" : "text-gray-400"}`}
+                                className={`ml-2 ${endDate ? "text-black" : "text-gray-400"} font-medium`}
                             >
                                 {fmt(endDate)}
                             </Text>
@@ -219,7 +218,7 @@ export default function SetPlanDetail() {
                 </View>
 
                 {/* Poster Trip */}
-                <View className="bg-white border border-gray_border rounded-2xl p-4 mb-5">
+                <View className="bg-white border border-gray_border rounded-lg p-4 mb-5">
                     <Text className="text-black font-sf-semibold text-[16px] mb-2">
                         Poster Trip
                     </Text>

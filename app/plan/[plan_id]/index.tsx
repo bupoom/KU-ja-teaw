@@ -1,48 +1,52 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  TextInput,
-  Modal,
-  Alert,
-} from "react-native";
-import { usePathname, useLocalSearchParams } from "expo-router";
+import FlightCard from "@/components/plan/FlightCard";
+import NoteItem from "@/components/plan/NoteItem";
+import Feather from "@expo/vector-icons/Feather";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
+import { useLocalSearchParams, usePathname } from "expo-router";
 import * as DocumentPicker from "expo-document-picker"; // เปิดไฟล์จากเครื่อง
 import * as FileSystem from "expo-file-system"; // โหลดไฟล์ลงเครื่อง
 import * as IntentLauncher from "expo-intent-launcher"; // เอาไว้เปิดไฟล์
 import { useEffect, useState } from "react";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
-import Feather from "@expo/vector-icons/Feather";
+import {
+  Alert,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Image,
+} from "react-native";
 
-import { mockNotes } from "@/mock/mockDataComplete";
-import { mockFileGroups } from "@/mock/mockDataComplete";
-import { mockFlights } from "@/mock/mockDataComplete";
-import { mockTripMembers } from "@/mock/mockDataComplete";
+import {
+  mockFlights,
+  mockNotes,
+  mockTripMembers,
+  mockFileGroups,
+} from "@/mock/mockDataComplete";
 
 import PlanHeader from "@/components/PlanHeader";
-import { formatDateRange , formatTimeRange } from "@/util/formatFucntion/formatDate&TimeRange";
+import FilePool from "@/components/plan/FilePool";
+import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
 
 const PlanIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
   const user_id = 1;
   const pathName = usePathname();
 
-  // State management
   const [userRole, setUserRole] = useState<string>("");
   const [userName, setUserName] = useState<string>(""); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
-  const [userUrl, setUserUrl] = useState<string>("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop"); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
+  const [userUrl, setUserUrl] = useState<string>(
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop"
+  ); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
   const canEdit = userRole === "owner" || userRole === "editor"; // เอาไว้เช็คเงื่อนไข ว่าเเก้ไขได้ไหม
 
   // Note State
   const [overviewNotes, setOverviewNotes] = useState<Note[]>([]); // Note ทั้งหมด ในหน้า Overview
   const [isModalVisible, setIsModalVisible] = useState(false); // เอาไว้ โชว์ Note ของคนอื่นที่ไม่ใช่ของเรา
-  const [editingNoteId, setEditingNoteId] = useState<number | null>(null); // บอกว่า ตอนนี้กำลังเเก้ Note Id ไหนอยู่
-  const [editText, setEditText] = useState(""); // text ใน Note ของเราที่เเก้ไข
 
   // Flight State
   const [flights, setFlights] = useState<Flight[]>([]); // เก็บ Flights ของเราเอาไว้
@@ -109,8 +113,14 @@ const PlanIndex = () => {
       console.log(`Current Path : ${pathName}`);
       console.log(`Plan Id : ${plan_id}`);
       console.log(`User Id : ${user_id} => Role : ${memberData?.role}`);
+      console.log(notes);
     }
   }, [plan_id]);
+
+  // useEffect(() => {
+  //   console.log("Updated overviewNotes:", overviewNotes);
+  //   console.log("Updated commentNotes:", commentNotes);
+  // }, [overviewNotes]);
 
   // Note management functions
 
@@ -121,6 +131,8 @@ const PlanIndex = () => {
   const commentNotes = overviewNotes.filter(
     (note) => note.refer_user_id !== user_id
   ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ไม่ตรง กับ user_id เรา
+
+  //  ---------- handle user action --------------
 
   const handleAddNote = () => {
     const newNote: Note = {
@@ -135,34 +147,17 @@ const PlanIndex = () => {
       created_at: new Date().toISOString(), // current timestamp
     };
     setOverviewNotes((prev) => [...prev, newNote]);
-    setEditingNoteId(newNote.id);
-    setEditText("");
   };
 
-  const handleEditNote = (note: Note) => {
-    if (note.refer_user_id === user_id) {
-      setEditingNoteId(note.id);
-      setEditText(note.note_text);
-    }
-  };
-
-  const handleSaveEdit = (noteId: number) => {
+  const handleSaveEdit = (noteId: number, editText: string) => {
     setOverviewNotes((prev) =>
       prev.map((note) =>
         note.id === noteId ? { ...note, note_text: editText } : note
       )
     );
-    setEditingNoteId(null);
-    setEditText("");
   };
 
-  const handleCancelEdit = () => {
-    setEditingNoteId(null);
-    setEditText("");
-  };
-
-  // Flight management functions
-
+  // ---  Flight management functions   ---
   const resetFlightForm = () => {
     setFlightForm({
       departure_date: "",
@@ -176,13 +171,11 @@ const PlanIndex = () => {
       airline: "",
     });
   };
-
   const handleAddFlight = () => {
     resetFlightForm();
     setEditingFlightId(null);
     setIsFlightModalVisible(true);
   };
-
   const handleEditFlight = (flight: Flight) => {
     if (canEdit) {
       // Parse the date and time from the flight data
@@ -204,7 +197,6 @@ const PlanIndex = () => {
       setIsFlightModalVisible(true);
     }
   }; // เอาไว้กรองค่าใหม่ลง Flights Form
-
   const handleSaveFlight = () => {
     if (!validateFlightForm()) return; // เช็คว่าต้องมี Date เเละ Time ถ้าไม่เช็คมันจะ Error
 
@@ -244,13 +236,11 @@ const PlanIndex = () => {
     setIsFlightModalVisible(false);
     resetFlightForm();
   };
-
   const handleCancelFlight = () => {
     setIsFlightModalVisible(false);
     setEditingFlightId(null);
     resetFlightForm();
   };
-
   const handleDeleteFlight = (id: number) => {
     Alert.alert(
       "Delete Flight",
@@ -271,7 +261,6 @@ const PlanIndex = () => {
       ]
     );
   };
-
   const onChangeDate = (
     event: DateTimePickerEvent,
     selectedDate: Date | undefined,
@@ -282,7 +271,6 @@ const PlanIndex = () => {
       setFlightForm((prev) => ({ ...prev, [field]: iso }));
     }
   }; // เวลาเลือกวัน DateTimePicker ส่ง Date object มา  แปลงเป็น YYYY-MM-DD แล้วเก็บใน state
-
   const onChangeTime = (
     event: DateTimePickerEvent,
     selectedDate: Date | undefined,
@@ -294,6 +282,7 @@ const PlanIndex = () => {
     }
   }; // เวลาเลือกเวลา: DateTimePicker ส่ง Date object มา  แปลงเป็น HH:mm แล้วเก็บใน state
 
+  //  ---------- Catch error Function --------------
   const validateFlightForm = () => {
     if (!flightForm.departure_date) {
       Alert.alert("Missing Field", "Please select a departure date.");
@@ -316,24 +305,12 @@ const PlanIndex = () => {
 
   // File management functions
 
-  const formatFileSize = (sizeInMB: number) => {
-    if (sizeInMB < 1) {
-      return `${Math.round(sizeInMB * 1000)}KB`;
-    }
-    return `${sizeInMB.toFixed(1)}MB`;
-  };
-
   const calculateTotalSize = () => {
     const totalMB = file.reduce((sum, file) => sum + file.file_size_mb, 0);
     return {
       display: formatFileSize(totalMB), // สำหรับแสดงผล
       value: totalMB, // สำหรับเปรียบเทียบ
     };
-  };
-
-  const formatUploadDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1).toString().padStart(2, "0")}/${date.getFullYear().toString().slice(-2)}`;
   };
 
   const handleDownloadFile = async (file: FileGroup) => {
@@ -420,166 +397,14 @@ const PlanIndex = () => {
     setIsFileModalVisible(false);
   };
 
-  // render items
-
-  const renderNoteItem = (note: Note) => (
-    <View
-      key={note.id}
-      className="mb-3 bg-white rounded-lg p-3 border border-gray_border"
-    >
-      <View className="flex-row items-start">
-        {/* User Avatar and Name */}
-        <Image
-          source={{ uri: note.user_profile }}
-          className="w-8 h-8 rounded-full mr-3"
-        />
-        <View className="flex-1">
-          <Text className="font-medium text-gray-900 text-sm mb-1">
-            {note.user_name}
-          </Text>
-
-          {/* Note Text */}
-          {editingNoteId === note.id ? (
-            <View className="space-y-2">
-              <TextInput
-                value={editText}
-                onChangeText={setEditText}
-                multiline
-                className="border border-gray-300 rounded-lg p-3 text-gray-700 min-h-[80px] bg-white"
-                style={{ textAlignVertical: "top" }}
-              />
-              <View className="flex-row space-x-2 gap-3 mt-2">
-                <TouchableOpacity
-                  onPress={() => handleSaveEdit(note.id)}
-                  className="bg-green_2 px-4 py-2 rounded-lg flex-1"
-                >
-                  <Text className="text-white text-center font-medium">
-                    Save
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleCancelEdit}
-                  className="bg-white px-4 py-2 rounded-lg flex-1 border border-gray_border"
-                >
-                  <Text className="text-gray-700 text-center font-medium">
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <TouchableOpacity onPress={() => handleEditNote(note)}>
-              <Text className="text-gray-700 text-sm leading-5">
-                {note.note_text}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-    </View>
-  );
-
-  const renderFlight = (flight: Flight) => (
-    <TouchableOpacity
-      key={flight.id}
-      className="bg-white rounded-lg p-4 border border-gray_border mb-3"
-      onPress={() => handleEditFlight(flight)}
-    >
-      <View className="flex-col justify-center">
-        <View className="flex-row items-center justify-between mb-3 flex-1">
-          <Text className="text-lg font-bold text-gray-900 mr-2">
-            {flight.departure_airport}
-          </Text>
-          <Feather name="arrow-right" size={16} color="#6B7280" />
-          <Text className="text-lg font-bold text-gray-900 ml-2">
-            {flight.arrival_airport}
-          </Text>
-        </View>
-      </View>
-
-      <View className="flex-row justify-between mb-2">
-        <Text className="text-sm text-gray-600">
-          {flight.departure_country}
-        </Text>
-        <Text className="text-sm text-gray-600">{flight.arrival_country}</Text>
-      </View>
-
-      <View className="flex-row justify-between items-center mb-3">
-        <Text className="text-sm font-medium text-gray-900">
-          {formatDateRange(flight.departure_date, flight.arrival_date)}
-        </Text>
-        <Text className="text-sm font-medium text-gray-900">
-          {formatTimeRange(flight.departure_date, flight.arrival_date)}
-        </Text>
-      </View>
-
-      <View className="bg-gray-50 rounded-lg p-2">
-        <Text className="text-sm font-medium text-gray-900 text-center">
-          {flight.airline}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderFileItem = (fileItem: FileGroup) => (
-    <View
-      key={fileItem.id}
-      className="flex-row items-center py-3 border-b border-gray-100 last:border-b-0"
-    >
-      {/* File Name */}
-      <View className="flex-1 mr-3">
-        <Text className="text-sm font-medium text-gray-900 mb-1">
-          {fileItem.file_name}
-        </Text>
-        <Text className="text-xs text-gray-500">
-          {formatFileSize(fileItem.file_size_mb)}
-        </Text>
-      </View>
-
-      {/* Uploaded By */}
-      <View className="w-16 mr-3">
-        <Text className="text-xs text-gray-600 text-center">
-          {fileItem.uploaded_by}
-        </Text>
-      </View>
-
-      {/* Upload Date */}
-      <View className="w-16 mr-3">
-        <Text className="text-xs text-gray-600 text-center">
-          {formatUploadDate(fileItem.uploaded_date)}
-        </Text>
-      </View>
-
-      {/* Download Button */}
-      <TouchableOpacity
-        onPress={() => handleDownloadFile(fileItem)}
-        className="mr-2 p-1"
-      >
-        <Feather name="download" size={16} color="#6B7280" />
-      </TouchableOpacity>
-
-      {/* Delete Button - only show for file owner or editors */}
-      {canEdit && (
-        <TouchableOpacity
-          onPress={() => handleDeleteFile(fileItem.id)}
-          className="p-1"
-        >
-          <Feather name="trash-2" size={16} color="#EF4444" />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-
   return (
     <View className="flex-1 bg-white">
-      <PlanHeader planId={plan_id!}/>
+      <PlanHeader planId={plan_id!} />
 
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: 50,
-        }}
+        contentContainerStyle={{ paddingBottom: 50 }}
       >
         {/* Notes Section */}
         <View className="mx-4 mt-4 bg-white">
@@ -617,7 +442,6 @@ const PlanIndex = () => {
                     </View>
                   </View>
                 </View>
-
                 <TouchableOpacity
                   onPress={handleAddNote}
                   className="bg-green_2 rounded-lg py-3 mt-3"
@@ -628,7 +452,14 @@ const PlanIndex = () => {
                 </TouchableOpacity>
               </View>
             ) : (
-              userNotes.map((note) => renderNoteItem(note))
+              userNotes.map((note) => (
+                <NoteItem
+                  key={note.id}
+                  note={note}
+                  userId={user_id}
+                  onSave={handleSaveEdit}
+                />
+              ))
             )}
           </View>
         </View>
@@ -651,13 +482,19 @@ const PlanIndex = () => {
           {isShowFlights ? (
             <View className="pb-4">
               {flights.length === 0 ? (
-                <View className="bg-gray-50 rounded-lg p-4 ml-4">
+                <View className="bg-white rounded-lg p-3 border border-gray_border">
                   <Text className="text-gray-500 text-center">
                     No flights yet
                   </Text>
                 </View>
               ) : (
-                flights.map((flight) => renderFlight(flight))
+                flights.map((flight) => (
+                  <FlightCard
+                    key={flight.id}
+                    flight={flight}
+                    onPress={handleEditFlight}
+                  />
+                ))
               )}
 
               {/* Add Flight Button - only show for owner/editor */}
@@ -728,7 +565,12 @@ const PlanIndex = () => {
                   </View>
 
                   {/* File List */}
-                  {file.map((fileItem) => renderFileItem(fileItem))}
+                  <FilePool
+                    files={file}
+                    canEdit={canEdit}
+                    handleDeleteFile={handleDeleteFile}
+                    handleDownloadFile={handleDownloadFile}
+                  />
 
                   {/* File Size Summary */}
                   <View className="flex-row justify-end mt-3 pt-2 border-t border-gray-100">
@@ -785,13 +627,14 @@ const PlanIndex = () => {
 
           {/* Modal Content */}
           <ScrollView className="flex-1 p-4">
-            {commentNotes.length === 0 ? (
-              <Text className="text-gray-500 text-center py-8">
-                No notes available
-              </Text>
-            ) : (
-              commentNotes.map((note) => renderNoteItem(note))
-            )}
+            {commentNotes.map((note) => (
+              <NoteItem
+                key={note.id}
+                note={note}
+                userId={user_id}
+                onSave={handleSaveEdit}
+              />
+            ))}
           </ScrollView>
         </SafeAreaView>
       </Modal>
@@ -1010,7 +853,10 @@ const PlanIndex = () => {
               <TextInput
                 value={flightForm.airline}
                 onChangeText={(text) =>
-                  setFlightForm((prev) => ({ ...prev, airline: text }))
+                  setFlightForm((prev) => ({
+                    ...prev,
+                    airline: text,
+                  }))
                 }
                 placeholder="Airline Name"
                 className="bg-gray-100 rounded-lg p-3 text-gray-700"

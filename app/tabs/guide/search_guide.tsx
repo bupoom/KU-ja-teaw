@@ -87,7 +87,7 @@ const SearchGuideScreen: React.FC = () => {
                         Start searching
                     </Text>
                     <Text className="text-gray-400 text-center">
-                        Enter keywords to find guides you&apos;re looking for
+                        Enter keywords to find guides you are looking for
                     </Text>
                 </View>
             )}
@@ -106,7 +106,7 @@ const SearchGuideScreen: React.FC = () => {
 
             {/* Search Header */}
             <View className="bg-white p-4">
-                <View className="flex-row items-center bg-gray-100 rounded-full p-3">
+                <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-1 border border-gray_border">
                     <Feather
                         name="search"
                         size={20}
@@ -122,7 +122,6 @@ const SearchGuideScreen: React.FC = () => {
                         autoCorrect={false}
                         autoCapitalize="none"
                         returnKeyType="search"
-                        clearButtonMode="while-editing" // iOS only
                     />
                     {loading && (
                         <ActivityIndicator

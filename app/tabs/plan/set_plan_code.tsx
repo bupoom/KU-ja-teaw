@@ -47,11 +47,11 @@ export default function SetTripCode() {
                 </Text>
 
                 {/* Trip Code */}
-                <View className="bg-white border border-gray_border rounded-2xl p-4 mb-4">
+                <View className="bg-white border border-gray_border rounded-lg p-4 mb-4">
                     <Text className="text-black font-sf-semibold mb-2 text-[16px]">
                         Trip Code
                     </Text>
-                    <View className="border border-gray_border rounded-2xl px-4">
+                    <View className="border border-gray_border rounded-lg px-4">
                         <TextInput
                             value={tripCode}
                             editable={false}
@@ -62,11 +62,11 @@ export default function SetTripCode() {
                 </View>
 
                 {/* Password */}
-                <View className="bg-white border border-gray_border rounded-2xl p-4 mb-6">
+                <View className="bg-white border border-gray_border rounded-lg p-4 mb-6">
                     <Text className="text-black font-sf-semibold mb-2 text-[16px]">
                         Password
                     </Text>
-                    <View className="border border-gray_border rounded-2xl px-4 flex-row items-center">
+                    <View className="border border-gray_border rounded-lg px-4 flex-row items-center">
                         <TextInput
                             value={password}
                             onChangeText={setPassword}

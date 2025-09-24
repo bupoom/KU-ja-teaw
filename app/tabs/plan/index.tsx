@@ -48,7 +48,7 @@ const PlanIndex = () => {
       <View className="flex-1 px-5 pt-10 mt-6 mb-6">
         {/* Create Trip Card */}
         <TouchableOpacity 
-          className={`rounded-xl p-6 mb-5 shadow-sm border-2 w-[95%] h-[120px] mx-auto ${
+          className={`rounded-lg p-6 mb-5 shadow-sm border-2 w-[95%] h-[120px] mx-auto ${
             selectedCard === 'create' 
               ? 'border-[#284D44]' 
               : 'border-gray-300'
@@ -73,7 +73,7 @@ const PlanIndex = () => {
 
         {/* Join Trip Card */}
         <TouchableOpacity 
-          className={`rounded-xl p-6 mb-5 shadow-sm border-2 w-[95%] h-[120px] mx-auto ${
+          className={`rounded-lg p-6 mb-5 shadow-sm border-2 w-[95%] h-[120px] mx-auto ${
             selectedCard === 'join' 
               ? 'border-[#284D44]' 
               : 'border-gray-300'
@@ -87,7 +87,7 @@ const PlanIndex = () => {
           <Text className={`text-2xl font-bold mb-2 ${
             selectedCard === 'join' ? 'text-white' : 'text-gray-800'
           }`}>
-            Join someone trip
+            Join others trip
           </Text>
           <Text className={`text-sm leading-5 ${
             selectedCard === 'join' ? 'text-white' : 'text-gray-600'

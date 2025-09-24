@@ -11,7 +11,7 @@ export default function AddPlaceModalLayout() {
                 options={{ title: "Search Place" }}
             />
             <Stack.Screen
-                name="place_detail"
+                name="[place_detail]"
                 options={{ title: "Confirm Place" }}
             />
         </Stack>

@@ -105,7 +105,7 @@ const SearchScreen: React.FC = () => {
             <StatusBar barStyle="dark-content" backgroundColor="#075952" />
 
             {/* Search Header */}
-            <View className="bg-white p-4 mt-5">
+            <View className="bg-white p-4">
                 <View className="flex-row items-center bg-gray-50 rounded-full px-4 py-1 border border-gray_border">
                     <Feather name="search" size={20} color="#666" />
                     <TextInput
