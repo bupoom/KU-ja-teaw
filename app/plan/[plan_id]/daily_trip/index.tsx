@@ -1,25 +1,17 @@
+import PlanHeader from "@/components/PlanHeader";
+import { Ionicons } from "@expo/vector-icons";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Feather from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router, useLocalSearchParams } from "expo-router";
+import { useRef, useState } from "react";
 import {
+  Animated,
   SafeAreaView,
   Text,
   TouchableOpacity,
   View,
-  Animated,
 } from "react-native";
-import { useState, useEffect, useRef } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import Feather from "@expo/vector-icons/Feather";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import PlanHeader from "@/components/PlanHeader";
-import {
-  mockActivityEventBoxes,
-  mockActivityPlaceBoxes,
-  mockActivityVoteEvents,
-  mockActivityVotePlaces,
-  mockTripBoxes,
-} from "@/mock/mockDataComplete";
-import map from "./map";
 
 const DailyTripsIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
@@ -65,7 +57,7 @@ const DailyTripsIndex = () => {
   const handleAddVote = () => {
     console.log("Add Vote clicked");
     closeModal();
-    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type`);
+    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type_vote`);
   };
   
   const handleListPress = () => {
