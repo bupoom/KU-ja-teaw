@@ -11,7 +11,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import PlaceBox from "@/components/PlaceBox";
-import { getBookmarkPlaceList } from "@/service/APIserver/bookmarkService";
+import { getBookmarkPlaceList, UnbookmarkByPlaceId } from "@/service/APIserver/bookmarkService";
 
 const PlaceScreen = () => {
     const router = useRouter();
@@ -37,6 +37,7 @@ const PlaceScreen = () => {
     }
 
     const handleRemovePlace = useCallback((placeId: number) => {
+        UnbookmarkByPlaceId(placeId);
         setPlaces(prevPlaces =>
             prevPlaces.filter(place => place.id !== placeId)
         );

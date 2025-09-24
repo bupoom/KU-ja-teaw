@@ -20,7 +20,7 @@ import { mockTripDetails, mockTripMembers } from "@/mock/mockDataComplete";
 import Header from "@/components/common/Header";
 import { Feather } from "@expo/vector-icons";
 
-const setting_plan = () => {
+const PlanSetting = () => {
   const router = useRouter();
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
   const user_id = 1;
@@ -459,7 +459,7 @@ const setting_plan = () => {
               Leaving this trip will remove your access.
             </Text>
             <Text className="text-gray-600">
-              You're the trip Owner, Please assign your role before leaving
+              You&apos;re the trip Owner, Please assign your role before leaving
             </Text>
           </View>
 
@@ -503,4 +503,4 @@ const setting_plan = () => {
   );
 };
 
-export default setting_plan;
+export default PlanSetting;

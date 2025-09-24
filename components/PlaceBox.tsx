@@ -32,7 +32,7 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
     const handleUnbookmark = () => {
         Alert.alert(
             "Remove Bookmark",
-            `Are you sure you want to remove "${title}" from bookmarks?`,
+            `remove "${title}" from bookmarks?`,
             [
                 {
                     text: "Cancel",
@@ -73,8 +73,13 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
             >
                 <View className="flex-row">
                     {/* Place Image */}
-                    <Image
-                        source={{ uri: imageUri }}
+                    <Image // ตรวจสอบ invalid url
+                        source={
+                            imageUri.startsWith("https://") &&
+                            imageUri.endsWith("jpg")
+                                ? { uri: imageUri }
+                                : require("../assets/images/error.png")
+                        }
                         className="w-20 h-20 rounded-xl"
                     />
 

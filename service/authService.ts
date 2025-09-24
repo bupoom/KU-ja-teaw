@@ -103,9 +103,8 @@ export const AuthService = {
                 console.log("No refresh token available");
                 return false;
             }
+            console.log("Finished Refreshing token API..", refreshToken);
 
-            // เรียก API เพื่อ refresh token
-            // TODO: แทนที่ด้วย API endpoint จริง
             const response = await fetch(
                 `${BASE_URL}/api/users/refresh-token`,
                 {
@@ -122,18 +121,18 @@ export const AuthService = {
             }
 
             const data = await response.json();
+            console.log("response data:", data);
 
-            // บันทึก token ใหม่
             await AuthService.saveTokens({
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken || refreshToken, // บาง API ให้ refresh token ใหม่ด้วย
-                expiresAt: data.expiresAt || Date.now() + 30 * 60 * 1000, // default 30 นาที
+                accessToken: data.Access_token, 
+                refreshToken: data.Refresh_token || refreshToken, 
+                expiresAt: data.expiresAt || Date.now() + 30 * 60 * 1000,
             });
-            console.log("Finished Refreshing API..");
+
+            console.log("✅ Tokens saved successfully");
             return true;
         } catch (error) {
             console.error("Error refreshing access token:", error);
-            // ถ้า refresh ไม่ได้ อาจต้อง logout
             await AuthService.clearAuthData();
             return false;
         }
@@ -209,7 +208,7 @@ export const AuthService = {
                 console.log("🔄 Starting API login at SERVER");
 
                 const URL = `${BASE_URL}/api/users/login`;
-                console.log("url : " , URL)
+                console.log("url : ", URL);
                 const response = await fetch(URL, {
                     method: "POST",
                     headers: {
@@ -240,6 +239,9 @@ export const AuthService = {
                 expiresAt:
                     Date.now() + DaysBeforeExpires * (24 * 60 * 60 * 1000),
             });
+
+            const savedRefreshToken = await AuthService.getRefreshToken();
+            console.log("✅ Saved refresh token:", savedRefreshToken);
 
             // Save user data
             const userData: UserDetails = {

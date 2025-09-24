@@ -7,51 +7,86 @@ const client = axios.create({
     timeout: 10000
 });
 
-// Request interceptor - เปลี่ยน header ตาม accesstoken
-client.interceptors.request.use(async config => {
+// Wrapper function with improved error handling
+const makeAuthenticatedRequest = async (config: any) => {
     try {
         const token = await AuthService.getValidAccessToken();
+        
         if (token) {
+            if (!config.headers) {
+                config.headers = {};
+            }
             config.headers.Authorization = `Bearer ${token}`;
         }
-        return config;
-    } catch (error) {
-        console.error("Error in request interceptor:", error);
-        return config;
-    }
-});
+        
+        console.log('🚀 Request:', {
+            method: config.method?.toUpperCase(),
+            url: config.url,
+            hasToken: !!token
+        });
+        
+        return await client(config);
+    } catch (error: any) {
+        console.log('❌ Request failed:', {
+            status: error.response?.status,
+            url: config.url,
+            method: config.method?.toUpperCase()
+        });
 
-// Response interceptor
-client.interceptors.response.use(
-    response => response,
-    async error => {
-        const originalRequest = error.config;
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-
+        // Handle 401 here directly
+        if (error.response?.status === 401) {
+            console.log('🔄 401 detected, trying to refresh...');
+            
             try {
-                // พยายาม refresh token
                 const refreshSuccess = await AuthService.refreshAccessToken();
-
+                
                 if (refreshSuccess) {
-                    // ลองเรียก API อีกครั้งด้วย token ใหม่
+                    console.log('✅ Token refreshed, retrying request...');
                     const newToken = await AuthService.getAccessToken();
                     if (newToken) {
-                        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                        return client(originalRequest);
+                        config.headers = config.headers || {};
+                        config.headers.Authorization = `Bearer ${newToken}`;
+                        
+                        // Retry the request
+                        console.log('🔄 Retrying with new token...');
+                        return await client(config);
                     }
                 }
+                
+                console.log('❌ Refresh failed, logging out user');
+                // ถ้า refresh ไม่ได้
+                await AuthService.logout();
+                
+                // สามารถเพิ่ม navigation redirect ได้ที่นี่
+                // NavigationService.navigate('Login');
+                
             } catch (refreshError) {
-                console.error("Token refresh failed:", refreshError);
+                console.error('❌ Error during token refresh:', refreshError);
+                await AuthService.logout();
             }
-
-            // ถ้า refresh ไม่ได้ให้logout
-            await AuthService.logout();
-            return Promise.reject(error);
         }
-
-        return Promise.reject(error);
+        
+        throw error;
     }
-);
+};
 
-export default client;
+// Export wrapper functions แทน client ตรงๆ
+export const apiClient = {
+    get: (url: string, config?: any) => 
+        makeAuthenticatedRequest({ method: 'GET', url, ...config }),
+    
+    post: (url: string, data?: any, config?: any) => 
+        makeAuthenticatedRequest({ method: 'POST', url, data, ...config }),
+    
+    put: (url: string, data?: any, config?: any) => 
+        makeAuthenticatedRequest({ method: 'PUT', url, data, ...config }),
+    
+    patch: (url: string, data?: any, config?: any) => 
+        makeAuthenticatedRequest({ method: 'PATCH', url, data, ...config }),
+    
+    delete: (url: string, config?: any) => 
+        makeAuthenticatedRequest({ method: 'DELETE', url, ...config }),
+};
+
+// สำหรับใช้กับ old code ที่ยัง import client ตรงๆ
+export default apiClient;

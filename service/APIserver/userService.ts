@@ -50,17 +50,17 @@ export const updateUserDetails = async (data: {
 
 export const getUserDetailById = async (userId?: string) => {
     try {
-        let response: UserDetails ;
+        let response: UserDetails;
         if (!userId) {
-            console.log("fetch owner user details ");
-            response = (await client.get(`${endpoints.user.getUserDetail}`)).data;
+            console.log("fetch owner user details");
+            response = (await client.get(`${endpoints.user.getUserDetail}`)).data as UserDetails;
         } else {
-            console.log("fetch user by id: ", userId);
-            response = (await client.get(`${endpoints.user.getUserDetail}/${userId}`)).data;
+            console.log("fetch user by id:", userId);
+            response = (await client.get(`${endpoints.user.getUserDetail}/${userId}`)).data as UserDetails;
         }
         return response;
     } catch (error) {
-        console.error("Response data:", error);
+        console.error("Get user details error:", error);
         throw error;
     }
 };
