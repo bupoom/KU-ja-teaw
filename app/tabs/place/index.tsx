@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
     View,
     Text,
@@ -11,23 +11,30 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import PlaceBox from "@/components/PlaceBox";
-import { mockBookmarkPlaces } from "@/mock/mockDataComplete";
+import { getBookmarkPlaceList } from "@/service/APIserver/bookmarkService";
 
 const PlaceScreen = () => {
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
-    const [places, setPlaces] = useState<PlaceBox[]>(mockBookmarkPlaces);
+    const [places, setPlaces] = useState<PlaceBox[]>([]);
+
+    useEffect(() => {
+        fetchPlaceBox()
+    }, []);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        setPlaces(mockBookmarkPlaces);
+        await fetchPlaceBox();
         setRefreshing(false);
     }, []);
 
-    const handleSearch = () => {
-        router.push("/tabs/place/search_place");
-    };
+    const handleSearch = () => {router.push("/tabs/place/search_place");};
+
+    const fetchPlaceBox = async () => {
+        const data = await getBookmarkPlaceList()
+        setPlaces(data);
+    }
 
     const handleRemovePlace = useCallback((placeId: number) => {
         setPlaces(prevPlaces =>

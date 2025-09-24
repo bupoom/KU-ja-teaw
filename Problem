@@ -4,3 +4,4 @@ frontend
 API problem
 1. ในหน้า home ต้องการ trips แนะนำ ต้องสุ่มมาหรือ 
 2. เหมือน Auth refresh token จะผิดอยู่ไม่แน่ใจว่าต้องหมดเวลาอย่างเดียวเลยมั้ย refresh token ถึงจะทำงานได้จริง
+3. path img คือ path ของ jpg  เปลี่ยนเป็น http แลยได้มั้ย

@@ -1,4 +1,5 @@
 import * as SecureStore from "expo-secure-store";
+import { BASE_URL, TIME_BEFORE_TOKEN_EXPIRE } from "./config";
 
 // interface Token
 export interface TokenData {
@@ -69,7 +70,7 @@ export const AuthService = {
             const now = Date.now();
 
             // เผื่อเวลา 5 นาที ก่อนหมดอายุจริง
-            const timeBeforeExpire = Number(process.env.TIME_BEFORE_TOKEN_EXPIRE) || 5; // default 5 นาที
+            const timeBeforeExpire = Number(TIME_BEFORE_TOKEN_EXPIRE) || 5; // default 5 นาที
             return expiresAt - timeBeforeExpire * 60 * 1000 <= now;
         } catch (error) {
             console.error("Error checking token expiration:", error);
@@ -106,7 +107,7 @@ export const AuthService = {
             // เรียก API เพื่อ refresh token
             // TODO: แทนที่ด้วย API endpoint จริง
             const response = await fetch(
-                `${process.env.BASE_URL}/api/users/refresh-token`,
+                `${BASE_URL}/api/users/refresh-token`,
                 {
                     method: "get",
                     headers: {
@@ -207,7 +208,7 @@ export const AuthService = {
             } else {
                 console.log("🔄 Starting API login at SERVER");
 
-                const URL = `${process.env.BASE_URL}/api/users/login`;
+                const URL = `${BASE_URL}/api/users/login`;
                 console.log("url : " , URL)
                 const response = await fetch(URL, {
                     method: "POST",

@@ -1,18 +1,15 @@
 import axios from "axios";
 import { AuthService } from "./authService";
+import { BASE_URL } from "./config";
 
 const client = axios.create({
-    baseURL: process.env.BASE_URL,
+    baseURL: BASE_URL,
     timeout: 10000
 });
 
 // Request interceptor - เปลี่ยน header ตาม accesstoken
 client.interceptors.request.use(async config => {
-    try { 
-        const refresh_token_success = await AuthService.refreshAccessToken();
-        if (refresh_token_success) {
-            console.log( "sucess", refresh_token_success)
-        }
+    try {
         const token = await AuthService.getValidAccessToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
