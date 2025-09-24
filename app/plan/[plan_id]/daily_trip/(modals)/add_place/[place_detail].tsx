@@ -1,8 +1,8 @@
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 const place_detail = () => {
     return (
         <View>
-            <Text>place_detail</Text>
+            <Text>place_detail โอชิ = ตุ้ด</Text>
         </View>
     );
 };
