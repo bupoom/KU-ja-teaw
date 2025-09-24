@@ -12,6 +12,7 @@ import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import PlanHeader from "@/components/PlanHeader";
+import DateSelector from "@/components/plan/DateSelector";
 import {
   mockActivityEventBoxes,
   mockActivityPlaceBoxes,
@@ -19,15 +20,20 @@ import {
   mockActivityVotePlaces,
   mockTripBoxes,
 } from "@/mock/mockDataComplete";
-import map from "./map";
 
 const DailyTripsIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
-
-  const [numOfNotifications, setNumOfNotifications] = useState("");
-  const [newNotifications, setNewNotifications] = useState(true);
-
+  
+  
+  // <------------------------------------- Fetch Data ------------------------------------->
+  const [dates, setDates] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  
+  
+  // <------------------------------------- Add and List Button ------------------------------------->
+  
   //Animation State
+  const [newNotifications, setNewNotifications] = useState(true);
   const [showSelectAdd, setShowSelectAdd] = useState(false);
   const [showSelectNotiMap, setShowSelectNotiMap] = useState(false);
   const [isListOpen, setIsListOpen] = useState(false); // เพิ่ม state สำหรับเช็คสถานะของปุ่ม list
@@ -119,10 +125,15 @@ const DailyTripsIndex = () => {
     outputRange: ["0deg", "45deg"],
   }); // Rotate effect ของปุ่ม Add จาก + เป็น x
 
+// <----------------------------------------------------------------------------------------------->
+
   return (
     <SafeAreaView className="flex-1">
       <PlanHeader planId={plan_id} />
+
       <Text>Daily Trip</Text>
+
+      {/* <---------------------------Add and List Button -----------------------------> */}
 
       {/* Add Button */}
       <TouchableOpacity

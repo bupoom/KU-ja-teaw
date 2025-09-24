@@ -6,6 +6,7 @@ import { mockTripBoxes } from "@/mock/mockDataComplete";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { truncateText } from "@/util/truncateText";
+import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 
 function PlanHeader({ planId }: { planId: string }) {
     const router = useRouter();
@@ -75,7 +76,7 @@ function PlanHeader({ planId }: { planId: string }) {
                                 color="#ffffff"
                             />
                             <Text className="text-sm text-white mb-2 ml-2">
-                                {tripData.start_date} - {tripData.end_date}
+                                {formatDateRange(tripData.start_date, tripData.end_date)}
                             </Text>
                         </View>
                         <View className="flex-row items-start">
