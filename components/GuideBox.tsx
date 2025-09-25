@@ -97,8 +97,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                     <Image
                         source={
                             guide_image &&
-                            guide_image.startsWith("https://") &&
-                            guide_image.endsWith("jpg")
+                            guide_image.startsWith("https://")
                                 ? { uri: guide_image }
                                 : require("../assets/images/error.png")
                         }
@@ -160,8 +159,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                             <Image
                                 source={
                                     owner_image &&
-                                    owner_image.startsWith("https://") &&
-                                    owner_image.endsWith("jpg")
+                                    owner_image.startsWith("https://")
                                         ? { uri: owner_image }
                                         : require("../assets/images/error.png")
                                 }

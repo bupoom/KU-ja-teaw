@@ -4,7 +4,12 @@ frontend
 
 
 API problem
-- ในหน้า home ต้องการ trips แนะนำต้องการ API daily trips แบบว่าอาจจะสุ่มมาหรือ ดูจาก rating 
+- ปัญหา Database
+    - ตอน /api/places/autocomplete/{input} placeId ที่ได้มันเป็น number แต่ว่าใน Database placeId เป็น Int4
+    - tables places Details ไม่มีข้อมูล จาก placesId ที่ search ได้จาก  /api/places/autocomplete/{input}
+        ผมเลยทำการ
+
+กำลังแก้ไข (เอาไว้บอกผมเองนี้แหละว่าต้องกลับมาแก้ frontend ด้วย)
 - path img คือ path ของ jpg  เปลี่ยนเป็น http เลยได้มั้ย เช่น OSHI.jpg หรือถ้าลำบาก url ปกติคืออะไรนะคับ แบบว่า https://supabase อะไร
 - search guide เหมือนจะยังไม่มีนะคับ
 - bookmark guide ไม่มี trips title นะคับแต่เห็นมี trips_Url ให้มา
@@ -19,3 +24,5 @@ API problem
     },
 ถ้าเอามาหารให้เป็นวันคือ 356476 นี้คือ 4.1258 วันนะคับ (ถ้างานไม่หนักมากขอเป็น start/end date ได้มั้ย)
 แล้วก็จากใน figma. API นี้ยังไม่มี trips_owner_image กับ copies หรือ likes นะคับ
+- ในหน้า home ต้องการ trips แนะนำต้องการ API daily trips แบบว่าอาจจะสุ่มมาหรือ ดูจาก rating 
+

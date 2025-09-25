@@ -861,6 +861,22 @@ export const mockPlaceBoxes: PlaceBox[] = [
   },
 ];
 
+interface PlaceDetails {
+    id: number;
+    title: string;
+    description?: string;
+    rating?: number;
+    review_count?: number;
+    location: string;
+    place_image?: string;
+    categories?: string[];
+    map_link?: string;
+    latitude:number;
+    longitude:number;
+    official_link?: string;
+} // เเสดงหน้า details ของ place ตอนกดเข้าไปจาก place bookmark กับ หน้า dailytrip
+
+
 // 19. Place Details (5 places - matching PlaceBox) อ้างอิง Note
 export const mockPlaceDetails: PlaceDetails[] = [
   {
@@ -878,9 +894,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.tokyotower.co.jp/en.html",
     latitude: 35.6586,
     longitude: 139.7454,
-    notes: mockNotes.filter(
-      (note) => note.reference_id === 1 && note.reference_type === "place"
-    ),
   },
   {
     id: 2,
@@ -897,9 +910,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.senso-ji.jp/",
     latitude: 35.7148,
     longitude: 139.7967,
-    notes: mockNotes.filter(
-      (note) => note.reference_id === 2 && note.reference_type === "place"
-    ),
   },
   {
     id: 3,
@@ -916,9 +926,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.shibuya-scramble-square.com/",
     latitude: 35.6595,
     longitude: 139.7005,
-    notes: mockNotes.filter(
-      (note) => note.reference_id === 3 && note.reference_type === "place"
-    ),
   },
   {
     id: 4,
@@ -934,7 +941,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.meijijingu.or.jp/en/",
     latitude: 35.6764,
     longitude: 139.6993,
-    notes: [],
   },
   {
     id: 5,
@@ -950,7 +956,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.tsukiji.or.jp/english/",
     latitude: 35.6655,
     longitude: 139.7708,
-    notes: [],
   },
   {
     id: 6,
@@ -966,7 +971,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "http://inari.jp/en/",
     latitude: 34.9671,
     longitude: 135.7727,
-    notes: [],
   },
   {
     id: 7,
@@ -988,7 +992,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.kiyomizudera.or.jp/en/",
     latitude: 34.9949,
     longitude: 135.785,
-    notes: [],
   },
   {
     id: 8,
@@ -1004,7 +1007,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.osakacastle.net/english/",
     latitude: 34.6873,
     longitude: 135.5259,
-    notes: [],
   },
   {
     id: 9,
@@ -1020,7 +1022,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.toureiffel.paris/en",
     latitude: 48.8584,
     longitude: 2.2945,
-    notes: [],
   },
   {
     id: 10,
@@ -1041,7 +1042,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.louvre.fr/en",
     latitude: 48.8606,
     longitude: 2.3376,
-    notes: [],
   },
   {
     id: 11,
@@ -1063,7 +1063,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://parcocolosseo.it/en/",
     latitude: 41.8902,
     longitude: 12.4922,
-    notes: [],
   },
   {
     id: 12,
@@ -1080,7 +1079,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://sagradafamilia.org/en/",
     latitude: 41.4036,
     longitude: 2.1744,
-    notes: [],
   },
   {
     id: 13,
@@ -1102,7 +1100,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.royalgrandpalace.th/en/home",
     latitude: 13.75,
     longitude: 100.4913,
-    notes: [],
   },
   {
     id: 14,
@@ -1118,7 +1115,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.phiphi.phuket.com/",
     latitude: 7.7407,
     longitude: 98.7784,
-    notes: [],
   },
   {
     id: 15,
@@ -1139,7 +1135,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.watpho.com/",
     latitude: 13.7467,
     longitude: 100.493,
-    notes: [],
   },
   {
     id: 16,
@@ -1156,7 +1151,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.suvarnabhumiairport.com/en",
     latitude: 13.69,
     longitude: 100.7501,
-    notes: [],
   },
   {
     id: 17,
@@ -1173,7 +1167,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.gotokyo.org/en/spot/87/index.html",
     latitude: 35.7156,
     longitude: 139.7745,
-    notes: [],
   },
   {
     id: 18,
@@ -1190,7 +1183,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.tokyo-skytree.jp/en/",
     latitude: 35.7101,
     longitude: 139.8107,
-    notes: [],
   },
   {
     id: 19,
@@ -1208,7 +1200,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
       "https://en.parisinfo.com/discovering-paris/walks-in-paris/montmartre",
     latitude: 48.8867,
     longitude: 2.3431,
-    notes: [],
   },
   {
     id: 20,
@@ -1225,7 +1216,6 @@ export const mockPlaceDetails: PlaceDetails[] = [
     official_link: "https://www.bateauxparisiens.com/",
     latitude: 48.8584,
     longitude: 2.2945,
-    notes: [],
   },
 ];
 

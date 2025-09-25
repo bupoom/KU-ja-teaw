@@ -54,10 +54,15 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
         );
     };
 
-    const handlePlaceBoxPress = (): void => {
-        router.push(`/dynamicPage/places/${place_id}`);
+    const handlePlacePress = (): void => {
+        router.push({
+            pathname: "/dynamicPage/places/[id]" as any,
+            params: { 
+                id: place_id,
+                type: 'place' 
+            },
+        });
     };
-
     // Default image if place_image is not provided
     const imageUri =
         place_image ||
@@ -69,14 +74,13 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
             <TouchableOpacity
                 key={id}
                 className="bg-white rounded-xl p-3 mb-3 mr-1 ml-1 border border-gray_border"
-                onPress={handlePlaceBoxPress}
+                onPress={handlePlacePress}
             >
                 <View className="flex-row">
                     {/* Place Image */}
                     <Image // ตรวจสอบ invalid url
                         source={
-                            imageUri.startsWith("https://") &&
-                            imageUri.endsWith("jpg")
+                            imageUri.startsWith("https://")
                                 ? { uri: imageUri }
                                 : require("../assets/images/error.png")
                         }

@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-import { BASE_URL, TIME_BEFORE_TOKEN_EXPIRE } from "./config";
+import { BASE_URL, TIME_BEFORE_TOKEN_EXPIRE , NO_SERVER_WHILE_DEV } from "./config";
 
 // interface Token
 export interface TokenData {
@@ -13,10 +13,6 @@ const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
 const USER_DATA_KEY = "userData";
 const TOKEN_EXPIRES_KEY = "tokenExpires";
-
-// ******************************
-const NO_SERVER_WHILE_DEV = false;
-// ******************************
 
 export const AuthService = {
     saveTokens: async (tokenData: TokenData): Promise<void> => {
@@ -97,8 +93,8 @@ export const AuthService = {
     },
     refreshAccessToken: async (): Promise<boolean> => {
         try {
-            console.log("refreshing API..");
             const refreshToken = await AuthService.getRefreshToken();
+            console.log("refreshing API.." , refreshToken);
             if (!refreshToken) {
                 console.log("No refresh token available");
                 return false;

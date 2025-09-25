@@ -18,8 +18,9 @@ interface PlaceDetails {
     place_image?: string;
     categories?: string[];
     map_link?: string;
+    latitude:number;
+    longitude:number;
     official_link?: string;
-    notes?: Note[];
 } // เเสดงหน้า details ของ place ตอนกดเข้าไปจาก place bookmark กับ หน้า dailytrip
 
 

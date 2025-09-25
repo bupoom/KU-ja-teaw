@@ -30,15 +30,16 @@ export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
             const serverData = bookmarks[i];
             places.push({
                 id: serverData.bookmark_id,
-                title: serverData.name, // 👈 ใช้ name จาก API
-                rating: parseFloat(serverData.rating), // 👈 แปลง string → number
+                title: serverData.name,
+                rating: parseFloat(serverData.rating),
                 review_count: serverData.rating_count,
                 location: serverData.address,
-                place_image: serverData.places_picture_path, // 👈 ใช้ places_picture_path
+                place_image: serverData.places_picture_path,
                 place_id: serverData.place_id,
             });
+            
+            console.log(places[i].place_image)
         }
-
         return places;
     } catch (error) {
         console.error("Response data:", error);
@@ -66,7 +67,7 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
                 guide_image: serverData.trip_picture_path,
                 copies: -1,
                 owner_name: serverData.trip_owner,
-                owner_image: "",
+                owner_image: "", // earnแก้อยู่
                 description: "",
                 trip_id: serverData.trip_id,
             });

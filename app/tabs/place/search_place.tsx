@@ -10,8 +10,6 @@ import {
     StatusBar,
 } from "react-native";
 import { Feather, Entypo } from "@expo/vector-icons";
-import PlaceBox from "@/components/PlaceBox";
-import { mockPlaceBoxes } from "@/mock/mockDataComplete";
 import { useRouter } from "expo-router";
 import { SearchByInput } from "@/service/APIserver/bookmarkService";
 
@@ -24,9 +22,6 @@ const SearchScreen: React.FC = () => {
 
     // Auto focus เมื่อเข้าหน้ามาจะทำให้ page มีแป้นพิมและ cursor อยู่บน search bar ทันที
     const searchInputRef = useRef<TextInput>(null);
-    useEffect(() => {
-        searchInputRef.current?.focus();
-    }, []);
 
     // Search function API??? - เปลี่ยน return type เป็น PlaceBox[]
     const Search_with_query = async (
@@ -42,6 +37,7 @@ const SearchScreen: React.FC = () => {
 
     // Handle search ด้วยการ limit เวลา
     useEffect(() => {
+        searchInputRef.current?.focus();
         const delayedSearch = setTimeout(() => {
             if (!searchQuery.trim()) {
                 setSearchResults([]);
@@ -89,12 +85,15 @@ const SearchScreen: React.FC = () => {
     );
 
     // Handle navigation to PlaceDetails screen
-    const handlePlacePress = (placeId: string) => {
-        // TODO: Navigate to PlaceDetails screen
-        router.push(`/dynamicPage/places/${placeId}`);
-        console.log("Navigate to place details:", placeId);
+    const handlePlacePress = (GOOGLEAPI: string) => {
+        router.push({
+            pathname: "/dynamicPage/places/[place_id]" as any,
+            params: { 
+                id: GOOGLEAPI,
+                type: 'api' 
+            },
+        });
     };
-
     return (
         <SafeAreaView className="h-full bg-white py-14">
             <StatusBar barStyle="dark-content" backgroundColor="#075952" />
