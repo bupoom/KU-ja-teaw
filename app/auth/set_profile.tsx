@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { updateUserDetails } from "@/service/APIserver/userService";
 import * as ImagePicker from "expo-image-picker";
+import { AuthService } from "@/service/authService";
 
 // ✅ เพิ่ม interface สำหรับรูปภาพ
 interface ImageFile {
@@ -30,13 +31,14 @@ const ProfileSetupScreen = () => {
         userEmail?: string;
         userPhoto?: string;
     }>();
-    
+
     const [username, setUsername] = useState(userName || ""); // ✅ ใช้ค่าจาก Google เป็นค่าเริ่มต้น
     const [phoneNumber, setPhoneNumber] = useState("");
     const [agreedToPolicies, setAgreedToPolicies] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [profileImage, setProfileImage] = useState<string>(userPhoto || ""); // ✅ ใช้รูปจาก Google
-    const [selectedImageFile, setSelectedImageFile] = useState<ImageFile | null>(null); // ✅ เพิ่ม state สำหรับไฟล์
+    const [selectedImageFile, setSelectedImageFile] =
+        useState<ImageFile | null>(null); // ✅ เพิ่ม state สำหรับไฟล์
 
     const validatePhone = (text: string) => {
         const cleaned = text.replace(/[\s-\.]/g, "");
@@ -48,7 +50,8 @@ const ProfileSetupScreen = () => {
     };
 
     const requestPermissions = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
             Alert.alert(
                 "Permission Required",
@@ -73,13 +76,17 @@ const ProfileSetupScreen = () => {
             if (!result.canceled && result.assets[0]) {
                 const asset = result.assets[0];
                 setProfileImage(asset.uri);
-                
-                // ✅ เก็บข้อมูลไฟล์สำหรับส่ง API
-                setSelectedImageFile({
+
+                // ✅ สร้าง object ก่อน
+                const newImageFile = {
                     uri: asset.uri,
-                    type: 'image/jpeg',
+                    type: "image/jpeg",
                     name: `profile_${Date.now()}.jpg`,
-                });
+                };
+
+                // ✅ ตั้งค่าและ log object เดียวกัน
+                setSelectedImageFile(newImageFile);
+                console.log("Selected image:", newImageFile); // ← ตรงนี้จะแสดงค่าที่ถูก
             }
         } catch (error) {
             Alert.alert("Error", "Failed to pick image");
@@ -107,28 +114,40 @@ const ProfileSetupScreen = () => {
 
         try {
             console.log("🔄 Updating user profile...");
-            
+
             // ✅ ส่งรูปภาพที่เลือกไปด้วย (ถ้ามี)
-            const response = await updateUserDetails(
-                username.trim(), 
-                phoneNumber.trim(), 
-                selectedImageFile || undefined // ส่งรูปที่เลือกใหม่ หรือ undefined ถ้าไม่เลือก
-            );
-            
+            const response = await updateUserDetails({
+                username: username.trim(),
+                phoneNumber: phoneNumber.trim(),
+                selectedImageFile: selectedImageFile || undefined, // object ที่มี uri, type, name
+            });
+
             console.log("✅ Profile updated successfully:", response);
+            const userData = await AuthService.getUserData();
+            if (!userData) {
+                throw new Error("No user data found in AuthService");
+            }
+            const newUserData: UserDetails = {
+                user_id: userData.user_id,
+                name: username,
+                phone: phoneNumber,
+                email: userData.email,
+                profile_picture_link:
+                    selectedImageFile?.uri ?? userData.profile_picture_link ,
+                // ถ้าไม่มีรูปใหม่ → เก็บรูปเดิมไว้
+            };
+            AuthService.saveUserData(newUserData);
             Alert.alert("Success", "Profile setup completed!", [
                 {
                     text: "OK",
-                    onPress: () => router.push("/tabs/(home)")
-                }
+                    onPress: () => router.push("/tabs/(home)"),
+                },
             ]);
-            
         } catch (error) {
             console.error("❌ Registration error:", error);
             Alert.alert("Error", "Network error. Please try again.");
         }
     };
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" backgroundColor="white" />
@@ -160,14 +179,16 @@ const ProfileSetupScreen = () => {
                                 className="w-48 h-48 rounded-full"
                                 style={{ width: 192, height: 192 }}
                                 // ✅ เพิ่ม fallback กรณีโหลดรูปไม่ได้
-                                defaultSource={{ uri: 'https://via.placeholder.com/192x192/0f766e/ffffff?text=User' }}
+                                defaultSource={{
+                                    uri: "https://via.placeholder.com/192x192/0f766e/ffffff?text=User",
+                                }}
                             />
                         ) : (
                             <View className="w-48 h-48 rounded-full bg-teal-900 items-center justify-center">
                                 <Feather name="user" size={120} color="white" />
                             </View>
                         )}
-                        
+
                         {/* Edit icon */}
                         <TouchableOpacity
                             className="absolute bottom-3 right-2 w-10 h-10 rounded-full bg-gray-600 items-center justify-center border-2 border-white"
@@ -175,7 +196,7 @@ const ProfileSetupScreen = () => {
                         >
                             <Feather name="edit-2" size={14} color="white" />
                         </TouchableOpacity>
-                        
+
                         {/* ✅ แสดง indicator ว่าเลือกรูปใหม่แล้ว */}
                         {selectedImageFile && (
                             <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 items-center justify-center">
@@ -287,7 +308,11 @@ const ProfileSetupScreen = () => {
                                     onPress={() => setModalVisible(false)}
                                     className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
                                 >
-                                    <Feather name="x" size={20} color="#374151" />
+                                    <Feather
+                                        name="x"
+                                        size={20}
+                                        color="#374151"
+                                    />
                                 </TouchableOpacity>
                             </View>
 

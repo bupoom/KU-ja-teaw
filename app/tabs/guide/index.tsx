@@ -1,8 +1,7 @@
 import GuideBox from "@/components/GuideBox";
-import { mockGuideBoxes } from "@/mock/mockDataComplete";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     FlatList,
     RefreshControl,
@@ -12,23 +11,49 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { getBookmarkGuideList } from "@/service/APIserver/bookmarkService";
 
 const GuideBookmarkScreen = () => {
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
-    const [guides, setGuides] = useState<GuideBox[]>(mockGuideBoxes);
+    const [guides, setGuides] = useState<GuideBox[]>([]);
+
+    useEffect(() => {
+        fetchPlaceBox();
+    }, []);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        setGuides(mockGuideBoxes);
+        fetchPlaceBox();
         setRefreshing(false);
+    }, []);
+
+    const fetchPlaceBox = async () => {
+        try {
+            console.log("Fetching bookmark guides...");
+            const data = await getBookmarkGuideList();
+            setGuides(data);
+            console.log("Fetched guides count:", data.length);
+        } catch (error) {
+            console.error("Error fetching guides:", error);
+        }
+    };
+
+    // ✅ สร้าง handleRemove function ที่ถูกต้อง
+    const handleRemove = useCallback((guideId: number) => {
+        console.log("Removing guide from local state:", guideId);
+        
+        // อัพเดท local state โดยเอา guide ที่ถูกลบออก
+        setGuides(prevGuides => prevGuides.filter(guide => guide.id !== guideId));
+        
+        console.log("Guide removed from local state");
     }, []);
 
     const handleSearch = () => {
         router.push("/tabs/guide/search_guide");
     };
-    
+
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="light-content" backgroundColor="#284D44" />
@@ -51,7 +76,12 @@ const GuideBookmarkScreen = () => {
 
             <FlatList
                 data={guides}
-                renderItem={({ item }) => <GuideBox guideData={item} />}
+                renderItem={({ item }) => (
+                    <GuideBox 
+                        guideData={item} 
+                        onRemove={handleRemove}
+                    />
+                )}
                 keyExtractor={item => item.id.toString()}
                 className="flex-1 bg-white mb-20"
                 contentContainerStyle={{

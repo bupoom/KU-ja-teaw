@@ -31,7 +31,7 @@ const AuthScreen: React.FC = () => {
         });
     }, []);
 
-    const handleGoogleSignIn = async (): Promise<void> => {
+    const handleSignIn = async (): Promise<void> => {
         try {
             setIsSubmitting(true);
 
@@ -56,7 +56,7 @@ const AuthScreen: React.FC = () => {
                     Alert.alert("Error", "Failed to find or create user.");
                     return;
                 }
-                if (result.newUser) {
+                if (!result.newUser) {
                     // User เก่า - บันทึกข้อมูลแล้วไปหน้าหลัก
                     Alert.alert("Welcome Back.");
                     router.push("/tabs/(home)");
@@ -137,25 +137,6 @@ const AuthScreen: React.FC = () => {
         }
     };
 
-    const handleSkipSignIn = (): void => {
-        Alert.alert(
-            "Skip Sign In",
-            "Are you sure you want to continue without signing in?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel",
-                },
-                {
-                    text: "Continue",
-                    onPress: () => {
-                        router.replace("/tabs/(home)" as any);
-                    },
-                },
-            ]
-        );
-    };
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
@@ -176,7 +157,7 @@ const AuthScreen: React.FC = () => {
                     <GoogleSigninButton
                         size={GoogleSigninButton.Size.Wide}
                         color={GoogleSigninButton.Color.Dark}
-                        onPress={handleGoogleSignIn}
+                        onPress={handleSignIn}
                         disabled={isSubmitting}
                         style={styles.googleButton}
                     />
@@ -189,15 +170,6 @@ const AuthScreen: React.FC = () => {
                             </Text>
                         </View>
                     )}
-
-                    <TouchableOpacity
-                        style={[
-                            styles.skipButton,
-                            isSubmitting && styles.disabledButton,
-                        ]}
-                        onPress={handleSkipSignIn}
-                        disabled={isSubmitting}
-                    ></TouchableOpacity>
                 </View>
             </View>
         </SafeAreaView>

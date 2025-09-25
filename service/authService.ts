@@ -1,4 +1,5 @@
 import * as SecureStore from "expo-secure-store";
+import { BASE_URL, TIME_BEFORE_TOKEN_EXPIRE } from "./config";
 
 // interface Token
 export interface TokenData {
@@ -7,17 +8,6 @@ export interface TokenData {
     expiresAt?: number; // timestamp เมื่อ access token หมดอายุ
 }
 
-// ------------------ อธิบาย function ทั้งหมด ----------------------------------
-// saveTokens() → เก็บ access_token , refresh_token
-// getAccessToken() → อ่าน access token ซึ่งเรียกใช้จาก getValidAccessToken เท่านั้นนะไอโอชิ หรือกรที่เข้ามาอ่าน
-// getRefreshToken() → อ่าน refresh token
-// isAccessTokenExpired() → เช็คหมดอายุหรือยังตาม exp date
-// getValidAccessToken() → ขอ token ที่ใช้ได้ (auto-refresh)
-// refreshAccessToken() → ขอ token ใหม่
-// isLoggedIn() → เช็ค login status
-// login() → เข้าสู่ระบบ
-// logout() → ออกจากระบบ
-
 // Keys สำหรับเก็บข้อมูลใน SecureStore
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
@@ -25,7 +15,7 @@ const USER_DATA_KEY = "userData";
 const TOKEN_EXPIRES_KEY = "tokenExpires";
 
 // ******************************
-const NO_SERVER_WHILE_DEV = true;
+const NO_SERVER_WHILE_DEV = false;
 // ******************************
 
 export const AuthService = {
@@ -80,7 +70,8 @@ export const AuthService = {
             const now = Date.now();
 
             // เผื่อเวลา 5 นาที ก่อนหมดอายุจริง
-            return expiresAt - 5 * 60 * 1000 <= now;
+            const timeBeforeExpire = Number(TIME_BEFORE_TOKEN_EXPIRE) || 5; // default 5 นาที
+            return expiresAt - timeBeforeExpire * 60 * 1000 <= now;
         } catch (error) {
             console.error("Error checking token expiration:", error);
             return true;
@@ -106,18 +97,18 @@ export const AuthService = {
     },
     refreshAccessToken: async (): Promise<boolean> => {
         try {
+            console.log("refreshing API..");
             const refreshToken = await AuthService.getRefreshToken();
             if (!refreshToken) {
                 console.log("No refresh token available");
                 return false;
             }
+            console.log("Finished Refreshing token API..", refreshToken);
 
-            // เรียก API เพื่อ refresh token
-            // TODO: แทนที่ด้วย API endpoint จริง
             const response = await fetch(
-                "https://10.0.2.2/api/users/refresh-token",
+                `${BASE_URL}/api/users/refresh-token`,
                 {
-                    method: "POST",
+                    method: "get",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${refreshToken}`,
@@ -130,18 +121,18 @@ export const AuthService = {
             }
 
             const data = await response.json();
+            console.log("response data:", data);
 
-            // บันทึก token ใหม่
             await AuthService.saveTokens({
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken || refreshToken, // บาง API ให้ refresh token ใหม่ด้วย
-                expiresAt: data.expiresAt || Date.now() + 30 * 60 * 1000, // default 30 นาที
+                accessToken: data.Access_token, 
+                refreshToken: data.Refresh_token || refreshToken, 
+                expiresAt: data.expiresAt || Date.now() + 30 * 60 * 1000,
             });
 
+            console.log("✅ Tokens saved successfully");
             return true;
         } catch (error) {
             console.error("Error refreshing access token:", error);
-            // ถ้า refresh ไม่ได้ อาจต้อง logout
             await AuthService.clearAuthData();
             return false;
         }
@@ -195,13 +186,11 @@ export const AuthService = {
         googleIdToken: string
     ): Promise<{ success: boolean; user?: UserDetails; newUser?: boolean }> => {
         try {
-            console.log("🔄 Starting API login at SERVER");
-            const URL = "http://10.0.2.2:3000/api/users/login";
-
             let data: any;
             let newUser = false;
 
             if (NO_SERVER_WHILE_DEV) {
+                console.log("📄 Using mock data for development");
                 // Mock response
                 data = {
                     name: "OSHI",
@@ -216,7 +205,10 @@ export const AuthService = {
                 newUser = true;
                 console.log("📄 Using mock data for development");
             } else {
-                // Real API call
+                console.log("🔄 Starting API login at SERVER");
+
+                const URL = `${BASE_URL}/api/users/login`;
+                console.log("url : ", URL);
                 const response = await fetch(URL, {
                     method: "POST",
                     headers: {
@@ -227,15 +219,13 @@ export const AuthService = {
                         idToken: googleIdToken,
                     }),
                 });
-
                 console.log("📊 Response status:", response.status);
-
                 if (!response.ok) {
                     throw new Error(`Login failed: ${response.statusText}`);
                 }
 
                 data = await response.json();
-                console.log("📄 Response data received" , data);
+                console.log("📄 Response data received", data);
 
                 newUser = response.status === 201;
             }
@@ -249,6 +239,9 @@ export const AuthService = {
                 expiresAt:
                     Date.now() + DaysBeforeExpires * (24 * 60 * 60 * 1000),
             });
+
+            const savedRefreshToken = await AuthService.getRefreshToken();
+            console.log("✅ Saved refresh token:", savedRefreshToken);
 
             // Save user data
             const userData: UserDetails = {

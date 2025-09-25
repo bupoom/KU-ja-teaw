@@ -1,13 +1,26 @@
 frontend
-1. interface มั่วมากต้องเอา APi มาเชื่อมกันเลยนานมากๆ
-2. login ไม่ได้
-3. ยังโหลด files จาก User ไม่ได้
+1. เช็คเรื่อง token expire อีกรอบด้วยๆ
+2. API guide bookmark ยังไม่มี title ตอนนี้ใส่เป็น URL และไม่มี date ให้เลยแก้เป็น วันที่ 1 มกราคมไปเป็น 
+
 
 API problem
-1. กุ login ไม่ได้
-2. /api/trips/by-user ไม่มี status ว่าอันไหน เสร็จแล้ว  => เช็คว่าเลยวันที่ จบ trips แล้วรึยัง
-3. ในหน้า home ต้องการ trips แนะนำ ต้องสุ่มมาหรือ 
-4. tripsDetail ไม่มี copies ว่ากี่อันแล้ว
-5. serach function
-
-Data baseproblem
+- ในหน้า home ต้องการ trips แนะนำต้องการ API daily trips แบบว่าอาจจะสุ่มมาหรือ ดูจาก rating 
+- path img คือ path ของ jpg  เปลี่ยนเป็น http เลยได้มั้ย เช่น OSHI.jpg หรือถ้าลำบาก url ปกติคืออะไรนะคับ แบบว่า https://supabase อะไร
+- autocomplete ของ place เหมือนจะยังใช้งานไม่ได้นะคับหรือผมใช้ผิดก็ไม่รู้ ตัวอย่างการใช้่งานคือ
+    curl -X 'GET' \
+  'http://localhost:3000/api/places/autocomplete/travel' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cC...'
+- search guide เหมือนจะยังไม่มีนะคับ
+- bookmark guide ไม่มี trips title นะคับแต่เห็นมี trips_Url ให้มา
+ึึ- แล้วก็ bookmark guide /api/users/bookmarks/guides นี้ duration เป็นวินาทีเหรอคับ ตัวอย่างใน swag คือ
+    {
+      "trip_id": 3,
+      "gbookmark_id": 7,
+      "duration": 356476, 
+      "trip_url": "OSHI_RESTURANT.com",
+      "trip_picture_path": "3-noice.jpg",
+      "trip_owner": "OSHI"
+    },
+ถ้าเอามาหารให้เป็นวันคือ 356476 นี้คือ 4.1258 วันนะคับ (ถ้างานไม่หนักมากขอเป็น start/end date ได้มั้ย)
+แล้วก็จากใน figma. API นี้ยังไม่มี trips_owner_image กับ copies หรือ likes นะคับ

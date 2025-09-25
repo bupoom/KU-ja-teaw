@@ -33,7 +33,7 @@ interface MarkerPlacePros {
 
 const SF_ZOOM = 13;
 
-const map = () => {
+const MAP = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
   const [markerPlaces, setMarkerPlaces] = useState<MarkerPlacePros[]>([]);
   const [dates, setDates] = useState<string[]>([]);
@@ -329,4 +329,4 @@ const map = () => {
   );
 };
 
-export default map;
+export default MAP;

@@ -1,6 +1,5 @@
 // app/(tabs)/profile/profile_setting.tsx
 import Header from "@/components/common/Header";
-import { mockUserDetails } from "@/mock/mockDataComplete";
 import { Feather, Foundation } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -16,6 +15,8 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { AuthService } from "@/service/authService";
+import { updateUserDetails } from "@/service/APIserver/userService";
 
 const AccountScreen: React.FC = () => {
     const router = useRouter();
@@ -23,6 +24,7 @@ const AccountScreen: React.FC = () => {
     const [name, setName] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
     const [profileImage, setProfileImage] = useState<string>("");
+    const [selectedImageFile, setSelectedImageFile] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [saving, setSaving] = useState<boolean>(false);
 
@@ -32,19 +34,12 @@ const AccountScreen: React.FC = () => {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Use mock data
-            const userData = {
-                user_id: "1",
-                name: "Mr.Terrific",
-                phone: "0654105555",
-                email: "terrific@example.com",
-                profile_picture_link: mockUserDetails[0].profile_picture_link,
-            };
+            const userData = await AuthService.getUserData();
 
             setUser(userData);
-            setName(userData.name);
-            setPhone(userData.phone);
-            setProfileImage(userData.profile_picture_link);
+            setName(userData?.name ?? "");
+            setPhone(userData?.phone ?? "");
+            setProfileImage(userData?.profile_picture_link ?? "");
         } catch (error) {
             Alert.alert("Error", "Failed to load user data");
             console.error("Error loading user data:", error);
@@ -80,7 +75,15 @@ const AccountScreen: React.FC = () => {
             });
 
             if (!result.canceled && result.assets[0]) {
-                setProfileImage(result.assets[0].uri);
+                const asset = result.assets[0];
+
+                const newImageFile = {
+                    uri: asset.uri,
+                    type: "image/jpeg",
+                    name: `profile_${Date.now()}.jpg`,
+                };
+                setSelectedImageFile(newImageFile);
+                setProfileImage(asset.uri);
             }
         } catch (error) {
             Alert.alert("Error", "Failed to pick image");
@@ -126,12 +129,25 @@ const AccountScreen: React.FC = () => {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            console.log("Saving user data:", {
-                name: name.trim(),
-                phone: phone.trim(),
-                profileImage,
+            const response = await updateUserDetails({
+                username: name.trim(),
+                phoneNumber: phone.trim(),
+                selectedImageFile: selectedImageFile || undefined,
             });
-
+            const userData = await AuthService.getUserData();
+            if (!userData) {
+                throw new Error("No user data found in AuthService");
+            }
+            const newUserData: UserDetails = {
+                user_id: userData.user_id,
+                name: name,
+                phone: phone,
+                email: userData.email,
+                profile_picture_link:
+                    selectedImageFile?.uri ?? userData.profile_picture_link,
+                // ถ้าไม่มีรูปใหม่ → เก็บรูปเดิมไว้
+            };
+            AuthService.saveUserData(newUserData);
             Alert.alert("Success", "Profile updated successfully", [
                 { text: "OK", onPress: () => router.back() },
             ]);

@@ -225,6 +225,17 @@ const SettingsScreen: React.FC = () => {
             <Feather name="log-out" size={20} color="#374151" />
           </View>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            AuthService.refreshAccessToken()
+          }}
+          className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+        >
+          <View className="flex-row items-center justify-between">
+            <Text className="text-black font-medium text-xl">test_refresh_token</Text>
+            <Feather name="log-out" size={20} color="#374151" />
+          </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

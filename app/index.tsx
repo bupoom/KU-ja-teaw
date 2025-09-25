@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { AuthService } from "@/service/authService";
+import "./global.css"
 
 const GetStartScreen = () => {
     const router = useRouter();

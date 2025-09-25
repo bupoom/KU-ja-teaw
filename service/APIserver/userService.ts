@@ -1,56 +1,66 @@
 import client from "../client";
+import { Image } from "react-native";
+import { endpoints } from "../config";
 
-const endpoints = {
-  user: {
-    getUserDetailById: "/api/users",
-    updateUserDetails: "/api/users",
-    getUserInvited: "/api/users/invited",
-  },
-};
-
-// =======================
-// PATCH: อัปเดต user details
-// =======================
 export const updateUserDetails = async (data: {
-  selectedImageFile?: string; // local uri ของรูป
-  username: string;
-  phoneNumber?: string;
+    selectedImageFile?: {
+        uri: string;
+        type: string;
+        name: string;
+    };
+    username: string;
+    phoneNumber?: string;
 }) => {
-  try {
-    const formData = new FormData();
+    try {
+        console.log("🔍 API received data:", data);
+        const formData = new FormData();
+        formData.append("name", data.username);
+        if (data.phoneNumber) {
+            formData.append("phone", data.phoneNumber);
+        }
+        if (!data.selectedImageFile) {
+            const defaultUserIcon = Image.resolveAssetSource(
+                require("../../assets/images/user_icon.png")
+            );
+            data.selectedImageFile = {
+                uri: defaultUserIcon.uri,
+                type: "image/png",
+                name: "user_icon.png",
+            };
+        }
 
-    // ถ้ามีรูป ให้ append
-    if (data.selectedImageFile) {
-      formData.append("image", {
-        uri: data.selectedImageFile,
-        name: "photo.png",
-        type: "image/png",
-      } as any);
+        console.log("📸 Final Image:", data.selectedImageFile);
+        formData.append("image", {
+            uri: data.selectedImageFile.uri,
+            name: data.selectedImageFile.name,
+            type: data.selectedImageFile.type,
+        } as any);
+
+        const response = await client.patch(
+            endpoints.user.updateUserDetails,
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
     }
+}; 
 
-    formData.append("name", data.username);
-    if (data.phoneNumber) formData.append("phone", data.phoneNumber);
-
-    const response = await client.patch(
-      endpoints.user.updateUserDetails,
-      formData);
-
-    return response.data;
-  } catch (error) {
-    console.error("Update user error:", error);
-    throw error;
-  }
-};
-
-// =======================
-// GET: ดึง user details
-// =======================
-export const getUserDetails = async (): Promise<any> => {
-  try {
-    const response = await client.get(endpoints.user.getUserDetailById);
-    return response.data;
-  } catch (error) {
-    console.error("Error getting user details:", error);
-    throw error;
-  }
+export const getUserDetailById = async (userId?: string) => {
+    try {
+        let response: UserDetails;
+        if (!userId) {
+            console.log("fetch owner user details");
+            response = (await client.get(`${endpoints.user.getUserDetail}`)).data as UserDetails;
+        } else {
+            console.log("fetch user by id:", userId);
+            response = (await client.get(`${endpoints.user.getUserDetail}/${userId}`)).data as UserDetails;
+        }
+        return response;
+    } catch (error) {
+        console.error("Get user details error:", error);
+        throw error;
+    }
 };

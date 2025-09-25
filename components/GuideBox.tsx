@@ -3,9 +3,9 @@ import { truncateText } from "@/util/truncateText";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import { UnbookmarkByGuideId } from "@/service/APIserver/bookmarkService";
 
 // Define GuideBox interface
-
 interface GuideBoxProps {
     guideData: GuideBox;
     onRemove?: (id: number) => void;
@@ -29,24 +29,48 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
     } = guideData;
 
     const handleUnbookmark = () => {
+        console.log("handleUnbookmark called for id:", id);
+
         Alert.alert(
             "Remove Bookmark",
-            `Are you sure you want to remove "${title}" from bookmarks?`,
+            `remove "${title}" from bookmarks?`,
             [
                 {
                     text: "Cancel",
                     style: "cancel",
+                    onPress: () => console.log("Cancel pressed"),
                 },
                 {
                     text: "Remove",
                     style: "destructive",
-                    onPress: () => {
-                        // กด Remove แล้วจะไปใช้ function onremove ที่หน้า place bookmark
-                        if (onRemove) {
-                            onRemove(id);
+                    onPress: async () => {
+                        console.log("Remove button pressed for id:", id);
+
+                        try {
+                            console.log("Calling UnbookmarkByGuideId API...");
+
+                            // ✅ แก้ไข: ใช้ await กับ async function
+                            const res = await UnbookmarkByGuideId(id);
+                            console.log("API result:", res);
+
+                            // ✅ เช็ค result ที่ถูกต้อง
+                            if (res) {
+                                if (onRemove) {
+                                    console.log("Calling onRemove function");
+                                    onRemove(id);
+                                } else {
+                                    console.log(
+                                        "onRemove function not provided"
+                                    );
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Error removing bookmark:", error);
+                            Alert.alert(
+                                "Error",
+                                `Failed to remove "${title}" from bookmarks`
+                            );
                         }
-                        // You can also add API call here for real implementation
-                        // fetch API ลบ bookmark ทิ้ง
                     },
                 },
             ]
@@ -71,8 +95,17 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                 <View className="flex-row">
                     {/* Guide Image */}
                     <Image
-                        source={{ uri: guide_image }}
+                        source={
+                            guide_image &&
+                            guide_image.startsWith("https://") &&
+                            guide_image.endsWith("jpg")
+                                ? { uri: guide_image }
+                                : require("../assets/images/error.png")
+                        }
                         className="w-20 h-20 rounded-xl"
+                        onError={error =>
+                            console.log("Guide image load error:", error)
+                        }
                     />
 
                     {/* Guide Info */}
@@ -87,7 +120,11 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                             {give_bookmark && (
                                 <TouchableOpacity
                                     className="ml-2"
-                                    onPress={handleUnbookmark}
+                                    onPress={e => {
+                                        e.stopPropagation(); // ป้องกัน event bubbling
+                                        console.log("Bookmark icon pressed");
+                                        handleUnbookmark();
+                                    }}
                                 >
                                     <Ionicons
                                         name="bookmark"
@@ -121,8 +158,17 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                         {/* Creator Info */}
                         <View className="flex-row items-center">
                             <Image
-                                source={{ uri: owner_image }}
+                                source={
+                                    owner_image &&
+                                    owner_image.startsWith("https://") &&
+                                    owner_image.endsWith("jpg")
+                                        ? { uri: owner_image }
+                                        : require("../assets/images/error.png")
+                                }
                                 className="w-5 h-5 rounded-full mr-2"
+                                onError={error =>
+                                    console.log("Owner image error:", error)
+                                }
                             />
                             <Text className="text-sm text-dark_gray ml-1 font-sf-semibold">
                                 {owner_name}
