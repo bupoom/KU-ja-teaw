@@ -13,15 +13,11 @@ import { Feather, Entypo } from "@expo/vector-icons";
 import PlaceBox from "@/components/PlaceBox";
 import { mockPlaceBoxes } from "@/mock/mockDataComplete";
 import { useRouter } from "expo-router";
-
-//  สิ่งที่ต้องแก้ไขเพิ่มเติมคือ
-//  - ใส่ API Function
-//  - ใส่ routing ไปยังหน้านั้นๆ
-//  - เขียนฟังชั่นค้นหาใหม่
+import { SearchByInput } from "@/service/APIserver/bookmarkService";
 
 const SearchScreen: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>("");
-    const [searchResults, setSearchResults] = useState<PlaceBox[]>([]);
+    const [searchResults, setSearchResults] = useState<SearchPlaces[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [hasSearched, setHasSearched] = useState<boolean>(false);
     const router = useRouter();
@@ -33,16 +29,15 @@ const SearchScreen: React.FC = () => {
     }, []);
 
     // Search function API??? - เปลี่ยน return type เป็น PlaceBox[]
-    const Search_with_query = (query: string): PlaceBox[] => {
+    const Search_with_query = async (
+        query: string
+    ): Promise<SearchPlaces[]> => {
         if (!query.trim()) {
             return [];
         }
+        const search_result = SearchByInput(query);
 
-        return mockPlaceBoxes.filter(
-            item =>
-                item.title.toLowerCase().includes(query.toLowerCase()) ||
-                item.location.toLowerCase().includes(query.toLowerCase())
-        );
+        return search_result;
     };
 
     // Handle search ด้วยการ limit เวลา
@@ -57,8 +52,8 @@ const SearchScreen: React.FC = () => {
 
             setLoading(true);
             // จำลองการ loading
-            setTimeout(() => {
-                const results = Search_with_query(searchQuery);
+            setTimeout(async () => {
+                const results = await Search_with_query(searchQuery);
                 setSearchResults(results);
                 setHasSearched(true);
                 setLoading(false);
@@ -94,10 +89,10 @@ const SearchScreen: React.FC = () => {
     );
 
     // Handle navigation to PlaceDetails screen
-    const handlePlacePress = (place: PlaceBox) => {
+    const handlePlacePress = (placeId: string) => {
         // TODO: Navigate to PlaceDetails screen
-        router.push(`/dynamicPage/places/${place.place_id}`);
-        console.log("Navigate to place details:", place.place_id);
+        router.push(`/dynamicPage/places/${placeId}`);
+        console.log("Navigate to place details:", placeId);
     };
 
     return (
@@ -141,12 +136,15 @@ const SearchScreen: React.FC = () => {
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         style={{ marginBottom: 10 }}
-                        onPress={() => handlePlacePress(item)}
+                        onPress={() => handlePlacePress(item.placeId)}
                     >
-                        <PlaceBox {...item} />
+                        <Text className="bg-white rounded-xl p-3 mr-1 ml-1 border border-gray_border">
+                            {item.text}
+                        </Text>
+                        {/* <PlaceBox {...item} /> */}
                     </TouchableOpacity>
                 )}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => item.placeId}
                 className="m-2 pb-5"
                 ListEmptyComponent={renderEmptyState}
             />

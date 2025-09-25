@@ -21,3 +21,9 @@ interface PlaceDetails {
     official_link?: string;
     notes?: Note[];
 } // เเสดงหน้า details ของ place ตอนกดเข้าไปจาก place bookmark กับ หน้า dailytrip
+
+
+interface SearchPlaces {
+    text: string;
+    placeId: string;
+}

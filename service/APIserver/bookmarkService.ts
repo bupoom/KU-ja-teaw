@@ -1,3 +1,4 @@
+import { Text } from "react-native";
 import client from "../client";
 
 const endpoints = {
@@ -6,6 +7,7 @@ const endpoints = {
         unbookmarkPlace: "/api/users/bookmarks/places",
         getbookmarkGuides: "/api/users/bookmarks/guides",
         unbookmarkGuide: "/api/users/bookmarks/guides",
+        autoComplete: "/api/places/autocomplete",
     },
 };
 
@@ -82,26 +84,26 @@ export const UnbookmarkByGuideId = async (
 ): Promise<boolean> => {
     try {
         console.log("Delete User Bookmark by bookmarkID:", bookmarkid);
-        
-        const response = await client.delete(
+
+        const response = (await client.delete(
             `${endpoints.bookmark.unbookmarkGuide}/${bookmarkid}`
-        ) as {data: {message : string}};
-        
+        )) as { data: { message: string } };
+
         console.log("API Response:", response.data);
-        
+
         // Object mapping แทน switch case
         const messageMap: Record<string, string> = {
             "Removed Guide from user's bookmark": "completed",
-            "Guide doesn't exist inside user's bookmark": "guideId not in user bookmark list",
-            "trip_id is required": "invalid guideId"
+            "Guide doesn't exist inside user's bookmark":
+                "guideId not in user bookmark list",
+            "trip_id is required": "invalid guideId",
         };
-        
+
         const message = response.data.message || "";
         const result = messageMap[message] || "invalid guideId";
-        
+
         console.log("Processed result:", result);
         return result === "completed";
-        
     } catch (error) {
         console.error("Unbookmark error:", error);
         throw error;
@@ -113,28 +115,55 @@ export const UnbookmarkByPlaceId = async (
 ): Promise<boolean> => {
     try {
         console.log("Delete User Bookmark by bookmarkID:", bookmarkid);
-        
-        const response = await client.delete(
+
+        const response = (await client.delete(
             `${endpoints.bookmark.unbookmarkPlace}/${bookmarkid}`
-        ) as {data: {message : string}};
-        
+        )) as { data: { message: string } };
+
         console.log("API Response:", response.data);
-        
+
         // Object mapping แทน switch case
         const messageMap: Record<string, string> = {
             "Place from user's bookmark removed": "completed",
-            "Place doesn't exist in user's bookmark": "placeId not in user bookmark list",
-            "place_id is required": "invalid placeId"
+            "Place doesn't exist in user's bookmark":
+                "placeId not in user bookmark list",
+            "place_id is required": "invalid placeId",
         };
-        
+
         const message = response.data.message || "";
         const result = messageMap[message] || "invalid placeId";
-        
+
         console.log("Processed result:", result);
         return result === "completed";
-        
     } catch (error) {
         console.error("Unbookmark error:", error);
+        throw error;
+    }
+};
+
+export const SearchByInput = async (input: string): Promise<SearchPlaces[]> => {
+    try {
+        console.log("fetching by user input...");
+        const response = (await client.get(
+            `${endpoints.bookmark.autoComplete}/${input}`
+        )) as {
+            data: { suggestions: any[] };
+        };
+
+        const bookmarks = response.data.suggestions || [];
+        const places: SearchPlaces[] = [];
+
+        for (let i = 0; i < bookmarks.length; i++) {
+            const Data = bookmarks[i];
+            places.push({
+                text: Data.placePrediction.text.text,
+                placeId:Data.placePrediction.placeId,
+            });
+        }
+        console.log("result : ", places);
+        return places;
+    } catch (error) {
+        console.error("Response data:", error);
         throw error;
     }
 };
