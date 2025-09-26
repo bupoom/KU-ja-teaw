@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { SafeAreaView, StatusBar, Text, TouchableOpacity, View } from "react-native";
+import {
+  SafeAreaView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+  TextInput,
+} from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -32,6 +39,7 @@ export default function SelectTransport() {
     end?: string;    // "HH:mm"
   }>();
 
+  const [title, setTitle] = useState<string>("");
   const [transport, setTransport] = useState<TransportKey | null>(null);
 
   const options = useMemo(
@@ -47,7 +55,7 @@ export default function SelectTransport() {
     []
   );
 
-  const canAdd = Boolean(transport && plan_id && date && start && end);
+  const canAdd = Boolean(title.trim() && transport && plan_id && date && start && end);
 
   const onBack = () => router.back();
 
@@ -60,11 +68,11 @@ export default function SelectTransport() {
       start: String(start),
       end: String(end),
       transport: String(transport),
+      title: title.trim(),
     };
 
     console.log("Add Event payload:", payload);
 
-    // Navigate back to the daily_trip index (wrapped by its layout)
     router.push({
       pathname: "/plan/[plan_id]/daily_trip",
       params: payload,
@@ -85,10 +93,21 @@ export default function SelectTransport() {
 
       {/* Body */}
       <View className="flex-1 px-6 pt-4">
+        {/* Title at top */}
+        <Text className="text-sm text-[#0E1820] mb-2">Event title</Text>
+        <TextInput
+          placeholder="e.g., Taxi to hotel, Morning commute"
+          value={title}
+          onChangeText={setTitle}
+          className="border border-gray-300 rounded-lg px-4 py-3 text-base mb-5"
+          maxLength={80}
+        />
+
         <Text className="text-[14px] text-[#0E1820] leading-5 mb-5">
           Please select your preferred travel method for{"\n"}this itinerary segment
         </Text>
 
+        {/* Transport tiles */}
         <View className="flex-row justify-between flex-wrap">
           {options.map(o => (
             <Tile
@@ -101,6 +120,7 @@ export default function SelectTransport() {
           ))}
         </View>
 
+        {/* Date & Time */}
         {(date || start || end) && (
           <View className="mt-2">
             <Text className="text-xs text-gray-500">
@@ -113,6 +133,7 @@ export default function SelectTransport() {
 
         <View className="flex-1" />
 
+        {/* Add */}
         <TouchableOpacity
           onPress={onAdd}
           disabled={!canAdd}

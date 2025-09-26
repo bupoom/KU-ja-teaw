@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  TextInput,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,6 +15,49 @@ const GREEN = "#294C43";
 const LIGHT_BORDER = "#E5E7EB";
 
 type TransportKey = "car" | "train" | "bus" | "walk" | "flight" | "boat";
+type UserRole = "owner" | "editor" | "viewer";
+
+/* ----------------------- STUBBED API ----------------------- */
+async function apiFetchVoteState(
+  vote_id: string,
+  user_id: string
+): Promise<{
+  hasVoted: boolean;
+  myChoice?: TransportKey;
+  counts: Record<TransportKey, number>;
+  totalVoters: number;
+  isClosed: boolean;
+}> {
+  return {
+    hasVoted: false,
+    myChoice: "car",
+    counts: { car: 1, train: 0, bus: 0, walk: 0, flight: 0, boat: 0 },
+    totalVoters: 5,
+    isClosed: false,
+  };
+}
+
+async function apiSubmitVote(params: {
+  vote_id: string;
+  user_id: string;
+  choice: TransportKey;
+}): Promise<{ ok: boolean }> {
+  return { ok: true };
+}
+
+async function apiFetchUserRole(plan_id: string, user_id: string): Promise<UserRole> {
+  // TODO: replace with real call
+  return "owner"; // change to 'viewer' or 'editor' to test permissions
+}
+
+async function apiCloseVote(params: {
+  vote_id: string;
+  user_id: string;
+}): Promise<{ ok: boolean }> {
+  // TODO: server marks vote closed
+  return { ok: true };
+}
+/* ----------------------------------------------------------- */
 
 const TRANSPORTS: Array<{
   key: TransportKey;
@@ -28,35 +72,6 @@ const TRANSPORTS: Array<{
   { key: "boat", label: "Boat", icon: "boat-outline" },
 ];
 
-/* ----------------------- STUBBED API -----------------------
-   Replace these with your real calls.
----------------------------------------------------------------- */
-async function apiFetchVoteState(vote_id: string, user_id: string): Promise<{
-  hasVoted: boolean;
-  myChoice?: TransportKey;
-  counts: Record<TransportKey, number>;
-  totalVoters: number;
-}> {
-  // TODO: fetch(`/votes/${vote_id}?user=${user_id}`)
-  // Demo defaults:
-  return {
-    hasVoted: false, // set true to test the lock
-    myChoice: "car",
-    counts: { car: 1, train: 0, bus: 0, walk: 0, flight: 0, boat: 0 },
-    totalVoters: 5,
-  };
-}
-
-async function apiSubmitVote(params: {
-  vote_id: string;
-  user_id: string;
-  choice: TransportKey;
-}): Promise<{ ok: boolean }> {
-  // TODO: await fetch(`/votes/${params.vote_id}`, { method:'POST', body: JSON.stringify({user_id, choice}) })
-  return { ok: true };
-}
-/* ----------------------------------------------------------- */
-
 export default function SelectTransport() {
   const router = useRouter();
   const { plan_id, vote_id, start, end, date, user_id } = useLocalSearchParams<{
@@ -69,6 +84,9 @@ export default function SelectTransport() {
   }>();
   const uid = String(user_id ?? "me-guest");
 
+  // title box (required)
+  const [title, setTitle] = useState("");
+
   // voting state
   const [selected, setSelected] = useState<TransportKey>("car");
   const [votes, setVotes] = useState<Record<TransportKey, number>>({
@@ -76,24 +94,34 @@ export default function SelectTransport() {
   });
   const [totalVoters, setTotalVoters] = useState(5);
   const [hasVoted, setHasVoted] = useState(false);
+  const [isClosed, setIsClosed] = useState(false);
+
+  // role/permissions
+  const [userRole, setUserRole] = useState<UserRole>("viewer");
+  const canClose = userRole === "owner";
+
   const [loading, setLoading] = useState(true);
 
-  // fetch vote status on mount
+  // fetch vote status + role on mount
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const res = await apiFetchVoteState(String(vote_id), uid);
-        setHasVoted(res.hasVoted);
-        setVotes(res.counts);
-        setTotalVoters(res.totalVoters);
-        // if user already voted, lock to their choice and do not allow change
-        if (res.hasVoted && res.myChoice) setSelected(res.myChoice);
+        const [state, role] = await Promise.all([
+          apiFetchVoteState(String(vote_id), uid),
+          apiFetchUserRole(String(plan_id), uid),
+        ]);
+        setUserRole(role);
+        setHasVoted(state.hasVoted);
+        setVotes(state.counts);
+        setTotalVoters(state.totalVoters);
+        setIsClosed(state.isClosed);
+        if (state.hasVoted && state.myChoice) setSelected(state.myChoice);
       } finally {
         setLoading(false);
       }
     })();
-  }, [vote_id, uid]);
+  }, [vote_id, uid, plan_id]);
 
   const currentVotes = useMemo(
     () => Object.values(votes).reduce((a, b) => a + b, 0),
@@ -101,9 +129,8 @@ export default function SelectTransport() {
   );
 
   const onSelect = (k: TransportKey) => {
-    if (hasVoted) return; // block change if already voted
+    if (hasVoted || isClosed) return; // block change if already voted or closed
     if (k === selected) return;
-    // Local visual move: shift "my" single vote
     setVotes((prev) => {
       const next = { ...prev };
       next[selected] = Math.max(0, next[selected] - 1);
@@ -113,9 +140,19 @@ export default function SelectTransport() {
     setSelected(k);
   };
 
+  const canConfirm = Boolean(!loading && !hasVoted && !isClosed && title.trim());
+
   const confirmVote = async () => {
+    if (isClosed) {
+      Alert.alert("Voting closed", "This poll has been closed by the owner.");
+      return;
+    }
     if (hasVoted) {
       Alert.alert("Already voted", "You have already submitted a vote for this poll.");
+      return;
+    }
+    if (!title.trim()) {
+      Alert.alert("Title required", "Please give this event a name.");
       return;
     }
     setLoading(true);
@@ -126,7 +163,6 @@ export default function SelectTransport() {
       return;
     }
     setHasVoted(true);
-    // navigate out with all params
     const payload = {
       plan_id: String(plan_id),
       vote_id: String(vote_id),
@@ -137,8 +173,32 @@ export default function SelectTransport() {
       selected,
       votes: JSON.stringify(votes),
       hasVoted: "true",
+      title: title.trim(),
+      isClosed: String(isClosed),
     };
     router.push({ pathname: "/plan/[plan_id]/daily_trip", params: payload });
+  };
+
+  const onCloseVote = async () => {
+    if (!canClose) return;
+    Alert.alert("Close vote?", "No one will be able to vote after closing.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Close",
+        style: "destructive",
+        onPress: async () => {
+          setLoading(true);
+          const resp = await apiCloseVote({ vote_id: String(vote_id), user_id: uid });
+          setLoading(false);
+          if (!resp.ok) {
+            Alert.alert("Error", "Failed to close the vote.");
+            return;
+          }
+          setIsClosed(true);
+          Alert.alert("Closed", "Voting has been closed.");
+        },
+      },
+    ]);
   };
 
   // small UI atoms
@@ -155,12 +215,12 @@ export default function SelectTransport() {
 
   const TransportCard = ({ item }: { item: (typeof TRANSPORTS)[number] }) => {
     const isActive = selected === item.key;
-    const lock = hasVoted && !isActive; // dim other options if locked
+    const lock = (hasVoted || isClosed) && !isActive;
     return (
       <TouchableOpacity
         onPress={() => onSelect(item.key)}
         activeOpacity={0.9}
-        disabled={hasVoted} // block all when already voted
+        disabled={hasVoted || isClosed}
         className={`h-28 w-[31%] mb-4 rounded-2xl items-center justify-center ${
           isActive ? "" : "border"
         }`}
@@ -181,11 +241,29 @@ export default function SelectTransport() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* Header */}
       <View className="px-5 py-3 items-center">
         <Text className="text-[17px] font-semibold">Vote Event</Text>
       </View>
 
-      <View className="mx-5 mt-1 rounded-2xl border bg-white" style={{ borderColor: LIGHT_BORDER }}>
+      {/* Title box at top */}
+      <View className="px-5">
+        <Text className="text-sm text-[#0E1820] mb-2">Event title</Text>
+        <TextInput
+          placeholder="e.g., Taxi to hotel, Morning commute"
+          value={title}
+          onChangeText={setTitle}
+          editable={!hasVoted && !isClosed}
+          className="border border-gray-300 rounded-xl px-4 py-3 text-base"
+          maxLength={80}
+        />
+        {!title.trim() && !hasVoted && !isClosed ? (
+          <Text className="mt-1 text-xs text-red-500">Required</Text>
+        ) : null}
+      </View>
+
+      {/* Time card */}
+      <View className="mx-5 mt-4 rounded-2xl border bg-white" style={{ borderColor: LIGHT_BORDER }}>
         <View className="flex-row items-center justify-between px-5 py-4">
           <View className="items-center">
             <Text className="text-gray-500 mb-1">Start</Text>
@@ -204,17 +282,24 @@ export default function SelectTransport() {
       </View>
 
       <View className="px-6 mt-3 items-end">
-        <Text className="text-gray-500">Voting: {currentVotes}/{totalVoters}</Text>
+        <Text className="text-gray-500">
+          {isClosed ? "Voting closed" : `Voting: ${currentVotes}/${totalVoters}`}
+        </Text>
       </View>
 
-      {hasVoted && (
+      {(hasVoted || isClosed) && (
         <View className="mx-5 mt-2 rounded-xl bg-gray-100 px-4 py-2">
           <Text className="text-gray-700">
-            You already voted (<Text className="font-semibold">{selected}</Text>). Voting is locked.
+            {isClosed ? (
+              <>This poll has been <Text className="font-semibold">closed</Text> by the owner.</>
+            ) : (
+              <>You already voted (<Text className="font-semibold">{selected}</Text>). Voting is locked.</>
+            )}
           </Text>
         </View>
       )}
 
+      {/* Transport grid */}
       <View className="px-4 mt-3">
         <FlatList
           data={TRANSPORTS}
@@ -228,18 +313,34 @@ export default function SelectTransport() {
 
       <View className="flex-1" />
 
-      <View className="px-5 pb-7">
+      {/* Footer actions */}
+      <View className="px-5 pb-7 gap-3">
+        {/* Confirm Vote */}
         <TouchableOpacity
           onPress={confirmVote}
           activeOpacity={0.9}
-          disabled={loading || hasVoted}
-          className={`py-4 rounded-xl items-center ${loading || hasVoted ? "opacity-60" : ""}`}
+          disabled={!canConfirm}
+          className={`py-4 rounded-xl items-center ${!canConfirm ? "opacity-60" : ""}`}
           style={{ backgroundColor: GREEN }}
         >
           <Text className="text-white font-semibold text-[16px]">
-            {hasVoted ? "Already Voted" : "Confirm Vote"}
+            {hasVoted ? "Already Voted" : isClosed ? "Voting Closed" : "Confirm Vote"}
           </Text>
         </TouchableOpacity>
+
+        {/* Close Vote (owner only) */}
+        {canClose && !isClosed && (
+          <TouchableOpacity
+            onPress={onCloseVote}
+            activeOpacity={0.9}
+            className="py-3 rounded-xl items-center border"
+            style={{ borderColor: "#ef4444" }}
+          >
+            <Text className="font-semibold text-[16px]" style={{ color: "#ef4444" }}>
+              Close Vote (Owner)
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );

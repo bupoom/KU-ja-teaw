@@ -27,7 +27,7 @@ const SelectTypeVote: React.FC = () => {
 
   const goVotePlace = () => {
     router.push(
-      `/plan/${plan_id}/daily_trip/(modals)/add_vote/vote_place/select_time`
+      `/plan/${plan_id}/daily_trip/(modals)/add_vote/${tempVoteId}/vote_place/select_time`
     );
   };
 
