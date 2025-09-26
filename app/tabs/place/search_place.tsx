@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Feather, Entypo } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { SearchByInput } from "@/service/APIserver/bookmarkService";
+import { SearchPlaceByInput } from "@/service/APIserver/bookmarkService";
 
 const SearchScreen: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>("");
@@ -30,7 +30,7 @@ const SearchScreen: React.FC = () => {
         if (!query.trim()) {
             return [];
         }
-        const search_result = SearchByInput(query);
+        const search_result = SearchPlaceByInput(query);
 
         return search_result;
     };

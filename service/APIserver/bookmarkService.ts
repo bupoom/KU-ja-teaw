@@ -3,10 +3,8 @@ import client from "../client";
 
 const endpoints = {
     bookmark: {
-        getbookmarkPlaces: "/api/users/bookmarks/places",
-        unbookmarkPlace: "/api/users/bookmarks/places",
-        getbookmarkGuides: "/api/users/bookmarks/guides",
-        unbookmarkGuide: "/api/users/bookmarks/guides",
+        place: "/api/users/bookmarks/places",
+        guide: "/api/users/bookmarks/guides",
         autoComplete: "/api/places/autocomplete",
     },
 };
@@ -14,12 +12,12 @@ const endpoints = {
 // getBookmarkPlaceList && getBookmarkGuideList อยู่หน้า tabs/place หรือ guide/index
 // UnbookmarkByPlaceId && UnbookmarkByGuideId อยู่ใน component
 
+
+// ------------------------------ Place --------------------------------------
 export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
     try {
         console.log("fetching User Bookmark..");
-        const response = (await client.get(
-            endpoints.bookmark.getbookmarkPlaces
-        )) as {
+        const response = (await client.get(endpoints.bookmark.place)) as {
             data: { bookmarks: any[] };
         };
 
@@ -37,8 +35,8 @@ export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
                 place_image: serverData.places_picture_path,
                 place_id: serverData.place_id,
             });
-            
-            console.log(places[i].place_image)
+
+            console.log(places[i].place_image);
         }
         return places;
     } catch (error) {
@@ -47,12 +45,103 @@ export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
     }
 };
 
+export const addPlaceToBookmark = async (
+    bookmarkid: number
+): Promise<boolean> => {
+    try {
+        console.log("Deleting User Bookmark by bookmarkID:", bookmarkid);
+        const response = (await client.post(
+            `${endpoints.bookmark.place}/${bookmarkid}`
+        )) as { data: { message: string } };
+        const messageMap: Record<string, string> = {
+            "Bookmark added": "completed",
+            "Place already bookmarked by user":
+                "placeId not in user bookmark list",
+            "place_id is required": "invalid placeId",
+        };
+        const message = response.data.message || "";
+        const result = messageMap[message] || "invalid placeId";
+
+        console.log("bookmark completed!!", result);
+        return result === "completed";
+    } catch (error) {
+        console.error("bookmark error:", error);
+        throw error;
+    }
+};
+
+export const UnbookmarkByPlaceId = async (
+    bookmarkid: number
+): Promise<boolean> => {
+    try {
+        console.log("Delete User Bookmark by bookmarkID:", bookmarkid);
+
+        const response = (await client.delete(
+            `${endpoints.bookmark.place}/${bookmarkid}`
+        )) as { data: { message: string } };
+
+        console.log("API Response:", response.data);
+
+        // Object mapping แทน switch case
+        const messageMap: Record<string, string> = {
+            "Place from user's bookmark removed": "completed",
+            "Place doesn't exist in user's bookmark":
+                "placeId not in user bookmark list",
+            "place_id is required": "invalid placeId",
+        };
+
+        const message = response.data.message || "";
+        const result = messageMap[message] || "invalid placeId";
+
+        console.log("Unbookmark completed!! :", result);
+        return result === "completed";
+    } catch (error) {
+        console.error("Unbookmark error:", error);
+        throw error;
+    }
+};
+
+export const SearchPlaceByInput = async (
+    input: string
+): Promise<SearchPlaces[]> => {
+    try {
+        console.log("fetching by user input...");
+        const response = (await client.get(
+            `${endpoints.bookmark.autoComplete}/${input}`
+        )) as {
+            data: { suggestions: any[] };
+        };
+
+        const bookmarks = response.data.suggestions || [];
+        const places: SearchPlaces[] = [];
+
+        for (let i = 0; i < bookmarks.length; i++) {
+            const Data = bookmarks[i];
+            places.push({
+                text: Data.placePrediction.text.text,
+                placeId: Data.placePrediction.placeId,
+            });
+        }
+        console.log("result : ", places);
+        return places;
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
+
+
+
+
+
+// ------------------------------ Place --------------------------------------
+
 export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
     try {
         console.log("fetching User Bookmark..");
-        const response = (await client.get(
-            endpoints.bookmark.getbookmarkGuides
-        )) as { data: { guide_bookmarks: any[] } };
+        const response = (await client.get(endpoints.bookmark.guide)) as {
+            data: { guide_bookmarks: any[] };
+        };
 
         const bookmarks = response.data.guide_bookmarks || [];
         const guides: GuideBox[] = [];
@@ -61,9 +150,9 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
             const serverData = bookmarks[i];
             guides.push({
                 id: serverData.gbookmark_id,
-                title: serverData.trip_url, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
-                start_date: "",
-                end_date: "",
+                title: serverData.title, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
+                start_date: serverData.start_date,
+                end_date: serverData.end_date,
                 guide_image: serverData.trip_picture_path,
                 copies: -1,
                 owner_name: serverData.trip_owner,
@@ -80,6 +169,26 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
     }
 };
 
+export const BookmarkByGuideId = async ( // ยังไม่เอาไปแปะที่ไหน
+    bookmarkid: number
+): Promise<boolean> => {
+    try {
+        console.log("Add User Guide Bookmark by bookmarkID:", bookmarkid);
+
+        const response = (await client.post(
+            `${endpoints.bookmark.guide}/${bookmarkid}`
+        )) as { data: { message: string } };
+        console.log("API Response:", response.data);
+        const message = response.data.message || "";
+
+        console.log("Processed result:", message);
+        return message === "Bookmark added";
+    } catch (error) {
+        console.error("Unbookmark error:", error);
+        throw error;
+    }
+};
+
 export const UnbookmarkByGuideId = async (
     bookmarkid: number
 ): Promise<boolean> => {
@@ -87,7 +196,7 @@ export const UnbookmarkByGuideId = async (
         console.log("Delete User Bookmark by bookmarkID:", bookmarkid);
 
         const response = (await client.delete(
-            `${endpoints.bookmark.unbookmarkGuide}/${bookmarkid}`
+            `${endpoints.bookmark.guide}/${bookmarkid}`
         )) as { data: { message: string } };
 
         console.log("API Response:", response.data);
@@ -111,60 +220,4 @@ export const UnbookmarkByGuideId = async (
     }
 };
 
-export const UnbookmarkByPlaceId = async (
-    bookmarkid: number
-): Promise<boolean> => {
-    try {
-        console.log("Delete User Bookmark by bookmarkID:", bookmarkid);
 
-        const response = (await client.delete(
-            `${endpoints.bookmark.unbookmarkPlace}/${bookmarkid}`
-        )) as { data: { message: string } };
-
-        console.log("API Response:", response.data);
-
-        // Object mapping แทน switch case
-        const messageMap: Record<string, string> = {
-            "Place from user's bookmark removed": "completed",
-            "Place doesn't exist in user's bookmark":
-                "placeId not in user bookmark list",
-            "place_id is required": "invalid placeId",
-        };
-
-        const message = response.data.message || "";
-        const result = messageMap[message] || "invalid placeId";
-
-        console.log("Processed result:", result);
-        return result === "completed";
-    } catch (error) {
-        console.error("Unbookmark error:", error);
-        throw error;
-    }
-};
-
-export const SearchByInput = async (input: string): Promise<SearchPlaces[]> => {
-    try {
-        console.log("fetching by user input...");
-        const response = (await client.get(
-            `${endpoints.bookmark.autoComplete}/${input}`
-        )) as {
-            data: { suggestions: any[] };
-        };
-
-        const bookmarks = response.data.suggestions || [];
-        const places: SearchPlaces[] = [];
-
-        for (let i = 0; i < bookmarks.length; i++) {
-            const Data = bookmarks[i];
-            places.push({
-                text: Data.placePrediction.text.text,
-                placeId:Data.placePrediction.placeId,
-            });
-        }
-        console.log("result : ", places);
-        return places;
-    } catch (error) {
-        console.error("Response data:", error);
-        throw error;
-    }
-};

@@ -76,7 +76,6 @@ export const AuthService = {
     getValidAccessToken: async (): Promise<string | null> => {
         try {
             const isExpired = await AuthService.isAccessTokenExpired();
-
             if (isExpired) {
                 // พยายาม refresh token
                 const refreshed = await AuthService.refreshAccessToken();
@@ -99,8 +98,6 @@ export const AuthService = {
                 console.log("No refresh token available");
                 return false;
             }
-            console.log("Finished Refreshing token API..", refreshToken);
-
             const response = await fetch(
                 `${BASE_URL}/api/users/refresh-token`,
                 {
@@ -117,15 +114,13 @@ export const AuthService = {
             }
 
             const data = await response.json();
-            console.log("response data:", data);
-
+            console.log("Finished Refreshing token API => response data:", data);
             await AuthService.saveTokens({
                 accessToken: data.Access_token, 
                 refreshToken: data.Refresh_token || refreshToken, 
                 expiresAt: data.expiresAt || Date.now() + 30 * 60 * 1000,
             });
 
-            console.log("✅ Tokens saved successfully");
             return true;
         } catch (error) {
             console.error("Error refreshing access token:", error);
@@ -228,7 +223,6 @@ export const AuthService = {
 
             const DaysBeforeExpires = 5;
 
-            // ✅ Save tokens - ใช้โครงสร้างเดียวกัน
             await AuthService.saveTokens({
                 accessToken: data.Access_token,
                 refreshToken: data.Refresh_token,

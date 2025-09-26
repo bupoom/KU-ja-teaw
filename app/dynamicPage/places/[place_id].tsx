@@ -14,6 +14,7 @@ import {
     View,
 } from "react-native";
 import { getPlaceDetails } from "@/service/APIserver/placeDetail";
+import { addPlaceToBookmark } from "@/service/APIserver/bookmarkService"
 
 export default function PlaceDetail() {
     const { id , type} = useLocalSearchParams();
@@ -178,8 +179,9 @@ export default function PlaceDetail() {
                 {/* Add Button - Fixed at bottom */}
                 <CustomButton
                     title="Add Place Bookmark"
+                    classname="text-center" //
                     onPress={() => {
-                        console.log("Add place to PlaceBookmarks");
+                        addPlaceToBookmark(placeDetail.id);
                     }}
                 />
             </ScrollView>
