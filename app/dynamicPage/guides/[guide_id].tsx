@@ -11,18 +11,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
 
 import { mockFlights, mockGuideDetails } from "@/mock/mockDataComplete";
+
 import CustomButton from "@/components/common/CustomButton";
 import Header from "@/components/common/Header";
-import ActivityEventEnd from "@/components/plan/ActivityEventEnd";
-import ActivityPlaceEnd from "@/components/plan/ActivityPlaceEnd";
+import ActivityEvent from "@/components/plan/ActivityEvent";
+import ActivityPlace from "@/components/plan/ActivityPlace";
 import { FlightBox } from "@/components/plan/FlightBox";
+import WeatherIcon from "@/components/common/WeatherIcon";
+
 import { formatDate } from "@/util/formatFucntion/formatDate";
 import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 import { organizeActivitiesByDay } from "@/util/organizedActivityByDay";
 import { truncateText } from "@/util/truncateText";
-import Feather from "@expo/vector-icons/Feather";
 
 interface DailyActivity {
   date: string;
@@ -31,7 +34,7 @@ interface DailyActivity {
 
 export default function GuideDetail() {
   const router = useRouter();
-  const { guide_id } = useLocalSearchParams();
+  const { guide_id } = useLocalSearchParams<{ guide_id: string }>();
 
   const [loading, setLoading] = useState<boolean>(true);
   const [guideDetail, setGuideDetail] = useState<GuideDetails | null>(null);
@@ -112,7 +115,7 @@ export default function GuideDetail() {
   const isActivityPlace = (
     activity: ActivityPlaceBox | ActivityEventBox
   ): activity is ActivityPlaceBox => {
-    return "location" in activity;
+    return "location" in activity; // ใน ActivityPlaceBox มี location อยู่
   };
 
   const loadData = async () => {
@@ -124,7 +127,11 @@ export default function GuideDetail() {
       if (guideData && guideData.trip_id) {
         const [flightsData, activitiesData] = await Promise.all([
           fetchFlights(guideData.trip_id),
-          organizeActivitiesByDay(guideData.trip_id),
+          organizeActivitiesByDay(
+            guideData.trip_id,
+            guideData.start_date,
+            guideData.end_date
+          ),
         ]);
         setFlights(flightsData);
         setDailyActivities(activitiesData);
@@ -282,87 +289,84 @@ export default function GuideDetail() {
         </TouchableOpacity>
 
         {/* Flight Section */}
-        {flights.length > 0 && (
-          <View className="bg-white p-6 m-6 border-gray_border border-2 rounded-xl">
-            <TouchableOpacity
-              onPress={toggleFlights}
-              className="flex-row justify-between items-center mb-4"
-            >
-              <Text className="text-xl font-bold text-black">
-                International Flight
-              </Text>
-              <Feather
-                name={showFlights ? "chevron-up" : "chevron-down"}
-                size={20}
-                color="black"
-              />
-            </TouchableOpacity>
+        <View className="bg-white p-6 m-6 border-gray_border border-2 rounded-xl">
+          <TouchableOpacity
+            onPress={toggleFlights}
+            className="flex-row justify-between items-center mb-4"
+          >
+            <Text className="text-xl font-bold text-black">
+              International Flight
+            </Text>
+            <Feather
+              name={showFlights ? "chevron-up" : "chevron-down"}
+              size={20}
+              color="black"
+            />
+          </TouchableOpacity>
 
-            {showFlights && (
-              <View>
-                {flights.map((flight) => (
-                  <FlightBox key={flight.id} {...flight} />
-                ))}
-              </View>
-            )}
-          </View>
-        )}
+          {showFlights && (
+            <View>
+              {flights.map((flight) => (
+                <FlightBox key={flight.id} {...flight} />
+              ))}
+            </View>
+          )}
+        </View>
 
         {/* Travel Place Section */}
-        {dailyActivities.length > 0 && (
-          <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
-            <Text className="text-xl font-bold text-black mb-4">
-              Travel Place
-            </Text>
+        <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
+          <Text className="text-xl font-bold text-black mb-4">
+            Travel Place
+          </Text>
 
-            {dailyActivities.map((day) => (
-              <View key={day.date} className="mb-4">
-                <TouchableOpacity
-                  onPress={() => toggleDay(day.date)}
-                  className="flex-row justify-between items-center mb-3 p-3 bg-gray-50 rounded-xl"
-                >
-                  <View className="flex-row items-center">
-                    <Feather name="sun" size={22} color="#666" />
-                    <Text className="text-lg font-semibold text-black ml-2">
-                      {formatDate(day.date)}
-                    </Text>
-                  </View>
-                  <Feather
-                    name={
-                      expandedDays[day.date] ? "chevron-up" : "chevron-down"
-                    }
+          {dailyActivities.map((day) => (
+            <View key={day.date} className="mb-4">
+              <TouchableOpacity
+                onPress={() => toggleDay(day.date)}
+                className="flex-row justify-between items-center mb-3 p-3 bg-gray-50 rounded-xl"
+              >
+                <View className="flex-row items-center">
+                  <WeatherIcon
+                    trip_id={parseInt(guide_id)}
+                    date={day.date}
                     size={20}
-                    color="black"
                   />
-                </TouchableOpacity>
+                  <Text className="text-lg font-semibold text-black ml-2">
+                    {formatDate(day.date)}
+                  </Text>
+                </View>
+                <Feather
+                  name={expandedDays[day.date] ? "chevron-up" : "chevron-down"}
+                  size={20}
+                  color="black"
+                />
+              </TouchableOpacity>
 
-                {expandedDays[day.date] && (
-                  <View>
-                    {day.activities.map((activity) => (
-                      <View
-                        key={`${activity.id}-${
-                          isActivityPlace(activity) ? "place" : "event"
-                        }`}
-                        className="mb-3"
-                      >
-                        {isActivityPlace(activity) ? (
-                          <ActivityPlaceEnd activity={activity} />
-                        ) : (
-                          <ActivityEventEnd activity={activity} />
-                        )}
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
+              {expandedDays[day.date] && (
+                <View>
+                  {day.activities.map((activity) => (
+                    <View
+                      key={`${activity.id}-${
+                        isActivityPlace(activity) ? "place" : "event"
+                      }`}
+                      className="mb-3"
+                    >
+                      {isActivityPlace(activity) ? (
+                        <ActivityPlace activity={activity} />
+                      ) : (
+                        <ActivityEvent activity={activity} />
+                      )}
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
 
         <CustomButton onPress={addBookmark} title="Add Guide Bookmark" />
       </ScrollView>
 
-      {/* 🔹 Animated Description Popup */}
       {showDescription && (
         <View className="absolute inset-0">
           {/* Backdrop */}
@@ -391,9 +395,7 @@ export default function GuideDetail() {
             </View>
 
             {/* Content */}
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-            >
+            <ScrollView showsVerticalScrollIndicator={false}>
               <View className="flex-row items-center mb-4">
                 <Image
                   source={{ uri: guideDetail.owner_image }}

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import {
   Alert,
   Image,
@@ -24,8 +24,8 @@ import {
 import CustomButton from "@/components/common/CustomButton";
 import Header from "@/components/common/Header";
 import WeatherIcon from "@/components/common/WeatherIcon";
-import ActivityEventEnd from "@/components/plan/ActivityEventEnd";
-import ActivityPlaceEnd from "@/components/plan/ActivityPlaceEnd";
+import ActivityEvent from "@/components/plan/ActivityEvent";
+import ActivityPlace from "@/components/plan/ActivityPlace";
 import { FlightBox } from "@/components/plan/FlightBox";
 import MemberBoxEnd from "@/components/plan/MemberBoxEnd";
 import Feather from "@expo/vector-icons/Feather";
@@ -43,7 +43,9 @@ interface DailyActivity {
 
 export default function TripDetail() {
   const router = useRouter();
-  const { trip_id } = useLocalSearchParams();
+  const user_id = 1;
+
+  const { trip_id } = useLocalSearchParams<{ trip_id: string }>();
   const [loading, setLoading] = useState<boolean>(true);
   const [tripDetail, setTripDetail] = useState<TripDetails | null>(null);
   const [flights, setFlights] = useState<Flight[]>([]);
@@ -62,11 +64,6 @@ export default function TripDetail() {
   const slideActivity = useRef(new Animated.Value(0)).current;
   const slideShare = useRef(new Animated.Value(0)).current;
 
-  // Modal states
-  const [showOverviewModal, setShowOverviewModal] = useState<boolean>(false);
-  const [showActivityModal, setShowActivityModal] = useState<boolean>(false);
-  const [showShareModal, setShowShareModal] = useState<boolean>(false);
-
   // Notes and activity data
   const [overviewNotes, setOverviewNotes] = useState<Note[]>([]);
   const [activityNotes, setActivityNotes] = useState<Note[]>([]);
@@ -74,6 +71,8 @@ export default function TripDetail() {
     ActivityPlaceBox | ActivityEventBox | null
   >(null);
   const [shareDescription, setShareDescription] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>("viewer");
+  const canShare = userRole === "owner";
 
   const handleBackPress = () => {
     router.back();
@@ -117,6 +116,16 @@ export default function TripDetail() {
       console.error("Error in fetchTripsDetails:", error);
       return null;
     }
+  };
+
+  const fetchRole = async (): Promise<string> => {
+    const user = mockTripMembers.find(
+      (user) => user.trip_id === parseInt(trip_id) && user.id === user_id
+    );
+    if (user) {
+      return user.role;
+    }
+    return "viewer";
   };
 
   const fetchFlights = async (trip_id: number): Promise<Flight[]> => {
@@ -256,7 +265,7 @@ export default function TripDetail() {
 
   const handleShareConfirm = () => {
     console.log("Share trip with description:", shareDescription);
-    setShowShareModal(false);
+    setShowShare(false);
     setShareDescription("");
     // Here you would make API call to share the trip
   };
@@ -268,11 +277,17 @@ export default function TripDetail() {
       const tripData = await fetchTripsDetails();
       console.log(tripData);
       setTripDetail(tripData);
+      const role = await fetchRole();
+      setUserRole(role);
 
       if (tripData && tripData.trip_id) {
         const [flightsData, activitiesData, membersData] = await Promise.all([
           fetchFlights(tripData.trip_id),
-          organizeActivitiesByDay(tripData.trip_id),
+          organizeActivitiesByDay(
+            tripData.trip_id,
+            tripData.start_date,
+            tripData.end_date
+          ),
           fetchTripMembers(tripData.trip_id),
         ]);
         setFlights(flightsData);
@@ -517,7 +532,11 @@ export default function TripDetail() {
                   className="flex-row justify-between items-center mb-3 p-3 bg-gray-50 rounded-xl"
                 >
                   <View className="flex-row items-center">
-                    <WeatherIcon trip_id={parsedTripId} date={day.date} />
+                    <WeatherIcon
+                      trip_id={parsedTripId}
+                      date={day.date}
+                      size={20}
+                    />
                     <Text className="text-lg font-semibold text-black ml-3">
                       {formatDate(day.date)}
                     </Text>
@@ -540,9 +559,9 @@ export default function TripDetail() {
                         onPress={() => handleActivity(activity)}
                       >
                         {isActivityPlace(activity) ? (
-                          <ActivityPlaceEnd activity={activity} />
+                          <ActivityPlace activity={activity} />
                         ) : (
-                          <ActivityEventEnd activity={activity} />
+                          <ActivityEvent activity={activity} />
                         )}
                       </TouchableOpacity>
                     ))}
@@ -553,11 +572,13 @@ export default function TripDetail() {
           </View>
         )}
 
-        <CustomButton
-          onPress={handleShare}
-          title="Shared Trip"
-          isShared={true}
-        />
+        {canShare && (
+          <CustomButton
+            onPress={handleShare}
+            title="Shared Trip"
+            isShared={true}
+          />
+        )}
       </ScrollView>
 
       {/* Overview Modal */}
@@ -588,27 +609,27 @@ export default function TripDetail() {
               {overviewNotes.map((note) => (
                 <View
                   key={note.id}
-                  className="flex-row p-3 mb-3 bg-gray-50 rounded-lg"
+                  className="flex-row p-3 mb-3 bg-white rounded-lg border border-gray_border"
                 >
                   <Image
                     source={{ uri: note.user_profile }}
                     className="w-10 h-10 rounded-full mr-3"
                   />
                   <View className="flex-1">
-                    <Text className="text-sm font-semibold text-black mb-1">
+                    <Text className="text-base font-semibold text-black mb-1">
                       {note.user_name}
                     </Text>
-                    <Text className="text-sm text-gray-700 mb-2">
+                    <Text className="text-base text-gray-700 mb-2">
                       {note.note_text}
                     </Text>
-                    <Text className="text-xs text-gray-500">
+                    <Text className="text-sm text-gray-500">
                       {formatDateTimeNote(note.created_at)}
                     </Text>
                   </View>
                 </View>
               ))}
             </ScrollView>
-			<View className="mt-6 pt-4 border-t border-gray-200">
+            <View className="mt-6 pt-4 border-t border-gray-200">
               <TouchableOpacity
                 onPress={() => closePopup(setShowOverview, slideOverview)}
                 className="bg-green_2 py-3 px-6 rounded-lg"
@@ -621,7 +642,6 @@ export default function TripDetail() {
           </Animated.View>
         </View>
       )}
-
 
       {/* Activity Modal */}
 
@@ -648,12 +668,15 @@ export default function TripDetail() {
               <WeatherIcon
                 trip_id={selectedActivity?.trip_id ?? 0}
                 date={selectedActivity?.date ?? ""}
+                size={24}
               />
 
               <Text className="text-xl font-medium text-black ml-4">
                 {truncateText(
                   selectedActivity
-                    ? `${formatDate(selectedActivity.date)}: ${truncateText(selectedActivity.title)}`
+                    ? isActivityPlace(selectedActivity)
+                      ? `${formatDate(selectedActivity.date)}: ${truncateText(selectedActivity.title)}`
+                      : `${formatDate(selectedActivity.date)}: ${truncateText(selectedActivity.title)}`
                     : "Activity Notes",
                   30
                 )}
@@ -777,7 +800,6 @@ export default function TripDetail() {
           </Animated.View>
         </View>
       )}
-
     </SafeAreaView>
   );
 }

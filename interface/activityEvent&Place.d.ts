@@ -8,6 +8,7 @@ interface ActivityPlaceBox {
     place_id?: number;
     place_image?: string;
     trip_id: number;
+    notes?: Note[];
 } // เเสดงในหน้า daily trip
 
 interface ActivityEventBox {
@@ -16,7 +17,7 @@ interface ActivityEventBox {
     date: string;
     time_begin: string;
     time_end: string;
-    transportation?: string;
-    Notes?: Note[];
+    transportation: string;
+    notes?: Note[];
     trip_id: number;
 } // เเสดงในหน้า daily trip, eventDetails

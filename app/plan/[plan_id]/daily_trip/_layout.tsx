@@ -8,8 +8,8 @@ export default function DailyTripsLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="[event_detail_id]" />
-      <Stack.Screen name="[place_detail_id]" />
+      <Stack.Screen name="eventDetails/[event_detail_id]" />
+      <Stack.Screen name="placeDetails/[place_detail_id]" />
       <Stack.Screen name="map"/>
       <Stack.Screen name="notification" />
     </Stack>

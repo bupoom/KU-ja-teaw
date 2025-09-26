@@ -11,6 +11,7 @@ interface Vote {
 
 interface ActivityVoteEvent {
     id: number;
+    title: string;
     date: string;
     time_begin: string;
     time_end: string;
@@ -18,6 +19,7 @@ interface ActivityVoteEvent {
     options: TransportationOption[];
     votes: Vote[];
     trip_id: number;
+    vote_type: string;
 } // เเสดงหน้า vote event
 
 interface ActivityVotePlace {
@@ -29,4 +31,5 @@ interface ActivityVotePlace {
     options: PlaceBox[];
     votes: Vote[];
     trip_id: number;
+    vote_type: string;
 } // เเสดงหน้า vote place

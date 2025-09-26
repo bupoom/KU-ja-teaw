@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-    View,
-    Text,
-    TextInput,
-    FlatList,
-    TouchableOpacity,
-    ActivityIndicator,
-    SafeAreaView,
-    StatusBar,
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { Feather, Entypo } from "@expo/vector-icons";
 import PlaceBox from "@/components/PlaceBox";
@@ -20,138 +20,135 @@ import { useRouter } from "expo-router";
 //  - เขียนฟังชั่นค้นหาใหม่
 
 const SearchScreen: React.FC = () => {
-    const [searchQuery, setSearchQuery] = useState<string>("");
-    const [searchResults, setSearchResults] = useState<PlaceBox[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [hasSearched, setHasSearched] = useState<boolean>(false);
-    const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<PlaceBox[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const router = useRouter();
 
-    // Auto focus เมื่อเข้าหน้ามาจะทำให้ page มีแป้นพิมและ cursor อยู่บน search bar ทันที
-    const searchInputRef = useRef<TextInput>(null);
-    useEffect(() => {
-        searchInputRef.current?.focus();
-    }, []);
+  // Auto focus เมื่อเข้าหน้ามาจะทำให้ page มีแป้นพิมและ cursor อยู่บน search bar ทันที
+  const searchInputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    searchInputRef.current?.focus();
+  }, []);
 
-    // Search function API??? - เปลี่ยน return type เป็น PlaceBox[]
-    const Search_with_query = (query: string): PlaceBox[] => {
-        if (!query.trim()) {
-            return [];
-        }
+  // Search function API??? - เปลี่ยน return type เป็น PlaceBox[]
+  const Search_with_query = (query: string): PlaceBox[] => {
+    if (!query.trim()) {
+      return [];
+    }
 
-        return mockPlaceBoxes.filter(
-            item =>
-                item.title.toLowerCase().includes(query.toLowerCase()) ||
-                item.location.toLowerCase().includes(query.toLowerCase())
-        );
-    };
+    return mockPlaceBoxes.filter(
+      (item) =>
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        item.location.toLowerCase().includes(query.toLowerCase())
+    );
+  };
 
-    // Handle search ด้วยการ limit เวลา
-    useEffect(() => {
-        const delayedSearch = setTimeout(() => {
-            if (!searchQuery.trim()) {
-                setSearchResults([]);
-                setHasSearched(false);
-                setLoading(false);
-                return;
-            }
+  // Handle search ด้วยการ limit เวลา
+  useEffect(() => {
+    const delayedSearch = setTimeout(() => {
+      if (!searchQuery.trim()) {
+        setSearchResults([]);
+        setHasSearched(false);
+        setLoading(false);
+        return;
+      }
 
-            setLoading(true);
-            // จำลองการ loading
-            setTimeout(() => {
-                const results = Search_with_query(searchQuery);
-                setSearchResults(results);
-                setHasSearched(true);
-                setLoading(false);
-            }, 300);
-        }, 500); // Debounce 500ms
+      setLoading(true);
+      // จำลองการ loading
+      setTimeout(() => {
+        const results = Search_with_query(searchQuery);
+        setSearchResults(results);
+        setHasSearched(true);
+        setLoading(false);
+      }, 300);
+    }, 500); // Debounce 500ms
 
-        return () => clearTimeout(delayedSearch);
-    }, [searchQuery]);
+    return () => clearTimeout(delayedSearch);
+  }, [searchQuery]);
 
-    // Render empty state
-    const renderEmptyState = () => (
-        <View className="flex-1 justify-center items-center px-8">
-            {hasSearched ? (
-                <View className="items-center">
-                    <Text className="text-gray-500 text-lg mb-2">
-                        No results found
-                    </Text>
-                    <Text className="text-gray-400 text-center">
-                        Try searching with different keywords
-                    </Text>
-                </View>
-            ) : (
-                <View className="items-center">
-                    <Text className="text-gray-500 text-lg mb-2">
-                        Start searching
-                    </Text>
-                    <Text className="text-gray-400 text-center">
-                        Enter keywords to find what you are looking for
-                    </Text>
-                </View>
-            )}
+  // Render empty state
+  const renderEmptyState = () => (
+    <View className="flex-1 justify-center items-center px-8">
+      {hasSearched ? (
+        <View className="items-center">
+          <Text className="text-gray-500 text-lg mb-2">No results found</Text>
+          <Text className="text-gray-400 text-center">
+            Try searching with different keywords
+          </Text>
         </View>
-    );
+      ) : (
+        <View className="items-center">
+          <Text className="text-gray-500 text-lg mb-2">Start searching</Text>
+          <Text className="text-gray-400 text-center">
+            Enter keywords to find what you are looking for
+          </Text>
+        </View>
+      )}
+    </View>
+  );
 
-    // Handle navigation to PlaceDetails screen
-    const handlePlacePress = (place: PlaceBox) => {
-        // TODO: Navigate to PlaceDetails screen
-        router.push(`/dynamicPage/places/${place.place_id}`);
-        console.log("Navigate to place details:", place.place_id);
-    };
+  const handleBoxPress = (place_id: number): void => {
+    router.push(`/dynamicPage/places/${place_id}`);
+  };
 
-    return (
-        <SafeAreaView className="h-full bg-white py-14">
-            <StatusBar barStyle="dark-content" backgroundColor="#075952" />
+  // Handle navigation to PlaceDetails screen
+  const handlePlacePress = (place: PlaceBox) => {
+    // TODO: Navigate to PlaceDetails screen
+    router.push(`/dynamicPage/places/${place.place_id}`);
+    console.log("Navigate to place details:", place.place_id);
+  };
 
-            {/* Search Header */}
-            <View className="bg-white p-4">
-                <View className="flex-row items-center bg-gray-50 rounded-full px-4 py-1 border border-gray_border">
-                    <Feather name="search" size={20} color="#666" />
-                    <TextInput
-                        ref={searchInputRef}
-                        className="text-black ml-3 flex-1"
-                        placeholder="Search..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        autoCorrect={false}
-                        autoCapitalize="none"
-                        returnKeyType="search"
-                    />
-                    {loading && (
-                        <ActivityIndicator
-                            size="small"
-                            color="#6b7280"
-                            className="ml-2"
-                        />
-                    )}
-                    <TouchableOpacity onPress={() => setSearchQuery("")}>
-                        <Entypo
-                            name="circle-with-cross"
-                            size={24}
-                            color="black"
-                        />
-                    </TouchableOpacity>
-                </View>
-            </View>
+  return (
+    <SafeAreaView className="h-full bg-white py-14">
+      <StatusBar barStyle="dark-content" backgroundColor="#075952" />
 
-            {/* Search Results */}
-            <FlatList
-                data={searchResults}
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        style={{ marginBottom: 10 }}
-                        onPress={() => handlePlacePress(item)}
-                    >
-                        <PlaceBox {...item} />
-                    </TouchableOpacity>
-                )}
-                keyExtractor={item => item.id.toString()}
-                className="m-2 pb-5"
-                ListEmptyComponent={renderEmptyState}
+      {/* Search Header */}
+      <View className="bg-white p-4">
+        <View className="flex-row items-center bg-gray-50 rounded-full px-4 py-1 border border-gray_border">
+          <Feather name="search" size={20} color="#666" />
+          <TextInput
+            ref={searchInputRef}
+            className="text-black ml-3 flex-1"
+            placeholder="Search..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCorrect={false}
+            autoCapitalize="none"
+            returnKeyType="search"
+          />
+          {loading && (
+            <ActivityIndicator size="small" color="#6b7280" className="ml-2" />
+          )}
+          <TouchableOpacity onPress={() => setSearchQuery("")}>
+            <Entypo name="circle-with-cross" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Search Results */}
+      <FlatList
+        data={searchResults}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handleBoxPress(item.place_id as number)}>
+            <PlaceBox
+              id={item.id}
+              title={item.title}
+              rating={item.rating}
+              review_count={item.review_count}
+              location={item.location}
+              place_image={item.place_image}
+              place_id={item.place_id ?? 0}
             />
-        </SafeAreaView>
-    );
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        className="m-2 pb-5"
+        ListEmptyComponent={renderEmptyState}
+      />
+    </SafeAreaView>
+  );
 };
 
 export default SearchScreen;

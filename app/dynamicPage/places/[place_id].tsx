@@ -16,13 +16,9 @@ import {
 } from "react-native";
 
 export default function PlaceDetail() {
-  const { place_id } = useLocalSearchParams();
+  const { place_id } = useLocalSearchParams<{ place_id: string }>();
   const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();
   const router = useRouter();
-
-  const parsedPlaceId = Array.isArray(place_id)
-    ? parseInt(place_id[0], 10)
-    : parseInt(place_id ?? "0", 10);
 
   const handleBackPress = () => {
     router.back();
@@ -31,7 +27,7 @@ export default function PlaceDetail() {
   useEffect(() => {
     if (place_id) {
       const place = mockPlaceDetails.find(
-        (place) => place.id === parsedPlaceId
+        (place) => place.id === parseInt(place_id)
       );
       setPlaceDetail(place);
     }

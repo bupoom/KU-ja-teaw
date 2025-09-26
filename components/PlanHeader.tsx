@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useRouter, useSegments } from "expo-router";
-import { mockTripBoxes } from "@/mock/mockDataComplete";
+import { mockTripDetails } from "@/mock/mockDataComplete";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { truncateText } from "@/util/truncateText";
@@ -13,7 +13,7 @@ function PlanHeader({ planId }: { planId: string }) {
     const segments = useSegments() as string[];
 
     // หาข้อมูล trip จาก mockTripBox โดยใช้ planId
-    const tripData = mockTripBoxes.find(
+    const tripData = mockTripDetails.find(
         trip => trip.trip_id === parseInt(planId)
     );
 
@@ -82,7 +82,7 @@ function PlanHeader({ planId }: { planId: string }) {
                         <View className="flex-row items-start">
                             <Feather name="users" size={16} color="#ffffff" />
                             <Text className="text-sm text-white ml-2">
-                                {tripData.member_count} Persons
+                                {tripData.group_members} Persons
                             </Text>
                         </View>
                     </View>

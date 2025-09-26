@@ -1,0 +1,133 @@
+✈️ Trip 1: Summer Adventure in Japan (2025-09-05 → 2025-09-12)
+
+    2025-09-05
+        Depart from Suvarnabhumi Airport ✈️ (place) → 1 note   ✅ (เพิ่มใหม่ id=19)
+        Travel to Hotel 🚉 (event) → 1 note
+
+    2025-09-06
+        Visit Tokyo Tower 🗼 (place) → 2 notes   ✅ (ของเดิม + เพิ่มใหม่ id=20)
+        Tokyo Skytree Visit 🗼 (place) → 1 note
+
+    2025-09-07
+        Ueno Park Walk 🌳 (place) → 1 note
+        Explore Senso-ji Temple ⛩ (place) → 1 note
+        Lunch Break 🍱 (event) → 1 note
+        Evening Shopping at Shibuya 🛍 (event) → 1 note
+
+    2025-09-08
+        (ไม่มี activity ในไฟล์ แต่มี weather และ overview notes)
+
+    ✅ รวม = 8 activities, notes ทั้งหมด = 9 (จากเดิม 6)
+
+🎒 Trip 2: European Backpacking Tour (2025-09-23 → 2025-10-13)
+
+    2025-09-23
+        Depart from Suvarnabhumi Airport ✈️ (place) → 1 note
+
+    2025-09-24
+        Eiffel Tower Visit 🗼 (place) → 1 note
+        Montmartre Exploration 🎨 (place) → 1 note
+
+    2025-09-25
+        Visit Louvre Museum 🖼 (place) → 1 note
+        Seine River Cruise 🚢 (place) → 1 note
+        Morning Museum Tour 🏛 (event) → 3 notes   ✅ (ของเดิม + เพิ่มใหม่ id=21,22)
+        Dinner in Paris 🍽 (event) → 1 note
+
+    2025-09-26
+        Train to Amsterdam 🚆 (event) → 1 note
+
+    ✅ รวม = 8 activities, notes ทั้งหมด = 9 (จากเดิม 7)
+
+🏖️ Trip 3: Thailand Beach Getaway (2025-08-19 → 2025-08-27)
+
+    2025-08-20
+        Explore Grand Palace 🏯 (place) → 1 note
+
+    2025-08-21
+        Phi Phi Islands Tour 🏝 (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2
+
+❄️ Trip 4: Tokyo Winter Festival (2025-12-06 → 2025-12-11)
+
+    2025-12-07
+        Shibuya Crossing Walk 🚶 (place) → 1 note
+
+    2025-12-08
+        Visit Meiji Shrine ⛩ (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2
+
+🌴 Trip 5: Bali Adventure (2025-11-15 → 2025-11-22)
+
+    2025-11-16
+        Explore Ubud Market 🛍 (place) → 1 note
+
+    2025-11-17
+        Beach Walk at Kuta 🏖 (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2
+
+🏔 Trip 6: Swiss Alps Hiking (2025-07-10 → 2025-07-17)
+
+    2025-07-11
+        Zermatt Hiking Trail ⛰ (place) → 1 note
+
+    2025-07-12
+        Glacier Viewpoint 🏔 (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2
+
+🇹🇭 Trip 7: Trip to Thailand (Invitation) (2025-10-25 → 2025-11-01)
+
+    2025-10-26
+        Wat Pho Temple Visit ⛩ (place) → 1 note
+
+    2025-10-27
+        Grand Palace Tour 🏯 (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2
+
+🇰🇷 Trip 8: Korean Food Tour (Invitation) (2025-12-15 → 2025-12-22)
+
+    2025-12-16
+        Street Food at Myeongdong 🍢 (place) → 1 note
+
+    2025-12-17
+        Traditional Market Visit 🛍 (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2
+
+🇯🇵 Trip 9: Ultimate Japan Travel Guide (2025-07-15 → 2025-07-25)
+
+    2025-07-16
+        Tsukiji Market Walk 🍣 (place) → 1 note
+        Train to Osaka 🚆 (event) → 1 note
+
+    2025-07-17
+        Kyoto Fushimi Inari ⛩ (place) → 1 note
+        Kyoto Temple Visit ⛩ (event) → 1 note
+        Evening Street Food Tour 🍢 (event) → 1 note
+
+    ✅ รวม = 5 activities, notes ทั้งหมด = 5
+
+🇪🇺 Trip 10: European Backpacker’s Paradise (2025-09-10 → 2025-09-30)
+
+    2025-09-11
+        Colosseum Tour 🏛 (place) → 1 note
+
+    2025-09-12
+        Sagrada Familia Visit ⛪ (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2
+
+🇹🇭 Trip 11: Thailand Island Hopping (2025-12-20 → 2025-12-28)
+
+    2025-12-21
+        Phi Phi Islands Snorkeling 🏝 (place) → 1 note
+
+    2025-12-22
+        Wat Pho Temple Tour ⛩ (place) → 1 note
+
+    ✅ รวม = 2 activities, notes ทั้งหมด = 2

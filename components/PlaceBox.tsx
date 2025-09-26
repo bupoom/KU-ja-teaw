@@ -11,7 +11,7 @@ interface PlaceBoxProps {
     review_count?: number;
     location: string;
     place_image?: string;
-    place_id?: number;
+    place_id: number;
     onRemove?: (id: number) => void; // Add onRemove prop for handling removal
 }
 
@@ -54,10 +54,6 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
         );
     };
 
-    const handlePlaceBoxPress = (): void => {
-        router.push(`/dynamicPage/places/${place_id}`);
-    };
-
     // Default image if place_image is not provided
     const imageUri =
         place_image ||
@@ -66,10 +62,9 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
     // Place bookmark page layout
     if (pathname === "/tabs/place" || pathname === "/tabs/place/search_place") {
         return (
-            <TouchableOpacity
+            <View
                 key={id}
                 className="bg-white rounded-xl p-3 mb-3 mr-1 ml-1 border border-gray_border"
-                onPress={handlePlaceBoxPress}
             >
                 <View className="flex-row">
                     {/* Place Image */}
@@ -127,7 +122,7 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
                         </View>
                     </View>
                 </View>
-            </TouchableOpacity>
+            </View>
         );
     }
 

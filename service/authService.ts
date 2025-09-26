@@ -15,7 +15,7 @@ const USER_DATA_KEY = "userData";
 const TOKEN_EXPIRES_KEY = "tokenExpires";
 
 // ******************************
-const NO_SERVER_WHILE_DEV = false;
+const NO_SERVER_WHILE_DEV = true;
 // ******************************
 
 export const AuthService = {
