@@ -89,10 +89,6 @@ const SearchScreen: React.FC = () => {
     </View>
   );
 
-  const handleBoxPress = (place_id: number): void => {
-    router.push(`/dynamicPage/places/${place_id}`);
-  };
-
   // Handle navigation to PlaceDetails screen
   const handlePlacePress = (place: PlaceBox) => {
     // TODO: Navigate to PlaceDetails screen
@@ -131,7 +127,7 @@ const SearchScreen: React.FC = () => {
       <FlatList
         data={searchResults}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleBoxPress(item.place_id as number)}>
+          <TouchableOpacity onPress={() => handlePlacePress(item)}>
             <PlaceBox
               id={item.id}
               title={item.title}

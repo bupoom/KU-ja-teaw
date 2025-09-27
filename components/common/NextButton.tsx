@@ -20,7 +20,7 @@ export default function NextButton({
         <TouchableOpacity
             onPress={onPress}
             disabled={isDisabled}
-            className={`bg-green_2 rounded-lg items-center justify-center h-[50px] ${
+            className={`bg-green_2 rounded-lg items-center justify-center py-4 w-full ${
                 isDisabled ? "opacity-60" : ""
             } ${classname}`}
             activeOpacity={0.85}
