@@ -1,5 +1,5 @@
 interface PlaceBox {
-    id: number;
+    id: strnig;
     title: string;
     rating?: number;
     review_count?: number;

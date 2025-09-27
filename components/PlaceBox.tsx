@@ -58,11 +58,12 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
         router.push({
             pathname: "/dynamicPage/places/[id]" as any,
             params: { 
-                id: place_id,
+                id: id,
                 type: 'place' 
             },
         });
     };
+
     // Default image if place_image is not provided
     const imageUri =
         place_image ||
