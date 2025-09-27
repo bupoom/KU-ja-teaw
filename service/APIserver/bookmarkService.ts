@@ -36,7 +36,7 @@ export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
                 place_id: serverData.place_id,
             });
 
-            console.log(places[i].place_image);
+            console.log(places[i]);
         }
         return places;
     } catch (error) {
@@ -150,9 +150,9 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
             const serverData = bookmarks[i];
             guides.push({
                 id: serverData.gbookmark_id,
-                title: serverData.title, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
-                start_date: serverData.start_date,
-                end_date: serverData.end_date,
+                title: serverData.trip_url, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
+                start_date: '', // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
+                end_date: '', // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 guide_image: serverData.trip_picture_path,
                 copies: -1,
                 owner_name: serverData.trip_owner,
@@ -161,7 +161,7 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
                 trip_id: serverData.trip_id,
             });
         }
-
+        console.log("FUCK REACT NATIVE : " , guides[0])
         return guides;
     } catch (error) {
         console.error("Response data:", error);

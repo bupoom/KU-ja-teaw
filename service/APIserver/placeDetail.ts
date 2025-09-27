@@ -15,6 +15,11 @@ const parseValues = (str: string): string[] =>  {
 
 // ID string คือ place หรือ  API (google)
 // type คือ place หรือ api
+
+const checkOverview = (text: string): string => {
+    return (text == '' )? "No description  for this place." : text;
+}
+
 export const getPlaceDetails = async (Id:string , type :string): Promise<PlaceDetails> => {
     try {
         console.log("start : fetching Place Deatails with places ID : " ,Id);
@@ -31,7 +36,7 @@ export const getPlaceDetails = async (Id:string , type :string): Promise<PlaceDe
         return {
             id:Data.place_id ,
             title:Data.name ,
-            description:Data.overview ,
+            description:checkOverview(Data.overview) ,
             rating:Data.rating ,
             review_count:Data.rating_count ,
             location:Data.address ,

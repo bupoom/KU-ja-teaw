@@ -9,19 +9,24 @@ import {
     SafeAreaView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import PlaceBox from "@/components/PlaceBox";
 import { getBookmarkPlaceList, UnbookmarkByPlaceId } from "@/service/APIserver/bookmarkService";
+import place_detail_id from "@/app/plan/[plan_id]/daily_trip/[place_detail_id]";
 
 const PlaceScreen = () => {
     const router = useRouter();
     const [refreshing, setRefreshing] = useState(false);
     const [places, setPlaces] = useState<PlaceBox[]>([]);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchPlaceBox();
+        }, [])
+    );
     useEffect(() => {
         fetchPlaceBox()
     }, []);
-
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -42,6 +47,16 @@ const PlaceScreen = () => {
             prevPlaces.filter(place => place.id !== placeId)
         );
     }, []);
+
+    const handlePlacePress = (placeId:number ): void => {
+        router.push({
+            pathname: "/dynamicPage/places/[place_id]" as any,
+            params: { 
+                id: placeId,
+                type: 'place' 
+            },
+        });
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-white">
@@ -66,16 +81,24 @@ const PlaceScreen = () => {
             <FlatList
                 data={places}
                 renderItem={({ item }) => (
-                    <PlaceBox
-                        id={item.id}
-                        title={item.title}
-                        rating={item.rating}
-                        review_count={item.review_count}
-                        location={item.location}
-                        place_image={item.place_image}
-                        place_id={item.place_id}
-                        onRemove={handleRemovePlace}
-                    />
+                    // <TouchableOpacity 
+                    //     onPress={() => {
+                    //         console.log("KUY OSHI", item.place_id)
+                    //         handlePlacePress(item.place_id)}
+
+                    //     } 
+                    // >
+                        <PlaceBox
+                            id={item.id}
+                            title={item.title}
+                            rating={item.rating}
+                            review_count={item.review_count}
+                            location={item.location}
+                            place_image={item.place_image}
+                            place_id={item.place_id}
+                            onRemove={handleRemovePlace}
+                        />
+                    // </TouchableOpacity>
                 )}
                 keyExtractor={item => item.id.toString()}
                 className="flex-1 bg-white mb-20"
