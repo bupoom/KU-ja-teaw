@@ -1,4 +1,4 @@
-import client from "../client";
+import  apiClient  from "../client";
 import { Image } from "react-native";
 import { endpoints } from "../config";
 
@@ -36,7 +36,7 @@ export const updateUserDetails = async (data: {
             type: data.selectedImageFile.type,
         } as any);
 
-        const response = await client.patch(
+        const response = await apiClient.patch(
             endpoints.user.updateUserDetails,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
@@ -53,10 +53,10 @@ export const getUserDetailById = async (userId?: string) => {
         let response: UserDetails;
         if (!userId) {
             console.log("fetch owner user details");
-            response = (await client.get(`${endpoints.user.getUserDetail}`)).data as UserDetails;
+            response = (await apiClient.get(`${endpoints.user.getUserDetail}`)).data as UserDetails;
         } else {
             console.log("fetch user by id:", userId);
-            response = (await client.get(`${endpoints.user.getUserDetail}/${userId}`)).data as UserDetails;
+            response = (await apiClient.get(`${endpoints.user.getUserDetail}/${userId}`)).data as UserDetails;
         }
         return response;
     } catch (error) {

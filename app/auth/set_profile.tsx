@@ -148,6 +148,7 @@ const ProfileSetupScreen = () => {
             Alert.alert("Error", "Network error. Please try again.");
         }
     };
+    
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" backgroundColor="white" />

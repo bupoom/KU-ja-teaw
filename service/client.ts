@@ -27,7 +27,7 @@ const makeAuthenticatedRequest = async (config: any) => {
         
         return await client(config);
     } catch (error: any) {
-        console.log('❌ Request failed:', {
+        console.log('Request failed:', {
             status: error.response?.status,
             url: config.url,
             method: config.method?.toUpperCase()
@@ -53,7 +53,7 @@ const makeAuthenticatedRequest = async (config: any) => {
                     }
                 }
                 
-                console.log('❌ Refresh failed, logging out user');
+                console.log('Refresh failed, logging out user');
                 // ถ้า refresh ไม่ได้
                 await AuthService.logout();
                 
@@ -61,7 +61,7 @@ const makeAuthenticatedRequest = async (config: any) => {
                 // NavigationService.navigate('Login');
                 
             } catch (refreshError) {
-                console.error('❌ Error during token refresh:', refreshError);
+                console.error('Error during token refresh:', refreshError);
                 await AuthService.logout();
             }
         }
@@ -71,7 +71,7 @@ const makeAuthenticatedRequest = async (config: any) => {
 };
 
 // Export wrapper functions แทน client ตรงๆ
-export const apiClient = {
+const apiClient = {
     get: (url: string, config?: any) => 
         makeAuthenticatedRequest({ method: 'GET', url, ...config }),
     

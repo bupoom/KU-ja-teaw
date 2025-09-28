@@ -1,4 +1,4 @@
-import client from "../client";
+import apiClient from "../client";
 
 const endpoints = {
     bookmark: {
@@ -16,7 +16,7 @@ const endpoints = {
 export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
     try {
         console.log("fetching User Bookmark..");
-        const response = (await client.get(endpoints.bookmark.place)) as {
+        const response = (await apiClient.get(endpoints.bookmark.place)) as {
             data: { bookmarks: any[] };
         };
 
@@ -49,7 +49,7 @@ export const addPlaceToBookmark = async (
 ): Promise<boolean> => {
     try {
         console.log("Deleting User Bookmark by bookmarkID:", bookmarkid);
-        const response = (await client.post(
+        const response = (await apiClient.post(
             `${endpoints.bookmark.place}/${bookmarkid}`
         )) as { data: { message: string } };
         const messageMap: Record<string, string> = {
@@ -75,7 +75,7 @@ export const UnbookmarkByPlaceId = async (
     try {
         console.log("Delete User Bookmark by bookmarkID:", bookmarkid);
 
-        const response = (await client.delete(
+        const response = (await apiClient.delete(
             `${endpoints.bookmark.place}/${bookmarkid}`
         )) as { data: { message: string } };
 
@@ -100,12 +100,15 @@ export const UnbookmarkByPlaceId = async (
     }
 };
 
+
+
+
 export const SearchPlaceByInput = async (
     input: string
 ): Promise<SearchPlaces[]> => {
     try {
         console.log("fetching by user input...");
-        const response = (await client.get(
+        const response = (await apiClient.get(
             `${endpoints.bookmark.autoComplete}/${input}`
         )) as {
             data: { suggestions: any[] };
@@ -138,7 +141,7 @@ export const SearchPlaceByInput = async (
 export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
     try {
         console.log("fetching User Bookmark..");
-        const response = (await client.get(endpoints.bookmark.guide)) as {
+        const response = (await apiClient.get(endpoints.bookmark.guide)) as {
             data: { guide_bookmarks: any[] };
         };
 
@@ -174,7 +177,7 @@ export const BookmarkByGuideId = async ( // ยังไม่เอาไปแ
     try {
         console.log("Add User Guide Bookmark by bookmarkID:", bookmarkid);
 
-        const response = (await client.post(
+        const response = (await apiClient.post(
             `${endpoints.bookmark.guide}/${bookmarkid}`
         )) as { data: { message: string } };
         console.log("API Response:", response.data);
@@ -194,7 +197,7 @@ export const UnbookmarkByGuideId = async (
     try {
         console.log("Delete User Bookmark by bookmarkID:", bookmarkid);
 
-        const response = (await client.delete(
+        const response = (await apiClient.delete(
             `${endpoints.bookmark.guide}/${bookmarkid}`
         )) as { data: { message: string } };
 

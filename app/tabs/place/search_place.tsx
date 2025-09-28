@@ -90,7 +90,8 @@ const SearchScreen: React.FC = () => {
             pathname: "/dynamicPage/places/[place_id]" as any,
             params: { 
                 id: GOOGLEAPI,
-                type: 'api' 
+                type: 'api',
+                from_bookmark: 1,
             },
         });
     };

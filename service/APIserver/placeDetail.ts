@@ -1,4 +1,4 @@
-import client from "../client";
+import apiClient from "../client";
 
 const endpoints = {
     place: {
@@ -23,7 +23,7 @@ const checkOverview = (text: string): string => {
 export const getPlaceDetails = async (Id:string , type :string): Promise<PlaceDetails> => {
     try {
         console.log("start : fetching Place Deatails with places ID : " ,Id);
-        const response = (await client.get(
+        const response = (await apiClient.get(
             `${endpoints.place.getPlaceDetails}/${Id}/${type}`
         )) as {
             data: any;
@@ -51,5 +51,6 @@ export const getPlaceDetails = async (Id:string , type :string): Promise<PlaceDe
     } catch (error) {
         console.error("Response data:", error);
         throw error;
+        
     }
 };

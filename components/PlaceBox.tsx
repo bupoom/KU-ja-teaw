@@ -3,18 +3,6 @@ import { View, Image, Text, TouchableOpacity, Alert } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { truncateText } from "@/util/truncateText";
 
-// Interface matching your latest mockData
-interface PlaceBoxProps {
-    id: number;
-    title: string;
-    rating?: number;
-    review_count?: number;
-    location: string;
-    place_image?: string;
-    place_id?: number;
-    onRemove?: (id: number) => void; // Add onRemove prop for handling removal
-}
-
 const PlaceBox: React.FC<PlaceBoxProps> = ({
     id,
     title,
@@ -24,9 +12,9 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
     place_image,
     place_id,
     onRemove,
+    onPressPlace,
 }) => {
     const pathname = usePathname();
-    const router = useRouter();
     const give_bookmark = pathname === "/tabs/place";
 
     const handleUnbookmark = () => {
@@ -54,16 +42,6 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
         );
     };
 
-    const handlePlacePress = (): void => {
-        router.push({
-            pathname: "/dynamicPage/places/[id]" as any,
-            params: { 
-                id: id,
-                type: 'place' 
-            },
-        });
-    };
-
     // Default image if place_image is not provided
     const imageUri =
         place_image ||
@@ -75,7 +53,11 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
             <TouchableOpacity
                 key={id}
                 className="bg-white rounded-xl p-3 mb-3 mr-1 ml-1 border border-gray_border"
-                onPress={handlePlacePress}
+                onPress={() => {
+                    if ( place_id != null) {
+                        onPressPlace?.(place_id)}
+                    }
+                } 
             >
                 <View className="flex-row">
                     {/* Place Image */}

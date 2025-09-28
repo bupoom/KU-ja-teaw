@@ -17,8 +17,7 @@ import { getPlaceDetails } from "@/service/APIserver/placeDetail";
 import { addPlaceToBookmark } from "@/service/APIserver/bookmarkService"
 
 export default function PlaceDetail() {
-    const { id , type} = useLocalSearchParams();
-    console.log("----------- id and type : " ,id,type)
+    const { id , type , from_bookmark} = useLocalSearchParams();
     const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();
     const router = useRouter();
     const handleBackPress = () => {
@@ -178,13 +177,13 @@ export default function PlaceDetail() {
                 </View>
 
                 {/* Add Button - Fixed at bottom */}
-                <CustomButton
+                {(Number(from_bookmark) === 1) && <CustomButton
                     title="Add Place Bookmark"
                     onPress={() => {
                         addPlaceToBookmark(placeDetail.id);
                         router.dismissAll()
                     }}
-                />
+                />}
             </ScrollView>
         </View>
     );
