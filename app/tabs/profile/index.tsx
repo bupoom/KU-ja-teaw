@@ -1,5 +1,5 @@
 import TripBox from "@/components/TripBox";
-import { mockTripBoxes } from "@/mock/mockDataComplete";
+import { mockTripBoxes, mockUserDetails } from "@/mock/mockDataComplete";
 import { calculateTripStatus } from "@/util/calculationFunction/calculateTripStatus";
 import { Feather, Foundation } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,7 +17,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { AuthService } from "@/service/authService";
+import "../../global.css";
 
 interface TripSection {
     title: string;
@@ -29,7 +29,23 @@ const ProfileScreen: React.FC = () => {
     const [user, setUser] = useState<UserDetails | null>(null);
     const [tripSections, setTripSections] = useState<TripSection[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [refreshing, setRefreshing] = useState<boolean>(false)
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
+    const fetchUserData = async (): Promise<UserDetails> => {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Return custom user data for Mr.Terrific
+        // Note: When properties have the same name, the later ones override the earlier ones
+        // So name: 'Mr.Terrific' will override name: 'John Smith' from mockUserDetails[0]
+        return {
+            user_id: "1",
+            name: "Mr.Terrific", // This will override mockUserDetails[0].name
+            phone: "Tel. 0654105555", // This will override mockUserDetails[0].phone
+            email: "terrific@example.com", // This will override mockUserDetails[0].email
+            profile_picture_link: mockUserDetails[0].profile_picture_link, // Keep the same image
+        };
+    };
 
     const fetchTripsData = async (): Promise<TripBox[]> => {
         // Simulate API call
@@ -73,9 +89,10 @@ const ProfileScreen: React.FC = () => {
     const loadData = async () => {
         try {
             const [userData, tripsData] = await Promise.all([
-                AuthService.getUserData(),
+                fetchUserData(),
                 fetchTripsData(),
             ]);
+
             setUser(userData);
             setTripSections(organizeTrips(tripsData));
         } catch (error) {
@@ -126,6 +143,7 @@ const ProfileScreen: React.FC = () => {
 
     useEffect(() => {
         loadData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading) {
@@ -235,7 +253,8 @@ const ProfileScreen: React.FC = () => {
                                             : section.trips
                                     }
                                     renderItem={({ item }) => (
-                                        <TripBox tripData={item} />
+                                        <TripBox tripData={item} 
+                                        onPress={section.title === "END" ? () => handleEndTripPress(item.trip_id) : undefined}/>
                                     )}
                                     keyExtractor={item =>
                                         item.trip_id.toString()

@@ -446,6 +446,30 @@ export const mockNotes: Note[] = [
     created_at: "2025-09-08T14:30:00",
     trip_id: 1,
   },
+    {
+    id: 19,
+    note_text: "The garden area is beautiful in the evening, recommend after 5 PM.",
+    user_profile: mockUserDetails[1].profile_picture_link,
+    user_name: mockUserDetails[1].name, // Sarah Johnson
+    is_editable: true,
+    refer_user_id: 2, // ไม่ใช่ John Smith
+    reference_id: 1, // ซ้ำกับ Note id=1 (place)
+    reference_type: "place",
+    created_at: "2025-09-08T15:00:00",
+    trip_id: 1,
+  },
+  {
+    id: 20,
+    note_text: "Consider taking the subway instead of taxi to save cost.",
+    user_profile: mockUserDetails[2].profile_picture_link,
+    user_name: mockUserDetails[2].name, // Michael Chen
+    is_editable: false,
+    refer_user_id: 3, // ไม่ใช่ John Smith
+    reference_id: 2, // ซ้ำกับ Note id=2 (place)
+    reference_type: "place",
+    created_at: "2025-09-08T15:30:00",
+    trip_id: 1,
+  },
   {
     id: 2,
     note_text:
@@ -541,6 +565,30 @@ export const mockNotes: Note[] = [
     refer_user_id: 3, // Michael Chen (owner trip 2)
     reference_type: "overview",
     created_at: "2025-09-08T12:30:00",
+    trip_id: 2,
+  },
+    {
+    id: 21,
+    note_text: "Check luggage size rules for budget airlines.",
+    user_profile: mockUserDetails[0].profile_picture_link,
+    user_name: mockUserDetails[0].name, // John Smith (ยังไม่ใช่ member trip 2 → assign as guest)
+    is_editable: true,
+    refer_user_id: 2, // ไม่ใช่ owner Michael Chen
+    reference_id: 1, // ซ้ำกับ Note id=3 (event)
+    reference_type: "event",
+    created_at: "2025-09-07T09:00:00",
+    trip_id: 2,
+  },
+  {
+    id: 22,
+    note_text: "Great time to visit museums on weekdays, fewer crowds.",
+    user_profile: mockUserDetails[1].profile_picture_link,
+    user_name: mockUserDetails[1].name, // Sarah Johnson
+    is_editable: false,
+    refer_user_id: 2, // ไม่ใช่ owner Michael Chen
+    reference_id: 1, // ซ้ำกับ Note id=3 (event)
+    reference_type: "event",
+    created_at: "2025-09-07T09:30:00",
     trip_id: 2,
   },
 
@@ -1311,336 +1359,365 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
   // Trip 1: Summer Adventure in Japan
   {
     id: 1,
-    title: "Visit Tokyo Tower",
     date: "2025-09-06",
     time_begin: "09:00",
     time_end: "11:30",
-    location: "Minato City, Tokyo",
     place_id: 1,
+    title: mockPlaceBoxes.find((p) => p.place_id === 1)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 1)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 1)?.place_image,
     trip_id: 1,
+    notes: mockNotes.filter((note) => note.reference_id === 1 && note.reference_type === "place" && note.trip_id === 1),
   },
   {
     id: 2,
-    title: "Explore Senso-ji Temple",
     date: "2025-09-07",
     time_begin: "14:00",
     time_end: "16:00",
-    location: "Asakusa, Tokyo",
     place_id: 2,
+    title: mockPlaceBoxes.find((p) => p.place_id === 2)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 2)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 2)?.place_image,
     trip_id: 1,
+    notes: mockNotes.filter((note) => note.reference_id === 2 && note.reference_type === "place" && note.trip_id === 1),
+  },
+  {
+    id: 23,
+    date: "2025-09-05",
+    time_begin: "07:00",
+    time_end: "10:00",
+    place_id: 16,
+    title: mockPlaceBoxes.find((p) => p.place_id === 16)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 16)?.location ?? "Unknown Location",
+    place_image: mockPlaceBoxes.find((p) => p.place_id === 16)?.place_image,
+    trip_id: 1,
+    notes: mockNotes.filter((note) => note.reference_id === 23 && note.reference_type === "place" && note.trip_id === 1),
+  },
+  {
+    id: 24,
+    date: "2025-09-06",
+    time_begin: "13:00",
+    time_end: "15:00",
+    place_id: 18,
+    title: mockPlaceBoxes.find((p) => p.place_id === 18)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 18)?.location ?? "Unknown Location",
+    place_image: mockPlaceBoxes.find((p) => p.place_id === 18)?.place_image,
+    trip_id: 1,
+    notes: mockNotes.filter((note) => note.reference_id === 24 && note.reference_type === "place" && note.trip_id === 1),
+  },
+  {
+    id: 25,
+    date: "2025-09-07",
+    time_begin: "09:00",
+    time_end: "11:00",
+    place_id: 17,
+    title: mockPlaceBoxes.find((p) => p.place_id === 17)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 17)?.location ?? "Unknown Location",
+    place_image: mockPlaceBoxes.find((p) => p.place_id === 17)?.place_image,
+    trip_id: 1,
+    notes: mockNotes.filter((note) => note.reference_id === 25 && note.reference_type === "place" && note.trip_id === 1),
   },
 
   // Trip 2: European Backpacking Tour
   {
     id: 3,
-    title: "Eiffel Tower Visit",
     date: "2025-09-24",
     time_begin: "10:00",
     time_end: "12:00",
-    location: "Paris, France",
     place_id: 9,
+    title: mockPlaceBoxes.find((p) => p.place_id === 9)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 9)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 9)?.place_image,
     trip_id: 2,
+    notes: mockNotes.filter((note) => note.reference_id === 3 && note.reference_type === "place" && note.trip_id === 2),
   },
   {
     id: 4,
-    title: "Visit Louvre Museum",
     date: "2025-09-25",
     time_begin: "13:30",
     time_end: "16:30",
-    location: "Paris, France",
     place_id: 10,
+    title: mockPlaceBoxes.find((p) => p.place_id === 10)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 10)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 10)?.place_image,
     trip_id: 2,
+    notes: mockNotes.filter((note) => note.reference_id === 4 && note.reference_type === "place" && note.trip_id === 2),
+  },
+  {
+    id: 26,
+    date: "2025-09-23",
+    time_begin: "10:00",
+    time_end: "15:00",
+    place_id: 16,
+    title: mockPlaceBoxes.find((p) => p.place_id === 16)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 16)?.location ?? "Unknown Location",
+    place_image: mockPlaceBoxes.find((p) => p.place_id === 16)?.place_image,
+    trip_id: 2,
+    notes: mockNotes.filter((note) => note.reference_id === 26 && note.reference_type === "place" && note.trip_id === 2),
+  },
+  {
+    id: 27,
+    date: "2025-09-24",
+    time_begin: "14:00",
+    time_end: "16:00",
+    place_id: 19,
+    title: mockPlaceBoxes.find((p) => p.place_id === 19)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 19)?.location ?? "Unknown Location",
+    place_image: mockPlaceBoxes.find((p) => p.place_id === 19)?.place_image,
+    trip_id: 2,
+    notes: mockNotes.filter((note) => note.reference_id === 27 && note.reference_type === "place" && note.trip_id === 2),
+  },
+  {
+    id: 28,
+    date: "2025-09-25",
+    time_begin: "18:00",
+    time_end: "20:00",
+    place_id: 20,
+    title: mockPlaceBoxes.find((p) => p.place_id === 20)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 20)?.location ?? "Unknown Location",
+    place_image: mockPlaceBoxes.find((p) => p.place_id === 20)?.place_image,
+    trip_id: 2,
+    notes: mockNotes.filter((note) => note.reference_id === 28 && note.reference_type === "place" && note.trip_id === 2),
   },
 
   // Trip 3: Thailand Beach Getaway
   {
     id: 5,
-    title: "Explore Grand Palace",
     date: "2025-08-20",
     time_begin: "09:00",
     time_end: "11:30",
-    location: "Bangkok, Thailand",
     place_id: 13,
+    title: mockPlaceBoxes.find((p) => p.place_id === 13)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 13)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 13)?.place_image,
     trip_id: 3,
+    notes: mockNotes.filter((note) => note.reference_id === 5 && note.reference_type === "place" && note.trip_id === 3),
   },
   {
     id: 6,
-    title: "Phi Phi Islands Tour",
     date: "2025-08-21",
     time_begin: "08:00",
     time_end: "15:00",
-    location: "Krabi, Thailand",
     place_id: 14,
+    title: mockPlaceBoxes.find((p) => p.place_id === 14)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 14)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 14)?.place_image,
     trip_id: 3,
+    notes: mockNotes.filter((note) => note.reference_id === 6 && note.reference_type === "place" && note.trip_id === 3),
   },
 
   // Trip 4: Tokyo Winter Festival
   {
     id: 7,
-    title: "Shibuya Crossing Walk",
     date: "2025-12-07",
     time_begin: "18:00",
     time_end: "20:00",
-    location: "Shibuya City, Tokyo",
     place_id: 3,
+    title: mockPlaceBoxes.find((p) => p.place_id === 3)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 3)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 3)?.place_image,
     trip_id: 4,
+    notes: mockNotes.filter((note) => note.reference_id === 7 && note.reference_type === "place" && note.trip_id === 4),
   },
   {
     id: 8,
-    title: "Visit Meiji Shrine",
     date: "2025-12-08",
     time_begin: "09:30",
     time_end: "11:30",
-    location: "Shibuya City, Tokyo",
     place_id: 4,
+    title: mockPlaceBoxes.find((p) => p.place_id === 4)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 4)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 4)?.place_image,
     trip_id: 4,
+    notes: mockNotes.filter((note) => note.reference_id === 8 && note.reference_type === "place" && note.trip_id === 4),
   },
 
   // Trip 5: Bali Adventure
   {
     id: 9,
-    title: "Explore Ubud Market",
     date: "2025-11-16",
     time_begin: "10:00",
     time_end: "12:00",
-    location: "Ubud, Bali",
-    place_id: 5, // ใช้แทน Tsukiji (mock ยังไม่มี Bali จริง)
+    place_id: 5,
+    title: mockPlaceBoxes.find((p) => p.place_id === 5)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 5)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 5)?.place_image,
     trip_id: 5,
+    notes: mockNotes.filter((note) => note.reference_id === 9 && note.reference_type === "place" && note.trip_id === 5),
   },
   {
     id: 10,
-    title: "Beach Walk at Kuta",
     date: "2025-11-17",
     time_begin: "16:00",
     time_end: "18:00",
-    location: "Kuta, Bali",
-    place_id: 6, // ใช้ Fushimi Inari เป็น mock
+    place_id: 6,
+    title: mockPlaceBoxes.find((p) => p.place_id === 6)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 6)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 6)?.place_image,
     trip_id: 5,
+    notes: mockNotes.filter((note) => note.reference_id === 10 && note.reference_type === "place" && note.trip_id === 5),
   },
 
   // Trip 6: Swiss Alps Hiking
   {
     id: 11,
-    title: "Zermatt Hiking Trail",
     date: "2025-07-11",
     time_begin: "09:00",
     time_end: "15:00",
-    location: "Swiss Alps, Zermatt",
-    place_id: 7, // ใช้ Kiyomizu-dera เป็น mock
+    place_id: 7,
+    title: mockPlaceBoxes.find((p) => p.place_id === 7)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 7)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 7)?.place_image,
     trip_id: 6,
+    notes: mockNotes.filter((note) => note.reference_id === 11 && note.reference_type === "place" && note.trip_id === 6),
   },
   {
     id: 12,
-    title: "Glacier Viewpoint",
     date: "2025-07-12",
     time_begin: "10:00",
     time_end: "14:00",
-    location: "Swiss Alps, Jungfrau",
     place_id: 8,
+    title: mockPlaceBoxes.find((p) => p.place_id === 8)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 8)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 8)?.place_image,
     trip_id: 6,
+    notes: mockNotes.filter((note) => note.reference_id === 12 && note.reference_type === "place" && note.trip_id === 6),
   },
 
   // Trip 7: Trip to Thailand (Invitation)
   {
     id: 13,
-    title: "Wat Pho Temple Visit",
     date: "2025-10-26",
     time_begin: "09:30",
     time_end: "11:00",
-    location: "Bangkok, Thailand",
     place_id: 15,
+    title: mockPlaceBoxes.find((p) => p.place_id === 15)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 15)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 15)?.place_image,
     trip_id: 7,
+    notes: mockNotes.filter((note) => note.reference_id === 13 && note.reference_type === "place" && note.trip_id === 7),
   },
   {
     id: 14,
-    title: "Grand Palace Tour",
     date: "2025-10-27",
     time_begin: "13:00",
     time_end: "15:00",
-    location: "Bangkok, Thailand",
     place_id: 13,
+    title: mockPlaceBoxes.find((p) => p.place_id === 13)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 13)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 13)?.place_image,
     trip_id: 7,
+    notes: mockNotes.filter((note) => note.reference_id === 14 && note.reference_type === "place" && note.trip_id === 7),
   },
 
   // Trip 8: Korean Food Tour (Invitation)
   {
     id: 15,
-    title: "Street Food at Myeongdong",
     date: "2025-12-16",
     time_begin: "17:00",
     time_end: "20:00",
-    location: "Seoul, South Korea",
     place_id: 1,
+    title: mockPlaceBoxes.find((p) => p.place_id === 1)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 1)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 1)?.place_image,
     trip_id: 8,
+    notes: mockNotes.filter((note) => note.reference_id === 15 && note.reference_type === "place" && note.trip_id === 8),
   },
   {
     id: 16,
-    title: "Traditional Market Visit",
     date: "2025-12-17",
     time_begin: "11:00",
     time_end: "13:00",
-    location: "Seoul, South Korea",
     place_id: 2,
+    title: mockPlaceBoxes.find((p) => p.place_id === 2)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 2)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 2)?.place_image,
     trip_id: 8,
+    notes: mockNotes.filter((note) => note.reference_id === 16 && note.reference_type === "place" && note.trip_id === 8),
   },
 
   // Trip 9: Ultimate Japan Travel Guide
   {
     id: 17,
-    title: "Tsukiji Market Walk",
     date: "2025-07-16",
     time_begin: "08:00",
     time_end: "10:00",
-    location: "Chuo City, Tokyo",
     place_id: 5,
+    title: mockPlaceBoxes.find((p) => p.place_id === 5)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 5)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 5)?.place_image,
     trip_id: 9,
+    notes: mockNotes.filter((note) => note.reference_id === 17 && note.reference_type === "place" && note.trip_id === 9),
   },
   {
     id: 18,
-    title: "Kyoto Fushimi Inari",
     date: "2025-07-17",
     time_begin: "09:00",
     time_end: "12:00",
-    location: "Kyoto, Japan",
     place_id: 6,
+    title: mockPlaceBoxes.find((p) => p.place_id === 6)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 6)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 6)?.place_image,
     trip_id: 9,
+    notes: mockNotes.filter((note) => note.reference_id === 18 && note.reference_type === "place" && note.trip_id === 9),
   },
 
   // Trip 10: European Backpacker's Paradise
   {
     id: 19,
-    title: "Colosseum Tour",
     date: "2025-09-11",
     time_begin: "10:00",
     time_end: "12:30",
-    location: "Rome, Italy",
     place_id: 11,
+    title: mockPlaceBoxes.find((p) => p.place_id === 11)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 11)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 11)?.place_image,
     trip_id: 10,
+    notes: mockNotes.filter((note) => note.reference_id === 19 && note.reference_type === "place" && note.trip_id === 10),
   },
   {
     id: 20,
-    title: "Sagrada Familia Visit",
     date: "2025-09-12",
     time_begin: "14:00",
     time_end: "16:00",
-    location: "Barcelona, Spain",
     place_id: 12,
+    title: mockPlaceBoxes.find((p) => p.place_id === 12)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 12)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 12)?.place_image,
     trip_id: 10,
+    notes: mockNotes.filter((note) => note.reference_id === 20 && note.reference_type === "place" && note.trip_id === 10),
   },
 
   // Trip 11: Thailand Island Hopping
   {
     id: 21,
-    title: "Phi Phi Islands Snorkeling",
     date: "2025-12-21",
     time_begin: "09:00",
     time_end: "15:00",
-    location: "Krabi, Thailand",
     place_id: 14,
+    title: mockPlaceBoxes.find((p) => p.place_id === 14)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 14)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 14)?.place_image,
     trip_id: 11,
+    notes: mockNotes.filter((note) => note.reference_id === 21 && note.reference_type === "place" && note.trip_id === 11),
   },
   {
     id: 22,
-    title: "Wat Pho Temple Tour",
     date: "2025-12-22",
     time_begin: "10:00",
     time_end: "12:00",
-    location: "Bangkok, Thailand",
     place_id: 15,
+    title: mockPlaceBoxes.find((p) => p.place_id === 15)?.title ?? "Unknown Title",
+    location: mockPlaceBoxes.find((p) => p.place_id === 15)?.location ?? "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 15)?.place_image,
     trip_id: 11,
-  },
-  {
-    id: 23,
-    title: "Depart from Suvarnabhumi Airport",
-    date: "2025-09-05",
-    time_begin: "07:00",
-    time_end: "10:00",
-    location: "Bangkok, Thailand",
-    place_id: 16,
-    place_image: mockPlaceBoxes.find((p) => p.place_id === 16)?.place_image,
-    trip_id: 1,
-  },
-  {
-    id: 24,
-    title: "Tokyo Skytree Visit",
-    date: "2025-09-06",
-    time_begin: "13:00",
-    time_end: "15:00",
-    location: "Sumida, Tokyo",
-    place_id: 18,
-    place_image: mockPlaceBoxes.find((p) => p.place_id === 18)?.place_image,
-    trip_id: 1,
-  },
-  {
-    id: 25,
-    title: "Ueno Park Walk",
-    date: "2025-09-07",
-    time_begin: "09:00",
-    time_end: "11:00",
-    location: "Ueno, Tokyo",
-    place_id: 17,
-    place_image: mockPlaceBoxes.find((p) => p.place_id === 17)?.place_image,
-    trip_id: 1,
-  },
-  {
-    id: 26,
-    title: "Depart from Suvarnabhumi Airport",
-    date: "2025-09-23",
-    time_begin: "10:00",
-    time_end: "15:00",
-    location: "Bangkok, Thailand",
-    place_id: 16,
-    place_image: mockPlaceBoxes.find((p) => p.place_id === 16)?.place_image,
-    trip_id: 2,
-  },
-  {
-    id: 27,
-    title: "Montmartre Exploration",
-    date: "2025-09-24",
-    time_begin: "14:00",
-    time_end: "16:00",
-    location: "Paris, France",
-    place_id: 19,
-    place_image: mockPlaceBoxes.find((p) => p.place_id === 19)?.place_image,
-    trip_id: 2,
-  },
-  {
-    id: 28,
-    title: "Seine River Cruise",
-    date: "2025-09-25",
-    time_begin: "18:00",
-    time_end: "20:00",
-    location: "Paris, France",
-    place_id: 20,
-    place_image: mockPlaceBoxes.find((p) => p.place_id === 20)?.place_image,
-    trip_id: 2,
+    notes: mockNotes.filter((note) => note.reference_id === 22 && note.reference_type === "place" && note.trip_id === 11),
   },
 ];
 
 // 10. Activity Event Boxes
 export const mockActivityEventBoxes: ActivityEventBox[] = [
+  // ---------- Trip 1: Japan ----------
   {
     id: 1,
     title: "Travel to Hotel",
@@ -1648,10 +1725,13 @@ export const mockActivityEventBoxes: ActivityEventBox[] = [
     time_begin: "16:00",
     time_end: "17:30",
     transportation: "Train",
-    Notes: mockNotes.filter(
-      (note) => note.reference_id === 1 && note.reference_type === "event"
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 1 &&
+        note.reference_type === "event" &&
+        note.trip_id === 1
     ),
-    trip_id: 1, // Japan trip
+    trip_id: 1,
   },
   {
     id: 2,
@@ -1660,9 +1740,31 @@ export const mockActivityEventBoxes: ActivityEventBox[] = [
     time_begin: "12:00",
     time_end: "13:30",
     transportation: "Walk",
-    Notes: [],
-    trip_id: 1, // Japan trip
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 2 &&
+        note.reference_type === "event" &&
+        note.trip_id === 1
+    ),
+    trip_id: 1,
   },
+  {
+    id: 5,
+    title: "Evening Shopping at Shibuya",
+    date: "2025-09-07",
+    time_begin: "18:00",
+    time_end: "20:00",
+    transportation: "Walk",
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 5 &&
+        note.reference_type === "event" &&
+        note.trip_id === 1
+    ),
+    trip_id: 1,
+  },
+
+  // ---------- Trip 2: Europe ----------
   {
     id: 3,
     title: "Train to Amsterdam",
@@ -1670,18 +1772,90 @@ export const mockActivityEventBoxes: ActivityEventBox[] = [
     time_begin: "09:00",
     time_end: "12:00",
     transportation: "Train",
-    Notes: [],
-    trip_id: 2, // European trip
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 3 &&
+        note.reference_type === "event" &&
+        note.trip_id === 2
+    ),
+    trip_id: 2,
   },
   {
+    id: 6,
+    title: "Dinner in Paris",
+    date: "2025-09-25",
+    time_begin: "19:00",
+    time_end: "21:00",
+    transportation: "Walk",
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 6 &&
+        note.reference_type === "event" &&
+        note.trip_id === 2
+    ),
+    trip_id: 2,
+  },
+  {
+    id: 7,
+    title: "Morning Museum Tour",
+    date: "2025-09-25",
+    time_begin: "09:00",
+    time_end: "11:30",
+    transportation: "Walk",
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 7 &&
+        note.reference_type === "event" &&
+        note.trip_id === 2
+    ),
+    trip_id: 2,
+  },
+
+  // ---------- Trip 9: Japan Guide ----------
+  {
     id: 4,
-    title: "Train to Amsterdam",
+    title: "Train to Osaka",
     date: "2025-07-16",
     time_begin: "12:00",
     time_end: "13:00",
     transportation: "Train",
-    Notes: [],
-    trip_id: 9, // European trip
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 4 &&
+        note.reference_type === "event" &&
+        note.trip_id === 9
+    ),
+    trip_id: 9,
+  },
+  {
+    id: 8,
+    title: "Kyoto Temple Visit",
+    date: "2025-07-17",
+    time_begin: "14:00",
+    time_end: "16:00",
+    transportation: "Bus",
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 8 &&
+        note.reference_type === "event" &&
+        note.trip_id === 9
+    ),
+    trip_id: 9,
+  },
+  {
+    id: 9,
+    title: "Evening Street Food Tour",
+    date: "2025-07-17",
+    time_begin: "18:00",
+    time_end: "20:00",
+    transportation: "Walk",
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 9 &&
+        note.reference_type === "event" &&
+        note.trip_id === 9
+    ),
+    trip_id: 9,
   },
 ];
 
@@ -1742,6 +1916,159 @@ export const mockVotes: Vote[] = [
     username: mockUserDetails[2].name,
     trip_id: 2, // European trip
   },
+  {
+    id: 7,
+    user_id: 1,
+    activity_id: 104,
+    vote_type: "place",
+    place_id: 21,
+    username: mockUserDetails[0].name,
+    trip_id: 1,
+  },
+  {
+    id: 8,
+    user_id: 2,
+    activity_id: 104,
+    vote_type: "place",
+    place_id: 21,
+    username: mockUserDetails[1].name,
+    trip_id: 1,
+  },
+  {
+    id: 9,
+    user_id: 3,
+    activity_id: 104,
+    vote_type: "place",
+    place_id: 21,
+    username: mockUserDetails[2].name,
+    trip_id: 1,
+  },
+  {
+    id: 10,
+    user_id: 4,
+    activity_id: 104,
+    vote_type: "place",
+    place_id: 22,
+    username: mockUserDetails[3].name,
+    trip_id: 1,
+  },
+  {
+    id: 11,
+    user_id: 1,
+    activity_id: 105,
+    vote_type: "event",
+    event_id: 1, // Car
+    username: mockUserDetails[0].name,
+    trip_id: 1,
+  },
+  {
+    id: 12,
+    user_id: 2,
+    activity_id: 105,
+    vote_type: "event",
+    event_id: 3, // Train
+    username: mockUserDetails[1].name,
+    trip_id: 1,
+  },
+  {
+    id: 13,
+    user_id: 3,
+    activity_id: 105,
+    vote_type: "event",
+    event_id: 1, // Car
+    username: mockUserDetails[2].name,
+    trip_id: 1,
+  },
+  {
+    id: 14,
+    user_id: 4,
+    activity_id: 105,
+    vote_type: "event",
+    event_id: 3, // Train
+    username: mockUserDetails[3].name,
+    trip_id: 1,
+  },
+  {
+    id: 15,
+    user_id: 1,
+    activity_id: 106,
+    vote_type: "place",
+    place_id: 24,
+    username: mockUserDetails[0].name,
+    trip_id: 2,
+  },
+  {
+    id: 16,
+    user_id: 2,
+    activity_id: 106,
+    vote_type: "place",
+    place_id: 24,
+    username: mockUserDetails[1].name,
+    trip_id: 2,
+  },
+  {
+    id: 17,
+    user_id: 3,
+    activity_id: 106,
+    vote_type: "place",
+    place_id: 24,
+    username: mockUserDetails[2].name,
+    trip_id: 2,
+  },
+  {
+    id: 18,
+    user_id: 4,
+    activity_id: 106,
+    vote_type: "place",
+    place_id: 23,
+    username: mockUserDetails[3].name,
+    trip_id: 2,
+  },
+  {
+    id: 19,
+    user_id: 5,
+    activity_id: 106,
+    vote_type: "place",
+    place_id: 24,
+    username: mockUserDetails[0].name,
+    trip_id: 2,
+  },
+  {
+    id: 20,
+    user_id: 1,
+    activity_id: 107,
+    vote_type: "event",
+    event_id: 2, // Bus
+    username: mockUserDetails[0].name,
+    trip_id: 2,
+  },
+  {
+    id: 21,
+    user_id: 2,
+    activity_id: 107,
+    vote_type: "event",
+    event_id: 4, // Walk
+    username: mockUserDetails[1].name,
+    trip_id: 2,
+  },
+  {
+    id: 22,
+    user_id: 3,
+    activity_id: 107,
+    vote_type: "event",
+    event_id: 3, // Train
+    username: mockUserDetails[2].name,
+    trip_id: 2,
+  },
+  {
+    id: 23,
+    user_id: 4,
+    activity_id: 107,
+    vote_type: "event",
+    event_id: 2, // Bus
+    username: mockUserDetails[3].name,
+    trip_id: 2,
+  },
 ];
 
 // 12. Activity Vote Place
@@ -1752,6 +2079,7 @@ export const mockActivityVotePlaces: ActivityVotePlace[] = [
     time_begin: "18:00",
     time_end: "20:00",
     number_of_votes: 3,
+    vote_type: "place",
     options: [
       {
         id: 6,
@@ -1784,8 +2112,78 @@ export const mockActivityVotePlaces: ActivityVotePlace[] = [
         place_id: 8,
       },
     ],
-    votes: mockVotes.filter((vote) => vote.activity_id === 101),
+    votes: mockVotes.filter(
+      (vote) => vote.activity_id === 101 && vote.vote_type === "place"
+    ),
     trip_id: 1, // Japan trip
+  },
+  {
+    id: 104,
+    date: "2025-09-10",
+    time_begin: "19:00",
+    time_end: "21:00",
+    number_of_votes: 4,
+    vote_type: "place",
+    options: [
+      {
+        id: 21,
+        title: "Sushi Saito",
+        rating: 4.8,
+        review_count: 320,
+        location: "Tokyo, Japan",
+        place_image:
+          "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=300&h=200&fit=crop",
+        place_id: 21,
+      },
+      {
+        id: 22,
+        title: "Izakaya Tokyo",
+        rating: 4.4,
+        review_count: 210,
+        location: "Tokyo, Japan",
+        place_image:
+          "https://images.unsplash.com/photo-1576866209830-5a7e67f52c41?w=300&h=200&fit=crop",
+        place_id: 22,
+      },
+    ],
+    votes: mockVotes.filter(
+      (vote) => vote.activity_id === 104 && vote.vote_type === "place"
+    ),
+    trip_id: 1,
+  },
+  {
+    id: 106,
+    date: "2025-09-27",
+    time_begin: "18:00",
+    time_end: "20:00",
+    number_of_votes: 5,
+    vote_type: "place",
+    options: [
+      {
+        id: 23,
+        title: "Brussels Cafe",
+        rating: 4.3,
+        review_count: 120,
+        location: "Brussels, Belgium",
+        place_image:
+          "https://images.unsplash.com/photo-1541542684-4a5c6fd39d2f?w=300&h=200&fit=crop",
+        place_id: 23,
+      },
+      {
+        id: 24,
+        title: "Amsterdam Steakhouse",
+        rating: 4.6,
+        review_count: 260,
+        location: "Amsterdam, Netherlands",
+        place_image:
+          "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=300&h=200&fit=crop",
+        place_id: 24,
+      },
+    ],
+    votes: mockVotes.filter(
+      (vote) => vote.activity_id === 106 && vote.vote_type === "place"
+    ),
+    trip_id: 2,
   },
 ];
 
@@ -1793,25 +2191,48 @@ export const mockActivityVotePlaces: ActivityVotePlace[] = [
 export const mockActivityVoteEvents: ActivityVoteEvent[] = [
   {
     id: 102,
+    title: "Paris to Amsterdam",
     date: "2025-09-26",
     time_begin: "09:00",
     time_end: "10:00",
     number_of_votes: 3,
+    vote_type: "event",
     options: mockTransportationOptions,
-    votes: mockVotes.filter((vote) => vote.activity_id === 102),
+    votes: mockVotes.filter(
+      (vote) => vote.activity_id === 102 && vote.vote_type === "event"
+    ),
     trip_id: 2, // European trip
   },
   {
     id: 103,
+    title: "Paris City Tour",
     date: "2025-09-08",
     time_begin: "09:00",
     time_end: "10:00",
     number_of_votes: 3,
+    vote_type: "event",
     options: mockTransportationOptions,
-    votes: mockVotes.filter((vote) => vote.activity_id === 103),
+    votes: mockVotes.filter(
+      (vote) => vote.activity_id === 103 && vote.vote_type === "event"
+    ),
     trip_id: 2, // European trip
   },
+  {
+    id: 105,
+    title: "Tokyo Morning Trip",
+    date: "2025-09-11",
+    time_begin: "10:00",
+    time_end: "11:00",
+    number_of_votes: 3,
+    vote_type: "event",
+    options: mockTransportationOptions, // Car, Bus, Train, Walk, Flight, Boat
+    votes: mockVotes.filter(
+      (vote) => vote.activity_id === 105 && vote.vote_type === "event"
+    ),
+    trip_id: 1, // Japan trip
+  },
 ];
+
 
 // <-------------------------- Trip ----------------------------------------->
 // 14. Trip Boxes (FIXED dates to 2025)
@@ -1921,7 +2342,10 @@ export const mockTripInvitations: TripBox[] = [
   },
 ];
 
-export const mockTripDetails: TripDetails[] = mockTripBoxes.map((trip) => ({
+export const mockTripDetails: TripDetails[] = [
+  ...mockTripBoxes,
+  ...mockTripInvitations,
+].map((trip) => ({
   trip_id: trip.trip_id,
   trip_name: trip.trip_name,
   trip_image: trip.trip_image,

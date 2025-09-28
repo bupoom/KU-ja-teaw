@@ -246,7 +246,7 @@ const PlanSetting = () => {
                 const numericText = text.replace(/[^0-9]/g, "");
                 setTripBudget(numericText);
               }}
-              className="border border-gray_border rounded-lg text-center self-center flex-1 ml-2 mr-2 h-[30px] mb-2"
+              className="border border-gray_border rounded-lg text-center self-center flex-1 ml-2 mr-2 mb-2"
               keyboardType="numeric"
               placeholder="Enter budget"
               textAlign="center"

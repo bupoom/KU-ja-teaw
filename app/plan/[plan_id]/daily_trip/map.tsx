@@ -51,8 +51,7 @@ const MAP = () => {
 
   const router = useRouter();
 
-  // สร้าง markers พร้อมสีที่แตกต่างกัน
-  const createMarkersWithColors = (places: any[]) => {
+  const createMarkers = (places: any[]) => {
     return places.map((place, index) => ({
       title: place.title,
       coordinates: { latitude: place.latitude, longitude: place.longitude },
@@ -131,7 +130,7 @@ const MAP = () => {
     );
 
     // สร้าง markers พร้อมสี
-    const newMarkerPlaces = createMarkersWithColors(places);
+    const newMarkerPlaces = createMarkers(places);
 
     setMarkerPlaces(newMarkerPlaces);
     setPLaceInDate(places.length);
@@ -237,19 +236,19 @@ const MAP = () => {
             resizeMode="cover"
           />
           {/* Gradient Overlay */}
-          <View className="absolute inset-0 bg-black/70 w-[50%] p-2 rounded-lg ml-2 mb-2 mt-2">
+          <View className="absolute inset-0 bg-black/70 w-[70%] p-2 rounded-lg ml-2 mb-2 mt-2">
             {/* Trip Info Overlay */}
             <View className="absolute inset-0 p-4 justify-center">
               <Text
-                className="text-white text-lg font-bold mb-1"
+                className="text-white text-lg font-bold"
                 numberOfLines={1}
               >
-                {truncateText(tripName, 25)}
+                {truncateText(tripName, 50)}
               </Text>
 
               <View className="flex-row items-center mb-1">
                 <Feather name="calendar" size={16} color="#ffffff" />
-                <Text className="text-white text-xs ml-1">
+                <Text className="text-white text-xs ml-1 font-medium">
                   {dates.length > 0 &&
                     formatDateRange(dates[0], dates[dates.length - 1])}
                 </Text>
@@ -257,7 +256,7 @@ const MAP = () => {
 
               <View className="flex-row items-center">
                 <Feather name="map-pin" size={16} color="#ffffff" />
-                <Text className="text-white text-xs ml-1">
+                <Text className="text-white text-xs ml-1 font-medium">
                   {placeInDate} Place{placeInDate !== 1 ? "s" : ""} today
                 </Text>
               </View>

@@ -124,7 +124,7 @@ const PlanIndex = () => {
 
   // Note management functions
 
-  const userNotes = overviewNotes.filter(
+  const userNotes = overviewNotes.find(
     (note) => note.refer_user_id === user_id
   ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ตรง กับ user_id เรา
 
@@ -141,7 +141,7 @@ const PlanIndex = () => {
       refer_user_id: user_id,
       reference_type: "overview",
       note_text: "",
-      user_name: userName || "You",
+      user_name: userName ?? "You",
       user_profile: userUrl,
       is_editable: true,
       created_at: new Date().toISOString(), // current timestamp
@@ -424,7 +424,13 @@ const PlanIndex = () => {
 
           {/* Notes Content */}
           <View className="pb-4">
-            {userNotes.length === 0 ? (
+            {userNotes ? (
+              <NoteItem
+                note={userNotes}
+                userId={user_id}
+                onSave={handleSaveEdit}
+              />
+            ) : (
               <View className="flex-col justify-center">
                 <View className="bg-white rounded-lg p-4 border border-gray_border">
                   <View className="flex-row items-start">
@@ -451,15 +457,6 @@ const PlanIndex = () => {
                   </Text>
                 </TouchableOpacity>
               </View>
-            ) : (
-              userNotes.map((note) => (
-                <NoteItem
-                  key={note.id}
-                  note={note}
-                  userId={user_id}
-                  onSave={handleSaveEdit}
-                />
-              ))
             )}
           </View>
         </View>
