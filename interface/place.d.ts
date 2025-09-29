@@ -5,7 +5,7 @@ interface PlaceBox {
   review_count?: number;
   location: string;
   place_image?: string;
-  place_id?: number;
+  place_id: number;
 } // เเสดงหน้า search ของ place bookmark
 
 interface PlaceDetails {

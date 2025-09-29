@@ -15,8 +15,12 @@ import {
   View,
 } from "react-native";
 
-export default function PlaceDetail() {
-  const { place_id } = useLocalSearchParams<{ place_id: string }>();
+const PlaceDetailVote = () => {
+  const { plan_id, vote_id, place_id } = useLocalSearchParams<{
+    plan_id: string;
+    vote_id: string;
+    place_id: string;
+  }>();
   const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();
   const router = useRouter();
 
@@ -139,14 +143,16 @@ export default function PlaceDetail() {
         {/* Add Button - Fixed at bottom */}
         <View className="mx-4">
           <CustomButton
-            title="Add Place Bookmark"
+            title="Add Place to Voting"
             onPress={() => {
-              router.replace(`/tabs/place`);
-              console.log("Add place to PlaceBookmarks");
+                router.replace(`/plan/${plan_id}/daily_trip/(modals)/add_vote/vote_place/${vote_id}/result_vote`)
+              console.log("Add place to Voting");
             }}
           />
         </View>
       </ScrollView>
     </View>
   );
-}
+};
+
+export default PlaceDetailVote;

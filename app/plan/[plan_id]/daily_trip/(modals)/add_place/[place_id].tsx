@@ -16,9 +16,12 @@ import {
 } from "react-native";
 
 export default function PlaceDetail() {
-  const { plan_id, place_id } = useLocalSearchParams<{
+  const { plan_id, place_id, selectDate, start, end } = useLocalSearchParams<{
     plan_id: string;
     place_id: string;
+    selectDate: string;
+    start: string;
+    end: string;
   }>();
   const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();
   const router = useRouter();
@@ -140,13 +143,21 @@ export default function PlaceDetail() {
         </View>
 
         {/* Add Button - Fixed at bottom */}
-        <CustomButton
-          title="Add Place"
-          onPress={() => {
-            console.log(`Add ${placeDetail.title} to PlaceBookmarks`);
-            router.replace(`/plan/${plan_id}/daily_trip`);
-          }}
-        />
+        <View className="mx-4">
+          <CustomButton
+            title="Add Place"
+            onPress={() => {
+              console.log(`Add ${placeDetail.title} to PlaceBookmarks`);
+              router.replace({
+                pathname: `/plan/[plan_id]/daily_trip`,
+                params: {
+                  plan_id: plan_id,
+                  date: selectDate,
+                },
+              });
+            }}
+          />
+        </View>
       </ScrollView>
     </View>
   );

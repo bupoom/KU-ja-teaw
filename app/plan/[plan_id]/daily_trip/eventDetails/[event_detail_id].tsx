@@ -112,7 +112,7 @@ const event_detail_id = () => {
     >
       <Header title="" onBackPress={handleBackPress} />
 
-      <View className="m-4">
+      <View className="mb-4 mr-4 ml-4 mt-6">
         <View className="flex-row items-stretch gap-x-2">
           {/* Transportation Section */}
           <View className="bg-green_2 rounded-lg px-8 py-4">

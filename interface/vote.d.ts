@@ -16,7 +16,7 @@ interface ActivityVoteEvent {
     time_begin: string;
     time_end: string;
     number_of_votes: number;
-    options: TransportationOption[];
+    options: TransportationOption[]; // มีอยู่ 6 เเบบ
     votes: Vote[];
     trip_id: number;
     vote_type: string;
@@ -31,5 +31,5 @@ interface ActivityVotePlace {
     options: PlaceBox[];
     votes: Vote[];
     trip_id: number;
-    vote_type: string;
+    vote_type: string; // อันนี้มีเอาไว้ เเยก UI ในหน้า daily trip ว่าต้องเเสดงเเบบไหน
 } // เเสดงหน้า vote place

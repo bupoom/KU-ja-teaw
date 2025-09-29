@@ -289,7 +289,7 @@ export default function GuideDetail() {
         </TouchableOpacity>
 
         {/* Flight Section */}
-        <View className="bg-white p-6 m-6 border-gray_border border-2 rounded-xl">
+        <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
           <TouchableOpacity
             onPress={toggleFlights}
             className="flex-row justify-between items-center mb-4"
@@ -364,7 +364,9 @@ export default function GuideDetail() {
           ))}
         </View>
 
-        <CustomButton onPress={addBookmark} title="Add Guide Bookmark" />
+        <View className="mx-4">
+          <CustomButton onPress={addBookmark} title="Add Guide Bookmark" />
+        </View>
       </ScrollView>
 
       {showDescription && (

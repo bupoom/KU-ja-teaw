@@ -446,9 +446,10 @@ export const mockNotes: Note[] = [
     created_at: "2025-09-08T14:30:00",
     trip_id: 1,
   },
-    {
+  {
     id: 19,
-    note_text: "The garden area is beautiful in the evening, recommend after 5 PM.",
+    note_text:
+      "The garden area is beautiful in the evening, recommend after 5 PM.",
     user_profile: mockUserDetails[1].profile_picture_link,
     user_name: mockUserDetails[1].name, // Sarah Johnson
     is_editable: true,
@@ -567,7 +568,7 @@ export const mockNotes: Note[] = [
     created_at: "2025-09-08T12:30:00",
     trip_id: 2,
   },
-    {
+  {
     id: 21,
     note_text: "Check luggage size rules for budget airlines.",
     user_profile: mockUserDetails[0].profile_picture_link,
@@ -906,6 +907,26 @@ export const mockPlaceBoxes: PlaceBox[] = [
     place_image:
       "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=300&h=200&fit=crop",
     place_id: 20,
+  },
+  {
+    id: 21,
+    title: "Sushi Saito",
+    rating: 4.8,
+    review_count: 320,
+    location: "Tokyo, Japan",
+    place_image:
+      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=300&h=200&fit=crop",
+    place_id: 21,
+  },
+  {
+    id: 22,
+    title: "Izakaya Tokyo",
+    rating: 4.4,
+    review_count: 210,
+    location: "Tokyo, Japan",
+    place_image:
+      "https://images.unsplash.com/photo-1576866209830-5a7e67f52c41?w=300&h=200&fit=crop",
+    place_id: 22,
   },
 ];
 
@@ -1249,6 +1270,38 @@ export const mockPlaceDetails: PlaceDetails[] = [
     latitude: 48.8584,
     longitude: 2.2945,
   },
+  {
+    id: 21,
+    title: "Sushi Saito",
+    description:
+      "Sushi Saito is a Michelin-starred sushi restaurant in Tokyo, renowned for its intimate setting and world-class omakase experience.",
+    rating: 4.8,
+    review_count: 320,
+    location: "Tokyo, Japan",
+    place_image:
+      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=300&h=200&fit=crop",
+    categories: ["Restaurant", "Sushi", "Fine Dining"],
+    map_link: "https://maps.google.com/?q=Sushi+Saito+Tokyo",
+    official_link: "https://example.com/sushi-saito",
+    latitude: 35.6728,
+    longitude: 139.7401,
+  },
+  {
+    id: 22,
+    title: "Izakaya Tokyo",
+    description:
+      "Izakaya Tokyo offers a traditional Japanese pub experience with a wide selection of sake, grilled skewers, and small plates.",
+    rating: 4.4,
+    review_count: 210,
+    location: "Tokyo, Japan",
+    place_image:
+      "https://images.unsplash.com/photo-1576866209830-5a7e67f52c41?w=300&h=200&fit=crop",
+    categories: ["Restaurant", "Izakaya", "Casual Dining"],
+    map_link: "https://maps.google.com/?q=Izakaya+Tokyo",
+    official_link: "https://example.com/izakaya-tokyo",
+    latitude: 35.6895,
+    longitude: 139.6917,
+  },
 ];
 
 // 20. Bookmark Place (from PlaceBox)
@@ -1347,11 +1400,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:00",
     time_end: "11:30",
     place_id: 1,
-    title: mockPlaceBoxes.find((p) => p.place_id === 1)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 1)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 1)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 1)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 1)?.place_image,
     trip_id: 1,
-    notes: mockNotes.filter((note) => note.reference_id === 1 && note.reference_type === "place" && note.trip_id === 1),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 1 &&
+        note.reference_type === "place" &&
+        note.trip_id === 1
+    ),
   },
   {
     id: 2,
@@ -1359,11 +1420,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "14:00",
     time_end: "16:00",
     place_id: 2,
-    title: mockPlaceBoxes.find((p) => p.place_id === 2)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 2)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 2)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 2)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 2)?.place_image,
     trip_id: 1,
-    notes: mockNotes.filter((note) => note.reference_id === 2 && note.reference_type === "place" && note.trip_id === 1),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 2 &&
+        note.reference_type === "place" &&
+        note.trip_id === 1
+    ),
   },
   {
     id: 23,
@@ -1371,11 +1440,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "07:00",
     time_end: "10:00",
     place_id: 16,
-    title: mockPlaceBoxes.find((p) => p.place_id === 16)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 16)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 16)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 16)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 16)?.place_image,
     trip_id: 1,
-    notes: mockNotes.filter((note) => note.reference_id === 23 && note.reference_type === "place" && note.trip_id === 1),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 23 &&
+        note.reference_type === "place" &&
+        note.trip_id === 1
+    ),
   },
   {
     id: 24,
@@ -1383,11 +1460,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "13:00",
     time_end: "15:00",
     place_id: 18,
-    title: mockPlaceBoxes.find((p) => p.place_id === 18)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 18)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 18)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 18)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 18)?.place_image,
     trip_id: 1,
-    notes: mockNotes.filter((note) => note.reference_id === 24 && note.reference_type === "place" && note.trip_id === 1),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 24 &&
+        note.reference_type === "place" &&
+        note.trip_id === 1
+    ),
   },
   {
     id: 25,
@@ -1395,11 +1480,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:00",
     time_end: "11:00",
     place_id: 17,
-    title: mockPlaceBoxes.find((p) => p.place_id === 17)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 17)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 17)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 17)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 17)?.place_image,
     trip_id: 1,
-    notes: mockNotes.filter((note) => note.reference_id === 25 && note.reference_type === "place" && note.trip_id === 1),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 25 &&
+        note.reference_type === "place" &&
+        note.trip_id === 1
+    ),
   },
 
   // Trip 2: European Backpacking Tour
@@ -1409,11 +1502,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "10:00",
     time_end: "12:00",
     place_id: 9,
-    title: mockPlaceBoxes.find((p) => p.place_id === 9)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 9)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 9)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 9)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 9)?.place_image,
     trip_id: 2,
-    notes: mockNotes.filter((note) => note.reference_id === 3 && note.reference_type === "place" && note.trip_id === 2),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 3 &&
+        note.reference_type === "place" &&
+        note.trip_id === 2
+    ),
   },
   {
     id: 4,
@@ -1421,11 +1522,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "13:30",
     time_end: "16:30",
     place_id: 10,
-    title: mockPlaceBoxes.find((p) => p.place_id === 10)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 10)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 10)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 10)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 10)?.place_image,
     trip_id: 2,
-    notes: mockNotes.filter((note) => note.reference_id === 4 && note.reference_type === "place" && note.trip_id === 2),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 4 &&
+        note.reference_type === "place" &&
+        note.trip_id === 2
+    ),
   },
   {
     id: 26,
@@ -1433,11 +1542,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "10:00",
     time_end: "15:00",
     place_id: 16,
-    title: mockPlaceBoxes.find((p) => p.place_id === 16)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 16)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 16)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 16)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 16)?.place_image,
     trip_id: 2,
-    notes: mockNotes.filter((note) => note.reference_id === 26 && note.reference_type === "place" && note.trip_id === 2),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 26 &&
+        note.reference_type === "place" &&
+        note.trip_id === 2
+    ),
   },
   {
     id: 27,
@@ -1445,11 +1562,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "14:00",
     time_end: "16:00",
     place_id: 19,
-    title: mockPlaceBoxes.find((p) => p.place_id === 19)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 19)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 19)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 19)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 19)?.place_image,
     trip_id: 2,
-    notes: mockNotes.filter((note) => note.reference_id === 27 && note.reference_type === "place" && note.trip_id === 2),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 27 &&
+        note.reference_type === "place" &&
+        note.trip_id === 2
+    ),
   },
   {
     id: 28,
@@ -1457,11 +1582,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "18:00",
     time_end: "20:00",
     place_id: 20,
-    title: mockPlaceBoxes.find((p) => p.place_id === 20)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 20)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 20)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 20)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 20)?.place_image,
     trip_id: 2,
-    notes: mockNotes.filter((note) => note.reference_id === 28 && note.reference_type === "place" && note.trip_id === 2),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 28 &&
+        note.reference_type === "place" &&
+        note.trip_id === 2
+    ),
   },
 
   // Trip 3: Thailand Beach Getaway
@@ -1471,11 +1604,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:00",
     time_end: "11:30",
     place_id: 13,
-    title: mockPlaceBoxes.find((p) => p.place_id === 13)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 13)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 13)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 13)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 13)?.place_image,
     trip_id: 3,
-    notes: mockNotes.filter((note) => note.reference_id === 5 && note.reference_type === "place" && note.trip_id === 3),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 5 &&
+        note.reference_type === "place" &&
+        note.trip_id === 3
+    ),
   },
   {
     id: 6,
@@ -1483,11 +1624,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "08:00",
     time_end: "15:00",
     place_id: 14,
-    title: mockPlaceBoxes.find((p) => p.place_id === 14)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 14)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 14)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 14)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 14)?.place_image,
     trip_id: 3,
-    notes: mockNotes.filter((note) => note.reference_id === 6 && note.reference_type === "place" && note.trip_id === 3),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 6 &&
+        note.reference_type === "place" &&
+        note.trip_id === 3
+    ),
   },
 
   // Trip 4: Tokyo Winter Festival
@@ -1497,11 +1646,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "18:00",
     time_end: "20:00",
     place_id: 3,
-    title: mockPlaceBoxes.find((p) => p.place_id === 3)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 3)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 3)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 3)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 3)?.place_image,
     trip_id: 4,
-    notes: mockNotes.filter((note) => note.reference_id === 7 && note.reference_type === "place" && note.trip_id === 4),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 7 &&
+        note.reference_type === "place" &&
+        note.trip_id === 4
+    ),
   },
   {
     id: 8,
@@ -1509,11 +1666,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:30",
     time_end: "11:30",
     place_id: 4,
-    title: mockPlaceBoxes.find((p) => p.place_id === 4)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 4)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 4)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 4)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 4)?.place_image,
     trip_id: 4,
-    notes: mockNotes.filter((note) => note.reference_id === 8 && note.reference_type === "place" && note.trip_id === 4),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 8 &&
+        note.reference_type === "place" &&
+        note.trip_id === 4
+    ),
   },
 
   // Trip 5: Bali Adventure
@@ -1523,11 +1688,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "10:00",
     time_end: "12:00",
     place_id: 5,
-    title: mockPlaceBoxes.find((p) => p.place_id === 5)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 5)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 5)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 5)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 5)?.place_image,
     trip_id: 5,
-    notes: mockNotes.filter((note) => note.reference_id === 9 && note.reference_type === "place" && note.trip_id === 5),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 9 &&
+        note.reference_type === "place" &&
+        note.trip_id === 5
+    ),
   },
   {
     id: 10,
@@ -1535,11 +1708,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "16:00",
     time_end: "18:00",
     place_id: 6,
-    title: mockPlaceBoxes.find((p) => p.place_id === 6)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 6)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 6)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 6)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 6)?.place_image,
     trip_id: 5,
-    notes: mockNotes.filter((note) => note.reference_id === 10 && note.reference_type === "place" && note.trip_id === 5),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 10 &&
+        note.reference_type === "place" &&
+        note.trip_id === 5
+    ),
   },
 
   // Trip 6: Swiss Alps Hiking
@@ -1549,11 +1730,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:00",
     time_end: "15:00",
     place_id: 7,
-    title: mockPlaceBoxes.find((p) => p.place_id === 7)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 7)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 7)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 7)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 7)?.place_image,
     trip_id: 6,
-    notes: mockNotes.filter((note) => note.reference_id === 11 && note.reference_type === "place" && note.trip_id === 6),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 11 &&
+        note.reference_type === "place" &&
+        note.trip_id === 6
+    ),
   },
   {
     id: 12,
@@ -1561,11 +1750,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "10:00",
     time_end: "14:00",
     place_id: 8,
-    title: mockPlaceBoxes.find((p) => p.place_id === 8)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 8)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 8)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 8)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 8)?.place_image,
     trip_id: 6,
-    notes: mockNotes.filter((note) => note.reference_id === 12 && note.reference_type === "place" && note.trip_id === 6),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 12 &&
+        note.reference_type === "place" &&
+        note.trip_id === 6
+    ),
   },
 
   // Trip 7: Trip to Thailand (Invitation)
@@ -1575,11 +1772,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:30",
     time_end: "11:00",
     place_id: 15,
-    title: mockPlaceBoxes.find((p) => p.place_id === 15)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 15)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 15)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 15)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 15)?.place_image,
     trip_id: 7,
-    notes: mockNotes.filter((note) => note.reference_id === 13 && note.reference_type === "place" && note.trip_id === 7),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 13 &&
+        note.reference_type === "place" &&
+        note.trip_id === 7
+    ),
   },
   {
     id: 14,
@@ -1587,11 +1792,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "13:00",
     time_end: "15:00",
     place_id: 13,
-    title: mockPlaceBoxes.find((p) => p.place_id === 13)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 13)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 13)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 13)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 13)?.place_image,
     trip_id: 7,
-    notes: mockNotes.filter((note) => note.reference_id === 14 && note.reference_type === "place" && note.trip_id === 7),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 14 &&
+        note.reference_type === "place" &&
+        note.trip_id === 7
+    ),
   },
 
   // Trip 8: Korean Food Tour (Invitation)
@@ -1601,11 +1814,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "17:00",
     time_end: "20:00",
     place_id: 1,
-    title: mockPlaceBoxes.find((p) => p.place_id === 1)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 1)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 1)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 1)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 1)?.place_image,
     trip_id: 8,
-    notes: mockNotes.filter((note) => note.reference_id === 15 && note.reference_type === "place" && note.trip_id === 8),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 15 &&
+        note.reference_type === "place" &&
+        note.trip_id === 8
+    ),
   },
   {
     id: 16,
@@ -1613,11 +1834,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "11:00",
     time_end: "13:00",
     place_id: 2,
-    title: mockPlaceBoxes.find((p) => p.place_id === 2)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 2)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 2)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 2)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 2)?.place_image,
     trip_id: 8,
-    notes: mockNotes.filter((note) => note.reference_id === 16 && note.reference_type === "place" && note.trip_id === 8),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 16 &&
+        note.reference_type === "place" &&
+        note.trip_id === 8
+    ),
   },
 
   // Trip 9: Ultimate Japan Travel Guide
@@ -1627,11 +1856,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "08:00",
     time_end: "10:00",
     place_id: 5,
-    title: mockPlaceBoxes.find((p) => p.place_id === 5)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 5)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 5)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 5)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 5)?.place_image,
     trip_id: 9,
-    notes: mockNotes.filter((note) => note.reference_id === 17 && note.reference_type === "place" && note.trip_id === 9),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 17 &&
+        note.reference_type === "place" &&
+        note.trip_id === 9
+    ),
   },
   {
     id: 18,
@@ -1639,11 +1876,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:00",
     time_end: "12:00",
     place_id: 6,
-    title: mockPlaceBoxes.find((p) => p.place_id === 6)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 6)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 6)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 6)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 6)?.place_image,
     trip_id: 9,
-    notes: mockNotes.filter((note) => note.reference_id === 18 && note.reference_type === "place" && note.trip_id === 9),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 18 &&
+        note.reference_type === "place" &&
+        note.trip_id === 9
+    ),
   },
 
   // Trip 10: European Backpacker's Paradise
@@ -1653,11 +1898,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "10:00",
     time_end: "12:30",
     place_id: 11,
-    title: mockPlaceBoxes.find((p) => p.place_id === 11)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 11)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 11)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 11)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 11)?.place_image,
     trip_id: 10,
-    notes: mockNotes.filter((note) => note.reference_id === 19 && note.reference_type === "place" && note.trip_id === 10),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 19 &&
+        note.reference_type === "place" &&
+        note.trip_id === 10
+    ),
   },
   {
     id: 20,
@@ -1665,11 +1918,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "14:00",
     time_end: "16:00",
     place_id: 12,
-    title: mockPlaceBoxes.find((p) => p.place_id === 12)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 12)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 12)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 12)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 12)?.place_image,
     trip_id: 10,
-    notes: mockNotes.filter((note) => note.reference_id === 20 && note.reference_type === "place" && note.trip_id === 10),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 20 &&
+        note.reference_type === "place" &&
+        note.trip_id === 10
+    ),
   },
 
   // Trip 11: Thailand Island Hopping
@@ -1679,11 +1940,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "09:00",
     time_end: "15:00",
     place_id: 14,
-    title: mockPlaceBoxes.find((p) => p.place_id === 14)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 14)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 14)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 14)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 14)?.place_image,
     trip_id: 11,
-    notes: mockNotes.filter((note) => note.reference_id === 21 && note.reference_type === "place" && note.trip_id === 11),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 21 &&
+        note.reference_type === "place" &&
+        note.trip_id === 11
+    ),
   },
   {
     id: 22,
@@ -1691,11 +1960,19 @@ export const mockActivityPlaceBoxes: ActivityPlaceBox[] = [
     time_begin: "10:00",
     time_end: "12:00",
     place_id: 15,
-    title: mockPlaceBoxes.find((p) => p.place_id === 15)?.title ?? "Unknown Title",
-    location: mockPlaceBoxes.find((p) => p.place_id === 15)?.location ?? "Unknown Location",
+    title:
+      mockPlaceBoxes.find((p) => p.place_id === 15)?.title ?? "Unknown Title",
+    location:
+      mockPlaceBoxes.find((p) => p.place_id === 15)?.location ??
+      "Unknown Location",
     place_image: mockPlaceBoxes.find((p) => p.place_id === 15)?.place_image,
     trip_id: 11,
-    notes: mockNotes.filter((note) => note.reference_id === 22 && note.reference_type === "place" && note.trip_id === 11),
+    notes: mockNotes.filter(
+      (note) =>
+        note.reference_id === 22 &&
+        note.reference_type === "place" &&
+        note.trip_id === 11
+    ),
   },
 ];
 
@@ -1851,54 +2128,54 @@ export const mockVotes: Vote[] = [
     user_id: 1,
     activity_id: 101,
     vote_type: "place",
-    place_id: 1,
+    place_id: 6,
     username: mockUserDetails[0].name,
-    trip_id: 1, // Japan trip
+    trip_id: 1,
   },
   {
     id: 2,
     user_id: 2,
     activity_id: 101,
     vote_type: "place",
-    place_id: 2,
+    place_id: 7,
     username: mockUserDetails[1].name,
-    trip_id: 1, // Japan trip
+    trip_id: 1,
   },
   {
     id: 3,
     user_id: 3,
     activity_id: 101,
     vote_type: "place",
-    place_id: 1,
+    place_id: 8,
     username: mockUserDetails[2].name,
-    trip_id: 1, // Japan trip
+    trip_id: 1,
   },
   {
     id: 4,
     user_id: 1,
     activity_id: 102,
     vote_type: "event",
-    event_id: 1,
+    event_id: 1, // Car
     username: mockUserDetails[0].name,
-    trip_id: 2, // European trip
+    trip_id: 2,
   },
   {
     id: 5,
     user_id: 2,
     activity_id: 102,
     vote_type: "event",
-    event_id: 2,
+    event_id: 2, // Bus
     username: mockUserDetails[1].name,
-    trip_id: 2, // European trip
+    trip_id: 2,
   },
   {
     id: 6,
     user_id: 3,
     activity_id: 102,
     vote_type: "event",
-    event_id: 1,
+    event_id: 1, // Car
     username: mockUserDetails[2].name,
-    trip_id: 2, // European trip
+    trip_id: 2,
   },
   {
     id: 7,
@@ -2056,6 +2333,7 @@ export const mockVotes: Vote[] = [
 ];
 
 // 12. Activity Vote Place
+// ========== FIXED ActivityVotePlaces ==========
 export const mockActivityVotePlaces: ActivityVotePlace[] = [
   {
     id: 101,
@@ -2064,42 +2342,13 @@ export const mockActivityVotePlaces: ActivityVotePlace[] = [
     time_end: "20:00",
     number_of_votes: 3,
     vote_type: "place",
-    options: [
-      {
-        id: 6,
-        title: "Sushi Ichiban",
-        rating: 4.5,
-        review_count: 200,
-        location: "Ginza, Tokyo",
-        place_image:
-          "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=200&fit=crop",
-        place_id: 6,
-      },
-      {
-        id: 7,
-        title: "Ramen Yokocho",
-        rating: 4.2,
-        review_count: 150,
-        location: "Shinjuku, Tokyo",
-        place_image:
-          "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=200&fit=crop",
-        place_id: 7,
-      },
-      {
-        id: 8,
-        title: "Tempura Matsui",
-        rating: 4.7,
-        review_count: 180,
-        location: "Asakusa, Tokyo",
-        place_image:
-          "https://images.unsplash.com/photo-1559314809-0f31657def5e?w=300&h=200&fit=crop",
-        place_id: 8,
-      },
-    ],
+    options: mockPlaceBoxes.filter(
+      (p) => [6, 7, 8].includes(p.place_id) // ใช้ Fushimi Inari, Kiyomizu-dera, Osaka Castle
+    ),
     votes: mockVotes.filter(
       (vote) => vote.activity_id === 101 && vote.vote_type === "place"
     ),
-    trip_id: 1, // Japan trip
+    trip_id: 1,
   },
   {
     id: 104,
@@ -2108,66 +2357,13 @@ export const mockActivityVotePlaces: ActivityVotePlace[] = [
     time_end: "21:00",
     number_of_votes: 4,
     vote_type: "place",
-    options: [
-      {
-        id: 21,
-        title: "Sushi Saito",
-        rating: 4.8,
-        review_count: 320,
-        location: "Tokyo, Japan",
-        place_image:
-          "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=300&h=200&fit=crop",
-        place_id: 21,
-      },
-      {
-        id: 22,
-        title: "Izakaya Tokyo",
-        rating: 4.4,
-        review_count: 210,
-        location: "Tokyo, Japan",
-        place_image:
-          "https://images.unsplash.com/photo-1576866209830-5a7e67f52c41?w=300&h=200&fit=crop",
-        place_id: 22,
-      },
-    ],
+    options: mockPlaceBoxes.filter(
+      (p) => [21, 22].includes(p.place_id) // ต้องเพิ่ม place ใหม่ลงใน mockPlaceBoxes ด้วย
+    ),
     votes: mockVotes.filter(
       (vote) => vote.activity_id === 104 && vote.vote_type === "place"
     ),
     trip_id: 1,
-  },
-  {
-    id: 106,
-    date: "2025-09-27",
-    time_begin: "18:00",
-    time_end: "20:00",
-    number_of_votes: 5,
-    vote_type: "place",
-    options: [
-      {
-        id: 23,
-        title: "Brussels Cafe",
-        rating: 4.3,
-        review_count: 120,
-        location: "Brussels, Belgium",
-        place_image:
-          "https://images.unsplash.com/photo-1541542684-4a5c6fd39d2f?w=300&h=200&fit=crop",
-        place_id: 23,
-      },
-      {
-        id: 24,
-        title: "Amsterdam Steakhouse",
-        rating: 4.6,
-        review_count: 260,
-        location: "Amsterdam, Netherlands",
-        place_image:
-          "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=300&h=200&fit=crop",
-        place_id: 24,
-      },
-    ],
-    votes: mockVotes.filter(
-      (vote) => vote.activity_id === 106 && vote.vote_type === "place"
-    ),
-    trip_id: 2,
   },
 ];
 
@@ -2216,7 +2412,6 @@ export const mockActivityVoteEvents: ActivityVoteEvent[] = [
     trip_id: 1, // Japan trip
   },
 ];
-
 
 // <-------------------------- Trip ----------------------------------------->
 // 14. Trip Boxes (FIXED dates to 2025)
