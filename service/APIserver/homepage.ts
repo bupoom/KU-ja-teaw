@@ -119,3 +119,14 @@ export const getinvitedtrip = async (): Promise<TripBox[]> => {
         throw error;
     }
 };
+
+export const joinTrip = async (trip_id: number) => {
+  const res = await apiClient.patch(`/api/trips/${trip_id}/invite/accept`);
+  return res.data;
+};
+
+// Reject Trip
+export const rejectTrip = async (trip_id: number) => {
+  const res = await apiClient.delete(`/api/trips/${trip_id}/invite/reject`);
+  return res.data;
+};
