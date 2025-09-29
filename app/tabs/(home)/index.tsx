@@ -1,7 +1,7 @@
 import GuideBox from "@/components/GuideBox";
 import InviteBox from "@/components/InviteBox";
 import TripBox from "@/components/TripBox";
-import { getinvitedtrip, getrecommendedguide, getuseralltrip } from "@/service/APIserver/homepage";
+import { getinvitedtrip, getrecommendedguide, getuseralltrip, joinTrip, rejectTrip } from "@/service/APIserver/homepage";
 import { useRouter } from "expo-router";
 import React, { JSX, useEffect, useState } from "react";
 import {
@@ -84,8 +84,9 @@ export default function HomeScreen(): JSX.Element {
     };
 
     const handleJoinTrip = async (trip: TripBox): Promise<void> => {
-        Alert.alert("Success", "You have successfully joined the trip!", [
-            {
+        try {
+            await joinTrip(trip.trip_id);
+            Alert.alert("Success", "You have successfully joined the trip!", [{
                 text: "OK",
                 onPress: () => {
                     // router.push(`/trips/${trip.trip_id}`);
@@ -95,13 +96,24 @@ export default function HomeScreen(): JSX.Element {
                     );
                 },
             },
-        ]);
+            ]);
+        } catch (err){
+            Alert.alert("Error", "Failed to join trip. Please try again.");
+            console.error(err);
+        }
+        
     };
 
     const handleRejectTrip = async (trip: TripBox): Promise<void> => {
-        setTripInvitations(prev =>
+        try {
+            await rejectTrip(trip.trip_id);
+            setTripInvitations(prev =>
             prev.filter(inv => inv.trip_id !== trip.trip_id)
-        );
+            );
+        } catch (err) {
+            Alert.alert("Error", "Failed to reject trip. Please try again.");
+            console.error(err);
+        }
     };
 
     const onRefresh = async (): Promise<void> => {
