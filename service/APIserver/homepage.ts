@@ -92,7 +92,6 @@ export const getinvitedtrip = async (): Promise<TripBox[]> => {
         const response = (await apiClient.get(endpoints.trip.invited)) as {
             data: { trips: any[] };
         };
-        const user_res = (await apiClient.get(endpoints.user.getUserDetail)).data as UserDetails;
 
         console.log(response.data.trips);
         const trips = response.data.trips || [];
@@ -103,13 +102,13 @@ export const getinvitedtrip = async (): Promise<TripBox[]> => {
             trip_list.push({
                 trip_id: serverData.trip_id,
                 trip_name: serverData.title,
-                trip_image: serverData.poster_image_link,
+                trip_image: serverData.guide_image,
                 start_date: serverData.start_date,
                 end_date: serverData.end_date,
-                member_count: serverData.joined_people,
-                status_planning: serverData.planning_status === true ? "completed" : "planning",
-                owner_name: user_res.name,
-                owner_image: user_res.profile_picture_link,
+                member_count: 0,
+                status_planning: "completed",
+                owner_name: serverData.owner_name,
+                owner_image: serverData.owner_image,
             });
 
             console.log(trip_list[i]);
