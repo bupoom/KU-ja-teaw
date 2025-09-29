@@ -169,7 +169,7 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
 export const BookmarkByGuideId = async (
     // ยังไม่เอาไปแปะที่ไหน
     bookmarkid: number
-): Promise<boolean> => {
+): Promise<string> => {
     try {
         console.log("Add User Guide Bookmark by bookmarkID:", bookmarkid);
 
@@ -180,12 +180,13 @@ export const BookmarkByGuideId = async (
         const message = response.data.message || "";
 
         console.log("Processed result:", message);
-        return message === "Bookmark added";
+        return message;
     } catch (error) {
         console.error("Unbookmark error:", error);
         throw error;
     }
 };
+
 // ลบ bookmark user
 export const UnbookmarkByGuideId = async (
     bookmarkid: number
@@ -235,16 +236,16 @@ export const SearchGuideByInput = async (
         for (let i = 0; i < bookmarks.length; i++) {
             const Data = bookmarks[i];
             guides.push({
-                id: bookmarks[i],
-                title: "",
-                start_date: "",
-                end_date: "",
-                guide_image: "",
-                copies: -1,
-                owner_name: "",
+                id: Data.trip_id,
+                title: Data.guide_name,
+                start_date: Data.start_date,
+                end_date: Data.end_date,
+                guide_image: Data.guide_poster_link,
+                copies: Data.total_copied,
+                owner_name: Data.owner_name,
                 owner_image: "",
                 description: "",
-                trip_id: -1,
+                trip_id: Data.trip_id,
             });
         }
         console.log("result : ", guides);
@@ -254,16 +255,3 @@ export const SearchGuideByInput = async (
         throw error;
     }
 };
-
-// interface GuideBox {
-//     id: number;
-//     title: string;
-//     start_date: string;
-//     end_date: string;
-//     guide_image: string;
-//     copies: number;
-//     owner_name: string;
-//     owner_image: string;
-//     description?: string;
-//     trip_id: number;
-// }

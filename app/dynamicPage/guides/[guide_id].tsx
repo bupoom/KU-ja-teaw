@@ -26,6 +26,7 @@ import { organizeActivitiesByDay } from "@/util/organizedActivityByDay";
 import { truncateText } from "@/util/truncateText";
 
 import { getGuideDetails } from "@/service/APIserver/guideDetail";
+import { BookmarkByGuideId } from "@/service/APIserver/bookmarkService";
 
 interface DailyActivity {
     date: string;
@@ -53,8 +54,13 @@ export default function GuideDetail() {
         router.back();
     };
 
-    const addBookmark = () => {
-        console.log("Add to Guide Bodokmark");
+    const addBookmark = async () => {
+        const response = await BookmarkByGuideId(Number(guide_id))
+        if (response === "Bookmark added") {
+            Alert.alert("Added to Bookmark");
+        } else {
+            Alert.alert(response)
+        }
     };
 
     const copyGuide = () => { // แก้ด้วย 

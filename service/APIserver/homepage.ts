@@ -2,14 +2,14 @@ import apiClient from "../client";
 
 const endpoints = {
     guide: {
-        recommend: "/api/trips/recommended"
+        recommend: "/api/trips/recommended",
     },
     user: {
-        getUserDetail: "/api/users" 
+        getUserDetail: "/api/users",
     },
-    trip:{
+    trip: {
         by_user: "/api/trips/by-user",
-        invited: "/api/trips/invited"
+        invited: "/api/trips/invited",
     },
 };
 
@@ -30,7 +30,7 @@ export const getrecommendedguide = async (): Promise<GuideBox[]> => {
         for (let i = 0; i < guides.length; i++) {
             const serverData = guides[i];
             guide_list.push({
-                id: i+1,
+                id: i + 1,
                 title: serverData.title,
                 start_date: serverData.start_date,
                 end_date: serverData.end_date,
@@ -57,9 +57,10 @@ export const getuseralltrip = async (): Promise<TripBox[]> => {
         const response = (await apiClient.get(endpoints.trip.by_user)) as {
             data: { trips: any[] };
         };
-        const user_res = (await apiClient.get(endpoints.user.getUserDetail)).data as UserDetails;
+        const user_res = (await apiClient.get(endpoints.user.getUserDetail))
+            .data as UserDetails;
 
-        console.log( "data : invited" , response.data);
+        console.log("data : invited", response.data);
         const trips = response.data.trips || [];
         const trip_list: TripBox[] = [];
 
@@ -72,7 +73,10 @@ export const getuseralltrip = async (): Promise<TripBox[]> => {
                 start_date: serverData.start_date,
                 end_date: serverData.end_date,
                 member_count: serverData.joined_people,
-                status_planning: serverData.planning_status === true ? "completed" : "planning",
+                status_planning:
+                    serverData.planning_status === true
+                        ? "completed"
+                        : "planning",
                 owner_name: user_res.name,
                 owner_image: user_res.profile_picture_link,
             });
@@ -121,12 +125,12 @@ export const getinvitedtrip = async (): Promise<TripBox[]> => {
 };
 
 export const joinTrip = async (trip_id: number) => {
-  const res = await apiClient.patch(`/api/trips/${trip_id}/invite/accept`);
-  return res.data;
+    const res = await apiClient.patch(`/api/trips/${trip_id}/invite/accept`);
+    return res.data;
 };
 
 // Reject Trip
 export const rejectTrip = async (trip_id: number) => {
-  const res = await apiClient.delete(`/api/trips/${trip_id}/invite/reject`);
-  return res.data;
+    const res = await apiClient.delete(`/api/trips/${trip_id}/invite/reject`);
+    return res.data;
 };

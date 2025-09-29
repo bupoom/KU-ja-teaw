@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { SearchGuideByInput } from "@/service/APIserver/bookmarkService";
 
 //  สิ่งที่ต้องแก้ไขเพิ่มเติมคือ
 //  - ใส่ API Function
@@ -34,16 +35,12 @@ const SearchGuideScreen: React.FC = () => {
     }, []);
 
     // Search function API??? - แก้ไข return type และ filter logic
-    const Search_with_query = (query: string): GuideBox[] => {
+    const Search_with_query = async (query: string) => {
         if (!query.trim()) {
             return [];
         }
-
-        return mockGuideBoxes.filter(
-            item =>
-                item.title.toLowerCase().includes(query.toLowerCase()) ||
-                item.owner_name.toLowerCase().includes(query.toLowerCase())
-        );
+        const results = await SearchGuideByInput(query)
+        setSearchResults(results); ;
     };
 
     // Handle search ด้วยการ limit เวลา
@@ -59,12 +56,12 @@ const SearchGuideScreen: React.FC = () => {
             setLoading(true);
             // จำลองการ loading
             setTimeout(() => {
-                const results = Search_with_query(searchQuery);
-                setSearchResults(results);
+                Search_with_query(searchQuery);
+                console.log("query result : " , searchResults)
                 setHasSearched(true);
                 setLoading(false);
-            }, 300);
-        }, 500); // Debounce 500ms
+            }, 500);
+        }, 700); // Debounce 500ms
 
         return () => clearTimeout(delayedSearch);
     }, [searchQuery]);

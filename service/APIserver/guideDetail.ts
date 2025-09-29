@@ -40,7 +40,6 @@ export const getGuideDetails = async (Id:number): Promise<GuideAndFlight> => {
             note: [], 
         }
         const FlightList = Data.flight_detail;
-        console.log("KUY Oshi",FlightList)
         const FlatList : Flight[] = [];
         for (let i = 0 ; i < FlightList.length; i++ ) {
             const Flight = FlightList[i];
