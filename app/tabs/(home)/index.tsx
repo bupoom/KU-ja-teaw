@@ -2,10 +2,9 @@ import GuideBox from "@/components/GuideBox";
 import InviteBox from "@/components/InviteBox";
 import TripBox from "@/components/TripBox";
 import {
-    mockGuideBoxes,
-    mockTripBoxes,
-    mockTripInvitations,
+    mockTripInvitations
 } from "@/mock/mockDataComplete";
+import { getinvitedtrip, getrecommendedguide, getuseralltrip } from "@/service/APIserver/homepage";
 import { useRouter } from "expo-router";
 import React, { JSX, useEffect, useState } from "react";
 import {
@@ -41,10 +40,12 @@ export default function HomeScreen(): JSX.Element {
     const fetchCurrentTrip = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, currentTrip: true }));
         try {
+            console.log("Fetch user all trip")
+            const data = await getuseralltrip();
             const today = new Date().toISOString().split("T")[0]; // วันนี้ในรูปแบบ YYYY-MM-DD
 
             // หา trip ที่วันนี้อยู่ในช่วงระหว่าง start_date และ end_date
-            const activeTripData = mockTripBoxes.find(trip => {
+            const activeTripData = data.find(trip => {
                 const startDate = trip.start_date;
                 const endDate = trip.end_date;
 
@@ -63,7 +64,9 @@ export default function HomeScreen(): JSX.Element {
     const fetchTripInvitations = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, invitations: true }));
         try {
-            setTripInvitations(mockTripInvitations);
+            console.log("Fetch invited trip")
+            const data = await getinvitedtrip();
+            setTripInvitations(data);
         } catch (error) {
             console.error("Failed to fetch trip invitations:", error);
             setError("Failed to load trip invitations");
@@ -75,7 +78,9 @@ export default function HomeScreen(): JSX.Element {
     const fetchGuidePlans = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, guidePlans: true }));
         try {
-            setGuidePlans(mockGuideBoxes);
+            console.log("Fetching guide recommended")
+            const data = await getrecommendedguide();
+            setGuidePlans(data);
         } catch (error) {
             console.error("Failed to fetch guide plans:", error);
             setError("Failed to load guide plans");

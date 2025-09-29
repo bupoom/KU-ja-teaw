@@ -1,5 +1,6 @@
 import TripBox from "@/components/TripBox";
 import { mockTripBoxes } from "@/mock/mockDataComplete";
+import { AuthService } from "@/service/authService";
 import { calculateTripStatus } from "@/util/calculationFunction/calculateTripStatus";
 import { Feather, Foundation } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,7 +18,6 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { AuthService } from "@/service/authService";
 
 interface TripSection {
     title: string;
@@ -235,7 +235,7 @@ const ProfileScreen: React.FC = () => {
                                             : section.trips
                                     }
                                     renderItem={({ item }) => (
-                                        <TripBox tripData={item} />
+                                        <TripBox tripData={item} onPress={section.title === "END" ? () => handleEndTripPress(item.trip_id) : undefined} />
                                     )}
                                     keyExtractor={item =>
                                         item.trip_id.toString()
