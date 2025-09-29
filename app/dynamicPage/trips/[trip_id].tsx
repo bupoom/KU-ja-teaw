@@ -573,11 +573,13 @@ export default function TripDetail() {
         )}
 
         {canShare && (
-          <CustomButton
-            onPress={handleShare}
-            title="Shared Trip"
-            isShared={true}
-          />
+          <View className="mx-4">
+            <CustomButton
+              onPress={handleShare}
+              title="Shared Trip"
+              isShared={true}
+            />
+          </View>
         )}
       </ScrollView>
 

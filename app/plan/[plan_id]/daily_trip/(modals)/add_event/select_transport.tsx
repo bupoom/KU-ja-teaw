@@ -1,4 +1,10 @@
-import { View, Text, SafeAreaView, TouchableOpacity, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
@@ -18,7 +24,12 @@ const transportOptions = [
 
 const SelectTransport = () => {
   const router = useRouter();
-  const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
+  const { plan_id, selectDate, start, end } = useLocalSearchParams<{
+    plan_id: string;
+    selectDate: string;
+    start: string;
+    end: string;
+  }>();
   const [selected, setSelected] = useState<string | null>(null);
   const [title, setTitle] = useState<string>("");
 
@@ -31,7 +42,7 @@ const SelectTransport = () => {
       <Header title="Add Event" onBackPress={handleBack} />
 
       {/* Title Input */}
-      <View className="mt-4 mb-2 bg-white rounded-lg px-6">
+      <View className="mt-6 mb-2 bg-white rounded-lg px-6">
         <Text className="text-xl font-bold text-black mb-3 ml-2">Title</Text>
         <TextInput
           value={title}
@@ -79,13 +90,20 @@ const SelectTransport = () => {
       </View>
 
       {/* Add button */}
-      <View className="absolute bottom-10 left-6 right-6">
+      <View className="absolute bottom-10 left-4 right-4">
         <CustomButton
           title="Add Event"
           onPress={() => {
             console.log("Event title:", title);
             console.log("Selected transport:", selected);
-            router.replace(`/plan/${plan_id}/daily_trip`)
+
+            router.replace({
+              pathname: `/plan/[plan_id]/daily_trip`,
+              params: {
+                plan_id: plan_id,
+                date: selectDate,
+              },
+            });
           }}
           disabled={!selected}
         />

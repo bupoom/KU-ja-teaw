@@ -35,19 +35,16 @@ import {
   mockTripMembers,
 } from "@/mock/mockDataComplete";
 
-interface Activity {
-  activities:
-    | ActivityPlaceBox
-    | ActivityEventBox
-    | ActivityVotePlace
-    | ActivityVoteEvent;
-}
-
 const DailyTripsIndex = () => {
-  const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
+  const { plan_id, date } = useLocalSearchParams<{
+    plan_id: string;
+    date?: string;
+  }>();
   const user_id = 1;
   const [role, setRole] = useState<string>("viewer");
   const [refreshing, setRefreshing] = useState(false);
+
+  const canEdit = role === "owner" || role === "editor";
 
   useEffect(() => {
     const trip = mockTripDetails.find(
@@ -176,6 +173,16 @@ const DailyTripsIndex = () => {
   useEffect(() => {
     console.log("Updated dailyActivities:", dailyActivities);
   }, [dailyActivities]);
+
+  useEffect(() => {
+    if (date) {
+      setSelectDate(date);
+      fetchActivity(date);
+    } else if (dates.length > 0) {
+      setSelectDate(dates[0]);
+      fetchActivity(dates[0]);
+    }
+  }, [dates, date]);
 
   // <------------------------------------ Notification --------------------------------------------->
   const [notifications, setNotifications] = useState<NotificationBox[]>([]);
@@ -454,7 +461,9 @@ const DailyTripsIndex = () => {
   const handleAddVote = () => {
     console.log("Add Vote clicked");
     closeAddPress();
-    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type`);
+    router.push(
+      `/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type_vote`
+    );
   };
 
   const handleMapPress = () => {
@@ -483,12 +492,18 @@ const DailyTripsIndex = () => {
     router.push(`/plan/${plan_id}/daily_trip/eventDetails/${activityId}`);
   };
 
-  const handleActivityVotePlace = () => {
+  const handleActivityVotePlace = (vote_id: number) => {
     console.log(`Go to Activity Details`);
+    router.push(
+      `/plan/${plan_id}/daily_trip/add_vote/vote_place/${vote_id}/result_vote`
+    );
   };
 
-  const handleActivityVoteEvent = () => {
+  const handleActivityVoteEvent = (vote_id: number) => {
     console.log(`Go to Activity Details`);
+    router.push(
+      `/plan/${plan_id}/daily_trip/add_vote/vote_event/${vote_id}/result_vote`
+    );
   };
 
   const handleDeleteActivity = (activityId: number) => {
@@ -521,7 +536,7 @@ const DailyTripsIndex = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <PlanHeader planId={plan_id} />
-      <DateSelector dates={dates} onDateSelect={handleselectDate} />
+      <DateSelector dates={dates} onDateSelect={handleselectDate} selectedDate={date}/>
 
       <View className="flex-row justify-between items-center mx-4 my-2 p-4 rounded-lg border border-gray_border">
         <Text className="text-black font-bold text-xl">
@@ -583,19 +598,21 @@ const DailyTripsIndex = () => {
 
       {/* <---------------------------Add and List Button -----------------------------> */}
       {/* Add Button */}
-      <TouchableOpacity
-        className="absolute bottom-12 right-10 w-16 h-16 rounded-full bg-green_2 justify-center items-center"
-        onPress={handleAddPress}
-        activeOpacity={0.8}
-      >
-        <Animated.View
-          style={{
-            transform: [{ rotate: buttonRotation }],
-          }}
+      {canEdit && (
+        <TouchableOpacity
+          className="absolute bottom-12 right-10 w-16 h-16 rounded-full bg-green_2 justify-center items-center"
+          onPress={handleAddPress}
+          activeOpacity={0.8}
         >
-          <Ionicons name="add" size={28} color="white" />
-        </Animated.View>
-      </TouchableOpacity>
+          <Animated.View
+            style={{
+              transform: [{ rotate: buttonRotation }],
+            }}
+          >
+            <Ionicons name="add" size={28} color="white" />
+          </Animated.View>
+        </TouchableOpacity>
+      )}
 
       {/* List Button */}
       <TouchableOpacity

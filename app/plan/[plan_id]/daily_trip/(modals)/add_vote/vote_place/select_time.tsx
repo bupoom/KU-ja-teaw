@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -14,19 +14,19 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 
+import Header from "@/components/common/Header";
+import CustomButton from "@/components/common/CustomButton";
+
 import { mockTripDetails } from "@/mock/mockDataComplete";
 
-import NextButton from "@/components/common/NextButton";
-import Header from "@/components/common/Header";
-
-import { formatDate } from "@/util/formatFucntion/formatDate";
 import { extractDates } from "@/util/extractDates";
+import { formatDate } from "@/util/formatFucntion/formatDate";
 
 // helper functions
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const hhmm = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
-const SelectTime = () => {
+const SelectTimeVotePlace = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [dates, setDates] = useState<string[]>([]);
@@ -50,11 +50,10 @@ const SelectTime = () => {
 
   // validation
   const isRangeValid = useMemo(() => end > start, [start, end]);
-
-  const handleDateSelect = (date: string) => {
-    setSelectedDate(date);
-    setShowDateModal(false);
-  };
+  const isFormValid = useMemo(
+    () => isRangeValid && selectedDate !== null,
+    [isRangeValid, selectedDate]
+  );
 
   const onPick =
     (which: "start" | "end") => (_: DateTimePickerEvent, selected?: Date) => {
@@ -68,15 +67,22 @@ const SelectTime = () => {
       which === "start" ? setStart(base) : setEnd(base);
     };
 
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
+    setShowDateModal(false);
+  };
+
   const goNext = () => {
-    if (!isRangeValid) return;
+    if (!isFormValid) return;
     router.push({
-      pathname: `/plan/[plan_id]/daily_trip/add_event/select_transport`,
+      pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_place/[vote_id]/result_vote`,
       params: {
         plan_id: plan_id as string,
-        selectDate: selectedDate as string,
-        start: hhmm(start),
-        end: hhmm(end),
+        vote_id: 101 as number,
+        // date: selectedDate,
+        // start: hhmm(start),
+        // end: hhmm(end),
+        // สร้างเลย เเล้วส่ id ไป
       },
     });
   };
@@ -179,7 +185,7 @@ const SelectTime = () => {
 
             {/* helper text */}
             <Text className="text-center text-light_gray mt-5 leading-5">
-              Please select the time period you plan{"\n"}to Add Place
+              Please select the date and time period you plan{"\n"}to Add Place
             </Text>
 
             {/* validation error */}
@@ -188,12 +194,17 @@ const SelectTime = () => {
                 End time must be after Start time
               </Text>
             )}
+            {!selectedDate && (
+              <Text className="text-red-500 text-center mt-2">
+                Please select a date
+              </Text>
+            )}
           </View>
         </View>
 
         {/* ===== Footer Button ===== */}
         <View className="mb-16">
-          <NextButton onPress={goNext} disabled={!isRangeValid} />
+          <CustomButton title="Create Vote" onPress={goNext} disabled={!isFormValid} />
         </View>
       </View>
 
@@ -255,7 +266,7 @@ const SelectTime = () => {
         </View>
       </Modal>
 
-      {/* Native Pickers */}
+      {/* Native Time Pickers */}
       {showStart && (
         <DateTimePicker
           mode="time"
@@ -278,4 +289,4 @@ const SelectTime = () => {
   );
 };
 
-export default SelectTime;
+export default SelectTimeVotePlace;

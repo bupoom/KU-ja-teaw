@@ -1,26 +1,36 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
   Text,
   TouchableOpacity,
   Platform,
+  Modal,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 
+import { mockTripDetails } from "@/mock/mockDataComplete";
+
 import NextButton from "@/components/common/NextButton";
 import Header from "@/components/common/Header";
+
+import { formatDate } from "@/util/formatFucntion/formatDate";
+import { extractDates } from "@/util/extractDates";
 
 // helper functions
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const hhmm = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
-export default function SelectTime() {
+const SelectTime = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [dates, setDates] = useState<string[]>([]);
+  const [showDateModal, setShowDateModal] = useState(false);
 
   // default times 00:00 → 12:00
   const [start, setStart] = useState(() => {
@@ -41,6 +51,11 @@ export default function SelectTime() {
   // validation
   const isRangeValid = useMemo(() => end > start, [start, end]);
 
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
+    setShowDateModal(false);
+  };
+
   const onPick =
     (which: "start" | "end") => (_: DateTimePickerEvent, selected?: Date) => {
       if (Platform.OS === "android") {
@@ -59,6 +74,7 @@ export default function SelectTime() {
       pathname: `/plan/[plan_id]/daily_trip/add_place/search_place`,
       params: {
         plan_id: plan_id as string,
+        selectDate: selectedDate as string,
         start: hhmm(start),
         end: hhmm(end),
       },
@@ -68,6 +84,23 @@ export default function SelectTime() {
   const handleBack = () => {
     router.back();
   };
+
+  useEffect(() => {
+    const datesData = mockTripDetails.find(
+      (trip) => trip.trip_id === parseInt(plan_id)
+    );
+    if (datesData) {
+      const extractedDates = extractDates(
+        datesData?.start_date,
+        datesData.end_date
+      );
+      setDates(extractedDates);
+      // Set first date as default
+      if (extractedDates.length > 0) {
+        setSelectedDate(extractedDates[0]);
+      }
+    }
+  }, [plan_id]);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -82,13 +115,39 @@ export default function SelectTime() {
             <Ionicons name="time-outline" size={30} color="#294C43" />
           </View>
 
+          {/* DATE SELECTION */}
+          <View className="w-full px-4 mb-6">
+            <View className="items-center">
+              <View className="px-4 py-2 rounded-full bg-[#294C43] mb-2">
+                <Text className="text-white font-semibold text-lg">DATE</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowDateModal(true)}
+                activeOpacity={0.85}
+                className="w-full h-16 rounded-lg border border-gray_border bg-white items-center justify-center flex-row"
+              >
+                <Ionicons
+                  name="calendar-outline"
+                  size={20}
+                  color="#666"
+                  style={{ marginRight: 8 }}
+                />
+                <Text className="text-xl font-semibold text-black">
+                  {selectedDate ? formatDate(selectedDate) : "Select Date"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* START / END columns */}
           <View className="w-full px-4">
             <View className="flex-row justify-between">
               {/* START */}
               <View className="w-[47%] items-center">
                 <View className="px-4 py-2 rounded-full bg-[#294C43]">
-                  <Text className="text-white font-semibold text-lg">START</Text>
+                  <Text className="text-white font-semibold text-lg">
+                    START
+                  </Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => setShowStart(true)}
@@ -133,10 +192,68 @@ export default function SelectTime() {
         </View>
 
         {/* ===== Footer Button ===== */}
-        <View className="mb-20">
+        <View className="mb-16">
           <NextButton onPress={goNext} disabled={!isRangeValid} />
         </View>
       </View>
+
+      {/* Date Selection Modal */}
+      <Modal
+        visible={showDateModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowDateModal(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-3xl">
+            {/* Modal Header */}
+            <View className="flex-row items-center justify-center px-6 py-4 border-b border-gray-200">
+              <Text className="text-lg font-semibold text-black">
+                Select Date
+              </Text>
+            </View>
+
+            {/* Date List */}
+            <ScrollView className="max-h-80">
+              {dates.map((date, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => handleDateSelect(date)}
+                  className={`px-6 py-4 border-b border-gray-100 ${
+                    selectedDate === date ? "bg-green-50" : "bg-white"
+                  }`}
+                  activeOpacity={0.7}
+                >
+                  <View className="flex-row items-center justify-between">
+                    <Text
+                      className={`text-lg font-medium ${
+                        selectedDate === date ? "text-green_2" : "text-black"
+                      }`}
+                    >
+                      {formatDate(date)}
+                    </Text>
+                    {selectedDate === date && (
+                      <Ionicons name="checkmark" size={20} color="#284D44" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Modal Footer */}
+            <View className="px-6 py-4">
+              <TouchableOpacity
+                onPress={() => setShowDateModal(false)}
+                className="bg-green_2 rounded-lg py-3"
+              >
+                <Text className="text-center text-white font-medium text-lg">
+                  Close
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Native Pickers */}
       {showStart && (
@@ -159,4 +276,6 @@ export default function SelectTime() {
       )}
     </SafeAreaView>
   );
-}
+};
+
+export default SelectTime;
