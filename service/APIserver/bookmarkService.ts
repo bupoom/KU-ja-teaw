@@ -1,18 +1,20 @@
 import apiClient from "../client";
+import { changeDateformat } from "@/util/formatFucntion/makeDateCorrect";
 
 const endpoints = {
     bookmark: {
         place: "/api/users/bookmarks/places",
         guide: "/api/users/bookmarks/guides",
         autoComplete: "/api/places/autocomplete",
+        searchGuideByid: "/api/search/guides",
     },
 };
 
 // getBookmarkPlaceList && getBookmarkGuideList อยู่หน้า tabs/place หรือ guide/index
 // UnbookmarkByPlaceId && UnbookmarkByGuideId อยู่ใน component
 
-
 // ------------------------------ Place --------------------------------------
+// fetch user bookmark ทั้งหมด
 export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
     try {
         console.log("fetching User Bookmark..");
@@ -43,7 +45,7 @@ export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
         throw error;
     }
 };
-
+// เพิ่ม bookmark user ด้วย Id
 export const addPlaceToBookmark = async (
     bookmarkid: number
 ): Promise<boolean> => {
@@ -68,7 +70,7 @@ export const addPlaceToBookmark = async (
         throw error;
     }
 };
-
+// ลบ bookmark user
 export const UnbookmarkByPlaceId = async (
     bookmarkid: number
 ): Promise<boolean> => {
@@ -100,9 +102,6 @@ export const UnbookmarkByPlaceId = async (
     }
 };
 
-
-
-
 export const SearchPlaceByInput = async (
     input: string
 ): Promise<SearchPlaces[]> => {
@@ -114,11 +113,11 @@ export const SearchPlaceByInput = async (
             data: { suggestions: any[] };
         };
 
-        const bookmarks = response.data.suggestions || [];
+        const data = response.data.suggestions || [];
         const places: SearchPlaces[] = [];
 
-        for (let i = 0; i < bookmarks.length; i++) {
-            const Data = bookmarks[i];
+        for (let i = 0; i < data.length; i++) {
+            const Data = data[i];
             places.push({
                 text: Data.placePrediction.text.text,
                 placeId: Data.placePrediction.placeId,
@@ -132,12 +131,8 @@ export const SearchPlaceByInput = async (
     }
 };
 
-
-
-
-
-// ------------------------------ Place --------------------------------------
-
+// ------------------------------ Guide --------------------------------------
+// fetch user bookmark ทั้งหมด
 export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
     try {
         console.log("fetching User Bookmark..");
@@ -153,25 +148,26 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
             guides.push({
                 id: serverData.gbookmark_id,
                 title: serverData.trip_url, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
-                start_date: '', // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
-                end_date: '', // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
+                start_date: changeDateformat(serverData.start_date), // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
+                end_date: changeDateformat(serverData.end_date), // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 guide_image: serverData.trip_picture_path,
-                copies: -1,
+                copies: Number(serverData.likes),
                 owner_name: serverData.trip_owner,
-                owner_image: "", // earnแก้อยู่
+                owner_image: serverData.trip_owner_picture_path, // earnแก้อยู่
                 description: "",
                 trip_id: serverData.trip_id,
             });
         }
-        console.log("FUCK REACT NATIVE : " , guides[0])
+        console.log("FUCK REACT NATIVE : ", guides[0]);
         return guides;
     } catch (error) {
         console.error("Response data:", error);
         throw error;
     }
 };
-
-export const BookmarkByGuideId = async ( // ยังไม่เอาไปแปะที่ไหน
+// เพิ่ม bookmark user ด้วย Id
+export const BookmarkByGuideId = async (
+    // ยังไม่เอาไปแปะที่ไหน
     bookmarkid: number
 ): Promise<boolean> => {
     try {
@@ -190,7 +186,7 @@ export const BookmarkByGuideId = async ( // ยังไม่เอาไปแ
         throw error;
     }
 };
-
+// ลบ bookmark user
 export const UnbookmarkByGuideId = async (
     bookmarkid: number
 ): Promise<boolean> => {
@@ -222,4 +218,52 @@ export const UnbookmarkByGuideId = async (
     }
 };
 
+export const SearchGuideByInput = async (
+    input: string
+): Promise<GuideBox[]> => {
+    try {
+        console.log("fetching Search results by user input...");
+        const response = (await apiClient.get(
+            `${endpoints.bookmark.searchGuideByid}/${input}`
+        )) as {
+            data: any[];
+        };
 
+        const bookmarks = response.data || [];
+        const guides: GuideBox[] = [];
+
+        for (let i = 0; i < bookmarks.length; i++) {
+            const Data = bookmarks[i];
+            guides.push({
+                id: bookmarks[i],
+                title: "",
+                start_date: "",
+                end_date: "",
+                guide_image: "",
+                copies: -1,
+                owner_name: "",
+                owner_image: "",
+                description: "",
+                trip_id: -1,
+            });
+        }
+        console.log("result : ", guides);
+        return guides;
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
+
+// interface GuideBox {
+//     id: number;
+//     title: string;
+//     start_date: string;
+//     end_date: string;
+//     guide_image: string;
+//     copies: number;
+//     owner_name: string;
+//     owner_image: string;
+//     description?: string;
+//     trip_id: number;
+// }

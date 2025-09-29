@@ -1,9 +1,6 @@
 import GuideBox from "@/components/GuideBox";
 import InviteBox from "@/components/InviteBox";
 import TripBox from "@/components/TripBox";
-import {
-    mockTripInvitations
-} from "@/mock/mockDataComplete";
 import { getinvitedtrip, getrecommendedguide, getuseralltrip } from "@/service/APIserver/homepage";
 import { useRouter } from "expo-router";
 import React, { JSX, useEffect, useState } from "react";
@@ -56,7 +53,6 @@ export default function HomeScreen(): JSX.Element {
             setCurrentTrip(activeTripData || null);
         } catch (error) {
             console.error("Failed to fetch current trip:", error);
-            setError("Failed to load current trip");
         } finally {
             setLoading(prev => ({ ...prev, currentTrip: false }));
         }
@@ -69,7 +65,6 @@ export default function HomeScreen(): JSX.Element {
             setTripInvitations(data);
         } catch (error) {
             console.error("Failed to fetch trip invitations:", error);
-            setError("Failed to load trip invitations");
         } finally {
             setLoading(prev => ({ ...prev, invitations: false }));
         }
@@ -83,7 +78,6 @@ export default function HomeScreen(): JSX.Element {
             setGuidePlans(data);
         } catch (error) {
             console.error("Failed to fetch guide plans:", error);
-            setError("Failed to load guide plans");
         } finally {
             setLoading(prev => ({ ...prev, guidePlans: false }));
         }

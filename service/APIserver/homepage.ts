@@ -5,7 +5,7 @@ const endpoints = {
         recommend: "/api/trips/recommended"
     },
     user: {
-        getUserDetail: "/api/users"
+        getUserDetail: "/api/users" 
     },
     trip:{
         by_user: "/api/trips/by-user",
@@ -59,7 +59,7 @@ export const getuseralltrip = async (): Promise<TripBox[]> => {
         };
         const user_res = (await apiClient.get(endpoints.user.getUserDetail)).data as UserDetails;
 
-        console.log(response.data.trips);
+        console.log( "data : invited" , response.data);
         const trips = response.data.trips || [];
         const trip_list: TripBox[] = [];
 

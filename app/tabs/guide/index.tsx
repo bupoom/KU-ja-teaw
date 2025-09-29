@@ -79,7 +79,7 @@ const GuideBookmarkScreen = () => {
                 renderItem={({ item }) => (
                     <GuideBox 
                         guideData={item} 
-                        onRemove={() => {console.log("Remove bookmark")}}//handleRemove}
+                        onRemove={handleRemove}
                     />
                 )}
                 keyExtractor={item => item.id.toString()}
