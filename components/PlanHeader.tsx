@@ -1,5 +1,5 @@
 // components/TripHeader.tsx
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 import { mockTripDetails } from "@/mock/mockDataComplete";
@@ -7,15 +7,26 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { truncateText } from "@/util/truncateText";
 import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
+import { get_trip_detail } from "@/service/APIserver/plan_overview";
 
 function PlanHeader({ planId }: { planId: string }) {
     const router = useRouter();
     const segments = useSegments() as string[];
 
-    // หาข้อมูล trip จาก mockTripBox โดยใช้ planId
-    const tripData = mockTripDetails.find(
-        trip => trip.trip_id === parseInt(planId)
-    );
+    const [tripData, setTripData] = useState<TripDetails | null>(null);
+    const trip_id = parseInt(planId);
+
+    useEffect(() => {
+        const fetchTrip = async () => {
+            try {
+                const trip = await get_trip_detail(trip_id);
+                setTripData(trip);
+            } catch (err) {
+                console.error("Failed to fetch trip detail:", err);
+            }
+        };
+        fetchTrip();
+    }, [trip_id]);
 
     if (!tripData) {
         return null; // หรือแสดง error state

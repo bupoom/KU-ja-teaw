@@ -31,18 +31,18 @@ import {
 import PlanHeader from "@/components/PlanHeader";
 import FilePool from "@/components/plan/FilePool";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
+import { get_more_detail, get_overview_note, create_note, edit_note } from "@/service/APIserver/plan_overview";
 
 const PlanIndex = () => {
     const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
-    const user_id = 1;
     const pathName = usePathname();
-
+    const [user_id, setUserID] = useState<string>("");
     const [userRole, setUserRole] = useState<string>("");
     const [userName, setUserName] = useState<string>(""); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
     const [userUrl, setUserUrl] = useState<string>(
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop"
     ); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
-    const canEdit = userRole === "owner" || userRole === "editor"; // เอาไว้เช็คเงื่อนไข ว่าเเก้ไขได้ไหม
+    const canEdit = userRole === "Owner" || userRole === "Editor"; // เอาไว้เช็คเงื่อนไข ว่าเเก้ไขได้ไหม
 
     // Note State
     const [overviewNotes, setOverviewNotes] = useState<Note[]>([]); // Note ทั้งหมด ในหน้า Overview
@@ -79,25 +79,28 @@ const PlanIndex = () => {
 
     useEffect(() => {
         if (plan_id) {
-            // Fetch user role
-            const memberData = mockTripMembers.find(
-                member =>
-                    member.trip_id === parseInt(plan_id) &&
-                    member.id === user_id
-            );
-            if (memberData) {
-                setUserRole(memberData.role);
-                setUserName(memberData.name);
-                setUserUrl(memberData.user_image);
-            }
+            const fetch_user_detail = async () => {
+                try {
+                    const detail = await get_more_detail(parseInt(plan_id));
+                    setUserID(detail.user_id);
+                    setUserRole(detail.role);
+                    setUserName(detail.username);
+                    setUserUrl(detail.user_image);
+                } catch (err) {
+                console.error("Failed to fetch user more detail:", err);
+                }
+            };
+            fetch_user_detail();
 
-            // Fetch overview notes
-            const notes = mockNotes.filter(
-                note =>
-                    note.trip_id === parseInt(plan_id) &&
-                    note.reference_type === "overview"
-            );
-            setOverviewNotes(notes);
+            const fetch_note_detail = async() => {
+                try {
+                    const detail = await get_overview_note(parseInt(plan_id));
+                    setOverviewNotes(detail);
+                } catch (err) {
+                console.error("Failed to fetch user more detail:", err);
+                }
+            };
+            fetch_note_detail();
 
             // Fetch flights
             const flightData = mockFlights.filter(
@@ -110,21 +113,13 @@ const PlanIndex = () => {
                 file => file.trip_id == parseInt(plan_id)
             );
             setFileGroup(fileData);
-
-            console.log(`Current Path : ${pathName}`);
-            console.log(`Plan Id : ${plan_id}`);
-            console.log(`User Id : ${user_id} => Role : ${memberData?.role}`);
-            console.log(notes);
         }
     }, [plan_id]);
-
-    // useEffect(() => {
-    //   console.log("Updated overviewNotes:", overviewNotes);
-    //   console.log("Updated commentNotes:", commentNotes);
-    // }, [overviewNotes]);
+    console.log(`Current Path : ${pathName}`);
+    console.log(`Plan Id : ${plan_id}`);
+    console.log(`User Id : ${user_id} => Role : ${userRole}`);
 
     // Note management functions
-
     const userNotes = overviewNotes.find(
         note => note.refer_user_id === user_id
     ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ตรง กับ user_id เรา
@@ -135,27 +130,27 @@ const PlanIndex = () => {
 
     //  ---------- handle user action --------------
 
-    const handleAddNote = () => {
-        const newNote: Note = {
-            id: Math.max(...overviewNotes.map(n => n.id), 0) + 1,
-            trip_id: parseInt(plan_id!),
-            refer_user_id: user_id,
-            reference_type: "overview",
-            note_text: "",
-            user_name: userName ?? "You",
-            user_profile: userUrl,
-            is_editable: true,
-            created_at: new Date().toISOString(), // current timestamp
-        };
-        setOverviewNotes(prev => [...prev, newNote]);
+    const handleAddNote = async () => {
+        try {
+            const newNote = await create_note(parseInt(plan_id), user_id, userUrl, userName);
+            setOverviewNotes(prev => [...prev, newNote]);
+        } catch (err) {
+            console.error("Failed to add note:", err);
+            Alert.alert("Error", "Failed to add note");
+        }
     };
-
-    const handleSaveEdit = (noteId: number, editText: string) => {
-        setOverviewNotes(prev =>
-            prev.map(note =>
-                note.id === noteId ? { ...note, note_text: editText } : note
-            )
-        );
+    const handleSaveEdit = async (noteId: number, editText: string) => {
+        try {
+            const Edited = await edit_note(parseInt(plan_id), noteId, editText, user_id, userUrl, userName);
+            setOverviewNotes(prev =>
+                prev.map(note =>
+                    note.id === noteId ? { ...note, note_text: Edited.note_text } : note
+                )
+            );
+        } catch (err) {
+            console.error("Failed to edit note:", err);
+            Alert.alert("Error", "Failed to edit note");
+        }
     };
 
     // ---  Flight management functions   ---

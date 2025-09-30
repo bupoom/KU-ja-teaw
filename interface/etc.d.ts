@@ -4,7 +4,7 @@ interface Note {
     user_profile: string;
     user_name: string;
     is_editable: boolean;
-    refer_user_id: number;
+    refer_user_id: string;
     reference_id?: number; // บอกว่าเชื่อมกับ place หรือ event id ไหน
     reference_type?: "place" | "event" | "overview";
     created_at: string;

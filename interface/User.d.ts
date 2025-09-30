@@ -5,3 +5,10 @@ interface UserDetails {
     email: string;
     profile_picture_link: string;
 }
+
+interface MoreUserDetail {
+    user_id: string;
+    username: string;
+    role: string;
+    user_image: string;
+}

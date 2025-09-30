@@ -110,7 +110,10 @@ export const getinvitedtrip = async (): Promise<TripBox[]> => {
                 start_date: serverData.start_date,
                 end_date: serverData.end_date,
                 member_count: 0,
-                status_planning: "completed",
+                status_planning:
+                    serverData.planning_status === true
+                        ? "completed"
+                        : "planning",
                 owner_name: serverData.owner_name,
                 owner_image: serverData.owner_image,
             });

@@ -3,7 +3,7 @@ import { useState } from "react";
 
 type Props = {
   note: Note;
-  userId: number;
+  userId: string;
   onSave: (id: number, text: string) => void;
 };
 

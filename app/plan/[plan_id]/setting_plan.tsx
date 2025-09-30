@@ -19,19 +19,20 @@ import * as ImagePicker from "expo-image-picker";
 import { mockTripDetails, mockTripMembers } from "@/mock/mockDataComplete";
 import Header from "@/components/common/Header";
 import { Feather } from "@expo/vector-icons";
+import { get_more_detail } from "@/service/APIserver/plan_overview";
 
 const PlanSetting = () => {
   const router = useRouter();
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
-  const user_id = 1;
-
+  
   // State
+  const [user_id, setUserID] = useState<string>("");
   const [planningStatus, setPlanningStatus] = useState<string>("");
   const [tripBudget, setTripBudget] = useState<string>("");
   const [tripCode, setTripCode] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [userRole, setUserRole] = useState<string>("");
-  const [newOwner, setNewOwner] = useState<number>(user_id);
+  const [newOwner, setNewOwner] = useState<number>(0);
   const [otherMembers, setOtherMembers] = useState<TripMember[]>([]);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
 
@@ -44,34 +45,44 @@ const PlanSetting = () => {
   // Poster
   const [posterUri, setPosterUri] = useState<string | null>(null);
 
-  const canEdit = userRole === "owner";
+  const canEdit = userRole === "Owner";
 
   useEffect(() => {
     if (plan_id) {
-      const trip = mockTripDetails.find(
-        (plan) => plan.trip_id === parseInt(plan_id)
-      );
-      if (trip) {
-        const memberData = mockTripMembers.find(
-          (member) =>
-            member.trip_id === parseInt(plan_id) && member.id === user_id
-        );
-        if (memberData) setUserRole(memberData.role);
+      const fetch_user_detail = async () => {
+        try {
+            const detail = await get_more_detail(parseInt(plan_id));
+            setUserID(detail.user_id);
+            setUserRole(detail.role);
+        } catch (err) {
+        console.error("Failed to fetch user more detail:", err);
+        }
+      };
+      fetch_user_detail();
+      // const trip = mockTripDetails.find(
+      //   (plan) => plan.trip_id === parseInt(plan_id)
+      // );
+      // if (trip) {
+      //   const memberData = mockTripMembers.find(
+      //     (member) =>
+      //       member.trip_id === parseInt(plan_id) && member.id === user_id
+      //   );
+      //   if (memberData) setUserRole(memberData.role);
 
-        const otherMemberData = mockTripMembers.filter(
-          (member) =>
-            member.trip_id === parseInt(plan_id) && member.id !== user_id
-        );
-        setOtherMembers(otherMemberData);
+      //   const otherMemberData = mockTripMembers.filter(
+      //     (member) =>
+      //       member.trip_id === parseInt(plan_id) && member.id !== user_id
+      //   );
+      //   setOtherMembers(otherMemberData);
 
-        setPlanningStatus(trip.trip_status || "planning");
-        setTripBudget(trip.budget?.toString() || "0");
-        setTripCode(trip.trip_code);
-        setPassword(trip.trip_password);
-        setStartDate(new Date(trip.start_date));
-        setEndDate(new Date(trip.end_date));
-        setPosterUri(trip.trip_image);
-      }
+      //   setPlanningStatus(trip.trip_status || "planning");
+      //   setTripBudget(trip.budget?.toString() || "0");
+      //   setTripCode(trip.trip_code);
+      //   setPassword(trip.trip_password);
+      //   setStartDate(new Date(trip.start_date));
+      //   setEndDate(new Date(trip.end_date));
+      //   setPosterUri(trip.trip_image);
+      // }
     }
   }, [plan_id]);
 
