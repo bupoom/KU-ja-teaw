@@ -128,12 +128,22 @@ export const getinvitedtrip = async (): Promise<TripBox[]> => {
 };
 
 export const joinTrip = async (trip_id: number) => {
-    const res = await apiClient.patch(`/api/trips/${trip_id}/invite/accept`);
-    return res.data;
+    try {
+        const res = await apiClient.patch(`/api/trips/${trip_id}/invite/accept`);
+        return res.data;
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
 };
 
 // Reject Trip
 export const rejectTrip = async (trip_id: number) => {
-    const res = await apiClient.delete(`/api/trips/${trip_id}/invite/reject`);
-    return res.data;
+    try {
+        const res = await apiClient.delete(`/api/trips/${trip_id}/invite/reject`);
+        return res.data;
+    } catch (error) {
+        console.error("Response date:", error);
+        throw error;
+    }
 };
