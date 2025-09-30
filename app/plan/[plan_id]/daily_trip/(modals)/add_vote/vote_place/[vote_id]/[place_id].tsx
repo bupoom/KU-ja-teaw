@@ -15,13 +15,11 @@ import {
   View,
 } from "react-native";
 
-export default function PlaceDetail() {
-  const { plan_id, place_id, selectDate, start, end } = useLocalSearchParams<{
+const PlaceDetailVote = () => {
+  const { plan_id, vote_id, place_id } = useLocalSearchParams<{
     plan_id: string;
+    vote_id: string;
     place_id: string;
-    selectDate: string;
-    start: string;
-    end: string;
   }>();
   const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();
   const router = useRouter();
@@ -52,7 +50,7 @@ export default function PlaceDetail() {
 
   return (
     <View className="flex-1 bg-white">
-      <Header title="Add Place" onBackPress={handleBackPress} />
+      <Header title="" onBackPress={handleBackPress} />
 
       <ScrollView
         className="flex-1"
@@ -145,20 +143,16 @@ export default function PlaceDetail() {
         {/* Add Button - Fixed at bottom */}
         <View className="mx-4">
           <CustomButton
-            title="Add Place"
+            title="Add Place to Voting"
             onPress={() => {
-              console.log(`Add ${placeDetail.title} to PlaceBookmarks`);
-              router.replace({
-                pathname: `/plan/[plan_id]/daily_trip`,
-                params: {
-                  plan_id: plan_id,
-                  date: selectDate,
-                },
-              });
+                router.replace(`/plan/${plan_id}/daily_trip/(modals)/add_vote/vote_place/${vote_id}/result_vote`)
+              console.log("Add place to Voting");
             }}
           />
         </View>
       </ScrollView>
     </View>
   );
-}
+};
+
+export default PlaceDetailVote;

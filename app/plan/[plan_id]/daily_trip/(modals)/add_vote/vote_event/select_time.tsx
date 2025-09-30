@@ -16,8 +16,8 @@ import DateTimePicker, {
 
 import { mockTripDetails } from "@/mock/mockDataComplete";
 
-import NextButton from "@/components/common/NextButton";
 import Header from "@/components/common/Header";
+import CustomButton from "@/components/common/CustomButton";
 
 import { formatDate } from "@/util/formatFucntion/formatDate";
 import { extractDates } from "@/util/extractDates";
@@ -26,7 +26,7 @@ import { extractDates } from "@/util/extractDates";
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
 const hhmm = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
-const SelectTime = () => {
+const SelectTimeVoteEvent = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [dates, setDates] = useState<string[]>([]);
@@ -71,12 +71,14 @@ const SelectTime = () => {
   const goNext = () => {
     if (!isRangeValid) return;
     router.push({
-      pathname: `/plan/[plan_id]/daily_trip/add_event/select_transport`,
+      pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_event/[vote_id]/result_vote`,
       params: {
         plan_id: plan_id as string,
-        selectDate: selectedDate as string,
-        start: hhmm(start),
-        end: hhmm(end),
+        vote_id: 105 as number,
+        // date: selectedDate,
+        // start: hhmm(start),
+        // end: hhmm(end),
+        // เราน่าจะสร้างเลยตอนเลือกวันเเละเวลา
       },
     });
   };
@@ -193,7 +195,7 @@ const SelectTime = () => {
 
         {/* ===== Footer Button ===== */}
         <View className="mb-16">
-          <NextButton onPress={goNext} disabled={!isRangeValid} />
+          <CustomButton title="Create Vote" onPress={goNext} disabled={!isRangeValid} />
         </View>
       </View>
 
@@ -277,5 +279,4 @@ const SelectTime = () => {
     </SafeAreaView>
   );
 };
-
-export default SelectTime;
+export default SelectTimeVoteEvent;

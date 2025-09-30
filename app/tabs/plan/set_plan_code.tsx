@@ -19,8 +19,7 @@ export default function SetTripCode() {
         posterUri: string;
         tripCode: string;
     };
-    const { tripCode } =
-        useLocalSearchParams<Params>();
+    const { tripCode } = useLocalSearchParams<Params>();
 
     const onNext = async () => {
         if (!password.trim()) {

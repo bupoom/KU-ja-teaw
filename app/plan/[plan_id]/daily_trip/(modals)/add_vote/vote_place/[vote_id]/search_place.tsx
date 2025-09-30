@@ -19,19 +19,24 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 //  - ใส่ routing ไปยังหน้านั้นๆ
 //  - เขียนฟังชั่นค้นหาใหม่
 
-const SearchScreen: React.FC = () => {
+const SearchPlaceVote = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<PlaceBox[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   const router = useRouter();
 
-  const { plan_id, selectDate, start, end } = useLocalSearchParams<{
+  const { plan_id, vote_id } = useLocalSearchParams<{
     plan_id: string;
-    selectDate: string;
-    start: string;
-    end: string;
+    vote_id: string;
   }>();
+
+  // Handle navigation to PlaceDetails screen
+  const handlePlacePress = (place: PlaceBox) => {
+    // TODO: Navigate to PlaceDetails screen
+    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_vote/vote_place/${vote_id}/${place.place_id}`);
+    console.log("Navigate to place details:", place.place_id);
+  };
 
   // Auto focus เมื่อเข้าหน้ามาจะทำให้ page มีแป้นพิมและ cursor อยู่บน search bar ทันที
   const searchInputRef = useRef<TextInput>(null);
@@ -75,10 +80,6 @@ const SearchScreen: React.FC = () => {
     return () => clearTimeout(delayedSearch);
   }, [searchQuery]);
 
-  useEffect(() => {
-    console.log(`Search Result: ${searchResults}`);
-  }, [searchResults]);
-
   // Render empty state
   const renderEmptyState = () => (
     <View className="flex-1 justify-center items-center px-8">
@@ -100,22 +101,6 @@ const SearchScreen: React.FC = () => {
     </View>
   );
 
-  // Handle navigation to PlaceDetails screen
-  const handlePlacePress = (place: PlaceBox) => {
-    // TODO: Navigate to PlaceDetails screen
-    router.push({
-      pathname: `/plan/[plan_id]/daily_trip/(modals)/add_place/[place_id]`,
-      params: {
-        plan_id : plan_id as string,
-        place_id: String(place.place_id),
-        selectDate: selectDate,
-        start: start,
-        end: end,
-      }
-    }
-    );
-    console.log("Navigate to place details:", place.place_id);
-  };
 
   return (
     <SafeAreaView className="h-full bg-white py-14">
@@ -168,4 +153,4 @@ const SearchScreen: React.FC = () => {
   );
 };
 
-export default SearchScreen;
+export default SearchPlaceVote;

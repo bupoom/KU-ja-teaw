@@ -15,16 +15,6 @@ interface GuideDetails {
     note?: Note[];
 }
 
-// {
-//   "trip_id": 0,
-//   "title": "string",
-//   "joined_people": 0,
-//   "start_date": "2025-09-25",
-//   "end_date": "2025-09-25",
-//   "poster_image_link": "Unknown Type: string,null",
-//   "planning_status": true
-// }
-
 interface GuideBox {
     id: number;
     title: string;

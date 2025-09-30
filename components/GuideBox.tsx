@@ -26,6 +26,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
         owner_name,
         owner_image,
         description,
+        trip_id,
     } = guideData;
 
     const handleUnbookmark = () => {
@@ -77,7 +78,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
         );
     };
 
-    const handleGuideBoxPress = (): void => {
+    const handleGuideBoxPress = (id:number): void => {
         console.log(`id: ${id}`);
         router.push(`/dynamicPage/guides/${id.toString()}`);
     };
@@ -90,7 +91,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
             <TouchableOpacity
                 key={id}
                 className="bg-white rounded-xl p-3 mb-3 mr-1 ml-1 border border-gray_border"
-                onPress={handleGuideBoxPress}
+                onPress={()=>{handleGuideBoxPress(trip_id)}}
             >
                 <View className="flex-row">
                     {/* Guide Image */}
@@ -183,7 +184,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
         return (
             <TouchableOpacity
                 className="mb-6 bg-white rounded-xl shadow-sm overflow-hidden mr-4"
-                onPress={handleGuideBoxPress}
+                onPress={()=>{handleGuideBoxPress(trip_id)}}
                 activeOpacity={0.8}
                 style={{
                     width: 280,

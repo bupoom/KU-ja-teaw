@@ -10,4 +10,7 @@ export const endpoints = {
         updateUserDetails: "/api/users",
         getUserInvited: "/api/users/invited",
     },
+    place: {
+        getPlaceDetails:"/api/places",
+    },
 }

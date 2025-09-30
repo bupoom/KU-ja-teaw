@@ -1,10 +1,5 @@
 import apiClient from "../client";
-
-const endpoints = {
-    place: {
-        getPlaceDetails:"/api/places",
-    },
-};
+import { endpoints } from "../config";
 
 const parseValues = (str: string): string[] =>  {
   return str
