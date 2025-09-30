@@ -24,13 +24,13 @@ export default function CustomButton({
   // ถ้ามีส่ง classname มา → ใช้อันนั้นแทน default
   const buttonClassName =
     classname ||
-    `py-4 rounded-lg w-full items-center justify-center ${
+    `mx-5 py-4 rounded-lg items-center justify-center ${
       isDisabled ? "bg-gray-300" : isShared ? "bg-blue_button" : "bg-green_2"
     }`;
 
   const textClassName = isDisabled
-    ? "text-lg font-semibold text-gray-500"
-    : "text-lg font-semibold text-white";
+    ? "text-center text-lg font-semibold text-gray-500"
+    : "text-center text-lg font-semibold text-white";
 
   return (
     <TouchableOpacity

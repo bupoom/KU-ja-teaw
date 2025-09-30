@@ -32,73 +32,74 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
     const handleUnbookmark = () => {
         console.log("handleUnbookmark called for id:", id);
 
-        Alert.alert(
-            "Remove Bookmark",
-            `remove "${title}" from bookmarks?`,
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel",
-                    onPress: () => console.log("Cancel pressed"),
-                },
-                {
-                    text: "Remove",
-                    style: "destructive",
-                    onPress: async () => {
-                        console.log("Remove button pressed for id:", id);
+        Alert.alert("Remove Bookmark", `remove "${title}" from bookmarks?`, [
+            {
+                text: "Cancel",
+                style: "cancel",
+                onPress: () => console.log("Cancel pressed"),
+            },
+            {
+                text: "Remove",
+                style: "destructive",
+                onPress: async () => {
+                    console.log("Remove button pressed for id:", id);
 
-                        try {
-                            console.log("Calling UnbookmarkByGuideId API...");
+                    try {
+                        console.log("Calling UnbookmarkByGuideId API...");
 
-                            // ✅ แก้ไข: ใช้ await กับ async function
-                            const res = await UnbookmarkByGuideId(id);
-                            console.log("API result:", res);
+                        // ✅ แก้ไข: ใช้ await กับ async function
+                        const res = await UnbookmarkByGuideId(id);
+                        console.log("API result:", res);
 
-                            // ✅ เช็ค result ที่ถูกต้อง
-                            if (res) {
-                                if (onRemove) {
-                                    console.log("Calling onRemove function");
-                                    onRemove(id);
-                                } else {
-                                    console.log(
-                                        "onRemove function not provided"
-                                    );
-                                }
+                        // ✅ เช็ค result ที่ถูกต้อง
+                        if (res) {
+                            if (onRemove) {
+                                console.log("Calling onRemove function");
+                                onRemove(id);
+                            } else {
+                                console.log("onRemove function not provided");
                             }
-                        } catch (error) {
-                            console.error("Error removing bookmark:", error);
-                            Alert.alert(
-                                "Error",
-                                `Failed to remove "${title}" from bookmarks`
-                            );
                         }
-                    },
+                    } catch (error) {
+                        console.error("Error removing bookmark:", error);
+                        Alert.alert(
+                            "Error",
+                            `Failed to remove "${title}" from bookmarks`
+                        );
+                    }
                 },
-            ]
-        );
+            },
+        ]);
     };
 
-    const handleGuideBoxPress = (id:number): void => {
-        console.log(`id: ${id}`);
-        router.push(`/dynamicPage/guides/${id.toString()}`);
+    const handleGuideBoxPress = (id: number, isFromBookmark: number): void => {
+        router.push({
+            pathname: "/dynamicPage/guides/[guide_id]",
+            params: {
+                guide_id: id.toString(),
+                isFromBookmark: isFromBookmark.toString(),
+            },
+        });
     };
 
     const duration = calculateDuration(start_date, end_date);
 
     // Guide bookmark page layout
     if (pathname === "/tabs/guide" || pathname === "/tabs/guide/search_guide") {
+        const isFromBookmark = pathname === "/tabs/guide" ? 1 : 0;
         return (
             <TouchableOpacity
                 key={id}
                 className="bg-white rounded-xl p-3 mb-3 mr-1 ml-1 border border-gray_border"
-                onPress={()=>{handleGuideBoxPress(trip_id)}}
+                onPress={() => {
+                    handleGuideBoxPress(trip_id, isFromBookmark);
+                }}
             >
                 <View className="flex-row">
                     {/* Guide Image */}
                     <Image
                         source={
-                            guide_image &&
-                            guide_image.startsWith("https://")
+                            guide_image && guide_image.startsWith("https://")
                                 ? { uri: guide_image }
                                 : require("../assets/images/error.png")
                         }
@@ -184,7 +185,9 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
         return (
             <TouchableOpacity
                 className="mb-6 bg-white rounded-xl shadow-sm overflow-hidden mr-4"
-                onPress={()=>{handleGuideBoxPress(trip_id)}}
+                onPress={() => {
+                    handleGuideBoxPress(trip_id, 0);
+                }}
                 activeOpacity={0.8}
                 style={{
                     width: 280,

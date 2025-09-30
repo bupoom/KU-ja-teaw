@@ -1,6 +1,13 @@
 import  apiClient  from "../client";
 import { Image } from "react-native";
-import { endpoints } from "../config";
+
+export const endpoints = {
+    user: {
+        getUserDetail: "/api/users",
+        updateUserDetails: "/api/users",
+        getUserInvited: "/api/users/invited",
+    },
+}
 
 export const updateUserDetails = async (data: {
     selectedImageFile?: {

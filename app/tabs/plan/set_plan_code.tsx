@@ -4,6 +4,8 @@ import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { createNewTrips } from "@/service/APIserver/tripInitApi";
+
 
 const MAX_PWD = 20;
 
@@ -19,8 +21,8 @@ export default function SetTripCode() {
         posterUri: string;
         tripCode: string;
     };
-    const { tripCode } = useLocalSearchParams<Params>();
-
+    const { name, start, end, posterUri, tripCode } =
+        useLocalSearchParams<Params>();
     const onNext = async () => {
         if (!password.trim()) {
             Alert.alert(
@@ -30,7 +32,22 @@ export default function SetTripCode() {
             return;
         }
         setSubmitting(true);
-        router.replace(`/plan/${password}`);
+        const data = {
+            trips_name: name,
+            start_date: start,
+            end_date:   end,
+            trip_code:  tripCode,
+            trip_password:password,
+            uri: posterUri
+        }
+        const response = await createNewTrips(data) //, start , end , tripCode , password, imageFile ,)
+        if (response) {
+            Alert.alert("Success!");
+            router.replace(`/plan/${password}`);
+        } else {
+            Alert.alert("Failed to Create new trips.");
+
+        }
     };
 
     return (

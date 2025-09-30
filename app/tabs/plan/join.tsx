@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+    Alert,
     SafeAreaView,
     StatusBar,
     Text,
@@ -11,6 +12,8 @@ import {
     View,
 } from "react-native";
 import Header from "../../../components/common/Header";
+
+import { enterTrip } from "@/service/APIserver/invitation";
 
 const JoinTripScreen = () => {
     const router = useRouter();
@@ -22,11 +25,14 @@ const JoinTripScreen = () => {
         router.back();
     };
 
-    const handleNext = () => {
-        // Handle join trip logic here
-        console.log("Trip Code:", tripCode);
-        console.log("Password:", password);
-        router.push(`/plan/${password}`);
+    const handleNext = async () => {
+        const response = await enterTrip(tripCode , password)
+        console.log("res : " , response)
+        if (response) {
+            router.push(`/plan/${password}`);
+        } else {
+            Alert.alert("failed to join trips!")
+        }
     };
 
     const isNextDisabled = !tripCode.trim() || !password.trim();
@@ -64,7 +70,7 @@ const JoinTripScreen = () => {
                             onChangeText={setTripCode}
                             autoCapitalize="characters"
                             placeholderTextColor="dark_gray"
-                            maxLength={8}
+                            maxLength={15}
                         />
                         {/* <Text className="text-right text-dark_gray text-sm font-sf mt-2">
                             {tripCode.length}/8 characters

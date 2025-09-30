@@ -1,13 +1,12 @@
 // components/TripHeader.tsx
-import React, {useEffect, useState} from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import { useRouter, useSegments } from "expo-router";
-import { mockTripDetails } from "@/mock/mockDataComplete";
+import { get_trip_detail } from "@/service/APIserver/planOverview";
+import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
+import { truncateText } from "@/util/truncateText";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { truncateText } from "@/util/truncateText";
-import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
-import { get_trip_detail } from "@/service/APIserver/plan_overview";
+import { useRouter, useSegments } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 function PlanHeader({ planId }: { planId: string }) {
     const router = useRouter();

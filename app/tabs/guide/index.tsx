@@ -40,7 +40,6 @@ const GuideBookmarkScreen = () => {
         }
     };
 
-    // ✅ สร้าง handleRemove function ที่ถูกต้อง
     const handleRemove = useCallback((guideId: number) => {
         console.log("Removing guide from local state:", guideId);
         
@@ -51,7 +50,7 @@ const GuideBookmarkScreen = () => {
     }, []);
 
     const handleSearch = () => {
-        router.push("/tabs/guide/search_guide");
+        router.push({pathname: "/tabs/guide/search_guide",});
     };
 
     return (

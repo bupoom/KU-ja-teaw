@@ -4,13 +4,14 @@ import Feather from "@expo/vector-icons/Feather";
 import DateTimePicker, {
     DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { useLocalSearchParams, usePathname } from "expo-router";
 import * as DocumentPicker from "expo-document-picker"; // เปิดไฟล์จากเครื่อง
 import * as FileSystem from "expo-file-system"; // โหลดไฟล์ลงเครื่อง
 import * as IntentLauncher from "expo-intent-launcher"; // เอาไว้เปิดไฟล์
+import { useLocalSearchParams, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     Alert,
+    Image,
     Modal,
     SafeAreaView,
     ScrollView,
@@ -18,20 +19,17 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    Image,
 } from "react-native";
 
 import {
-    mockFlights,
-    mockNotes,
-    mockTripMembers,
     mockFileGroups,
+    mockFlights
 } from "@/mock/mockDataComplete";
 
 import PlanHeader from "@/components/PlanHeader";
 import FilePool from "@/components/plan/FilePool";
+import { create_note, edit_note, get_more_detail, get_overview_note } from "@/service/APIserver/planOverview";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
-import { get_more_detail, get_overview_note, create_note, edit_note } from "@/service/APIserver/plan_overview";
 
 const PlanIndex = () => {
     const { plan_id } = useLocalSearchParams<{ plan_id: string }>();

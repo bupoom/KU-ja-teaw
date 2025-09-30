@@ -1,6 +1,4 @@
-import TripDetail from "@/app/dynamicPage/trips/[trip_id]";
 import apiClient from "../client";
-import { mockUserDetails } from "@/mock/mockDataComplete";
 
 const endpoints = {
     user: {

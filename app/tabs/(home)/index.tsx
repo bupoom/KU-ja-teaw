@@ -1,8 +1,13 @@
+// component
 import GuideBox from "@/components/GuideBox";
 import InviteBox from "@/components/InviteBox";
 import TripBox from "@/components/TripBox";
-import { getinvitedtrip, getrecommendedguide, getuseralltrip, joinTrip, rejectTrip } from "@/service/APIserver/homepage";
 
+// api
+import { getinvitedtrip, getrecommendedguide, getuseralltrip } from "@/service/APIserver/homepage";
+import { joinTrip , rejectTrip } from "@/service/APIserver/invitation";
+
+// common
 import { useRouter } from "expo-router";
 import React, { JSX, useEffect, useState } from "react";
 import {

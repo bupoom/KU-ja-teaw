@@ -1,25 +1,24 @@
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-  ScrollView,
-  Image,
-  Modal,
-} from "react-native";
-import { useState, useEffect } from "react";
-import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
-  DateTimePickerEvent,
+    DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+    Alert,
+    Image,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
-import { mockTripDetails, mockTripMembers } from "@/mock/mockDataComplete";
 import Header from "@/components/common/Header";
+import { get_more_detail } from "@/service/APIserver/planOverview";
 import { Feather } from "@expo/vector-icons";
-import { get_more_detail } from "@/service/APIserver/plan_overview";
 
 const PlanSetting = () => {
   const router = useRouter();

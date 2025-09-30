@@ -93,7 +93,7 @@ const SearchGuideScreen: React.FC = () => {
 
     // Handle navigation to GuideDetails screen
     const handleGuidePress = (guide: GuideBox) => {
-        router.push(`./guides/${guide.id}`);
+        router.push({pathname: `./guides/${guide.id}`,});
         console.log("Navigate to guide details:", guide.id);
     };
 

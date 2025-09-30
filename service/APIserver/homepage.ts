@@ -23,7 +23,7 @@ export const getrecommendedguide = async (): Promise<GuideBox[]> => {
             data: { guides: any[] };
         };
 
-        console.log(response.data.guides);
+        // console.log(response.data.guides);
         const guides = response.data.guides || [];
         const guide_list: GuideBox[] = [];
 
@@ -41,8 +41,6 @@ export const getrecommendedguide = async (): Promise<GuideBox[]> => {
                 description: serverData.description,
                 trip_id: serverData.trip_id,
             });
-
-            console.log(guide_list[i]);
         }
         return guide_list;
     } catch (error) {
@@ -80,8 +78,6 @@ export const getuseralltrip = async (): Promise<TripBox[]> => {
                 owner_name: user_res.name,
                 owner_image: user_res.profile_picture_link,
             });
-
-            console.log(trip_list[i]);
         }
         return trip_list;
     } catch (error) {
@@ -117,33 +113,10 @@ export const getinvitedtrip = async (): Promise<TripBox[]> => {
                 owner_name: serverData.owner_name,
                 owner_image: serverData.owner_image,
             });
-
-            console.log(trip_list[i]);
         }
         return trip_list;
     } catch (error) {
         console.error("Response data:", error);
-        throw error;
-    }
-};
-
-export const joinTrip = async (trip_id: number) => {
-    try {
-        const res = await apiClient.patch(`/api/trips/${trip_id}/invite/accept`);
-        return res.data;
-    } catch (error) {
-        console.error("Response data:", error);
-        throw error;
-    }
-};
-
-// Reject Trip
-export const rejectTrip = async (trip_id: number) => {
-    try {
-        const res = await apiClient.delete(`/api/trips/${trip_id}/invite/reject`);
-        return res.data;
-    } catch (error) {
-        console.error("Response date:", error);
         throw error;
     }
 };

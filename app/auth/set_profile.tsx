@@ -17,13 +17,6 @@ import { updateUserDetails } from "@/service/APIserver/userService";
 import * as ImagePicker from "expo-image-picker";
 import { AuthService } from "@/service/authService";
 
-// ✅ เพิ่ม interface สำหรับรูปภาพ
-interface ImageFile {
-    uri: string;
-    type: string;
-    name: string;
-}
-
 const ProfileSetupScreen = () => {
     const router = useRouter();
     const { userName, userEmail, userPhoto } = useLocalSearchParams<{
@@ -76,8 +69,7 @@ const ProfileSetupScreen = () => {
             if (!result.canceled && result.assets[0]) {
                 const asset = result.assets[0];
                 setProfileImage(asset.uri);
-
-                // ✅ สร้าง object ก่อน
+                
                 const newImageFile = {
                     uri: asset.uri,
                     type: "image/jpeg",
