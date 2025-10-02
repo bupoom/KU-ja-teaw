@@ -6,7 +6,7 @@ const endpoints = {
     },
     search: {
         user: "/api/search/users",
-    }
+    },
 };
 
 export const get_trip_member = async (trip_id:number): Promise<TripMember[]> => {
@@ -60,10 +60,10 @@ export const delete_mem = async (trip_id:number, collab_id:number): Promise<void
     }
 };
 
-export const search_user = async (username:string): Promise<UserDetails[]> => {
+export const search_user = async (username:string, trip_id:number): Promise<UserDetails[]> => {
     try {
         console.log("searching for user");
-        const response = (await apiClient.get(`${endpoints.search.user}/${username}`)) as {data : any[]};
+        const response = (await apiClient.get(`${endpoints.search.user}/${username}/${trip_id}`)) as {data : any[]};
 
         console.log(response.data);
         const user_list : UserDetails[] = [];
@@ -78,6 +78,17 @@ export const search_user = async (username:string): Promise<UserDetails[]> => {
             });
         }
         return user_list;
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
+
+export const invite_user = async (username:string, trip_id:number): Promise<void> => {
+    try {
+        console.log("inviting user");
+        const response = (await apiClient.post(`/api/trips/${trip_id}/invite`, {name:`${username}`}));
+        console.log("user has been invited");
     } catch (error) {
         console.error("Response data:", error);
         throw error;
