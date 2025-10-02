@@ -11,7 +11,7 @@ const getRoleText = (role: string): string => {
     if (role === "owner" || role === "editor" || role === "viewer") {
         return String(role).charAt(0).toUpperCase() + String(role).slice(1);
     }
-    return "Member";
+    return "Viewer";
 };
 
 const getRoleColor = (role: string): string => {

@@ -19,30 +19,49 @@ import Header from "@/components/common/Header";
 import CustomButton from "@/components/common/CustomButton";
 import { formatDate } from "@/util/formatFucntion/formatDate";
 
+// ----------------- Types -----------------
+interface PlaceVoting {
+  pit_id: number;
+  place_id: number;
+  address: string;
+  place_picture_url: string;
+  rating?: number;
+  title: string;
+  review_count?: number;
+  voting_count: number;
+  is_voted: boolean;
+  is_most_voted: boolean;
+}
+
+interface VoteData {
+  vote_id: number;
+  date: string;
+  time_start: string;
+  time_end: string;
+  places_voting: PlaceVoting[];
+}
+
+// ----------------- Component -----------------
 const ResultVotePlace = () => {
   const router = useRouter();
   const { plan_id, vote_id } = useLocalSearchParams<{
     plan_id: string;
     vote_id: string;
   }>();
-  const user_id = 1; // Current user ID
+  const user_id = 1; // mock current user
 
-  // State variables
-  const [date, setDate] = useState<string>("");
-  const [timeBegin, setTimeBegin] = useState<string>("");
-  const [timeEnd, setTimeEnd] = useState<string>("");
-  const [voteDetail, setVoteDetail] = useState<ActivityVotePlace>();
-  const [votes, setVotes] = useState<Vote[]>([]);
+  const [voteData, setVoteData] = useState<VoteData | null>(null);
   const [role, setRole] = useState<string>("viewer");
-  const [numMember, setNumMember] = useState<Number>(1);
+  const [numMember, setNumMember] = useState<number>(1);
 
   const canClose = role === "owner";
   const canEdit = role === "owner" || role === "editor";
 
+  // ----------------- Handlers -----------------
   const handleBack = () => {
     router.replace({
       pathname: `/plan/[plan_id]/daily_trip`,
-      params: { plan_id, date },
+      params: { plan_id, date: voteData?.date },
     });
   };
 
@@ -52,89 +71,99 @@ const ResultVotePlace = () => {
     );
   };
 
-  const handleCloseVote = () => {
-    const mostVoted = getMostVotedOptions();
-    console.log("🎯 mostVoted options:", mostVoted);
+  // ✅ Toggle Vote (เลือกได้แค่ 1 อัน)
+  const handleToggleVote = (placeId: number) => {
+    setVoteData((prev) => {
+      if (!prev) return prev;
 
-    if (mostVoted.length === 0) {
-      router.replace({
-        pathname: `/plan/[plan_id]/daily_trip`,
-        params: { plan_id, date },
-      });
-    } else if (mostVoted.length === 1) {
-      router.replace({
-        pathname: `/plan/[plan_id]/daily_trip`,
-        params: { plan_id, date },
-      });
-    } else {
-      console.log("📦 sending params:", {
-        plan_id,
-        vote_id,
-        date,
-        time_begin: timeBegin,
-        time_end: timeEnd,
-        options: JSON.stringify(mostVoted),
+      const previouslyVoted = prev.places_voting.find((p) => p.is_voted);
+
+      const updatedPlaces = prev.places_voting.map((p) => {
+        if (p.place_id === placeId) {
+          // กดซ้ำ = ยกเลิก
+          if (p.is_voted) {
+            return { ...p, is_voted: false, voting_count: p.voting_count - 1 };
+          }
+          // เลือกใหม่
+          return { ...p, is_voted: true, voting_count: p.voting_count + 1 };
+        }
+
+        // อันที่เคยโหวตไว้ → ลบโหวต
+        if (previouslyVoted?.place_id === p.place_id) {
+          return { ...p, is_voted: false, voting_count: p.voting_count - 1 };
+        }
+
+        return p;
       });
 
-      router.push({
-        pathname: `/plan/[plan_id]/daily_trip/(modals)/add_vote/vote_place/[vote_id]/owner_decision`,
-        params: {
-          plan_id,
-          vote_id,
-          date,
-          time_begin: timeBegin,
-          time_end: timeEnd,
-          options: JSON.stringify(mostVoted),
-        },
-      });
-    }
+      // หา max votes ใหม่
+      const maxVotes = Math.max(...updatedPlaces.map((p) => p.voting_count), 0);
+
+      const finalPlaces = updatedPlaces.map((p) => ({
+        ...p,
+        is_most_voted: p.voting_count === maxVotes && maxVotes > 0,
+      }));
+
+      return { ...prev, places_voting: finalPlaces };
+    });
   };
 
+  // ✅ Delete Place
   const handleDelete = (placeId: number) => {
-    Alert.alert("Delete Place", "You want to Delete This Place From Voting", [
+    Alert.alert("Delete Place", "Do you want to remove this place?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
         onPress: () => {
-          setVoteDetail((prev) =>
+          setVoteData((prev) =>
             prev
               ? {
                   ...prev,
-                  options: prev.options.filter((o) => o.place_id !== placeId),
+                  places_voting: prev.places_voting.filter(
+                    (p) => p.place_id !== placeId
+                  ),
                 }
               : prev
           );
-          setVotes((prev) => prev.filter((v) => v.place_id !== placeId));
         },
       },
     ]);
   };
 
-  const handleToggleVote = (placeId: number) => {
-    const existingVote = votes.find(
-      (v) => v.user_id === user_id && v.place_id === placeId
+  // ✅ Close Vote
+  const handleCloseVote = () => {
+    if (!voteData) return;
+
+    const maxVotes = Math.max(
+      ...voteData.places_voting.map((p) => p.voting_count)
+    );
+    const mostVoted = voteData.places_voting.filter(
+      (p) => p.voting_count === maxVotes
     );
 
-    if (existingVote) {
-      setVotes((prev) => prev.filter((v) => v !== existingVote));
+    if (mostVoted.length === 1) {
+      router.replace({
+        pathname: `/plan/[plan_id]/daily_trip`,
+        params: { plan_id, date: voteData.date },
+      });
     } else {
-      setVotes((prev) => [
-        ...prev.filter((v) => v.user_id !== user_id),
-        {
-          id: Date.now(),
-          user_id,
-          activity_id: parseInt(vote_id),
-          vote_type: "place",
-          place_id: placeId,
-          username: "You",
-          trip_id: parseInt(plan_id),
+      router.push({
+        pathname: `/plan/[plan_id]/daily_trip/(modals)/add_vote/vote_place/[vote_id]/owner_decision`,
+        params: {
+          plan_id,
+          vote_id,
+          date: voteData.date,
+          time_begin: voteData.time_start,
+          time_end: voteData.time_end,
+          options: JSON.stringify(mostVoted.map((p) => p.place_id)),
         },
-      ]);
+      });
     }
   };
 
-  const fetchVoteDetail = (vote_id: string, plan_id: string) => {
+  // ----------------- Fetch Data -----------------
+  useEffect(() => {
     const result = mockActivityVotePlaces.find(
       (vote) =>
         vote.id === parseInt(vote_id) && vote.trip_id === parseInt(plan_id)
@@ -151,50 +180,47 @@ const ResultVotePlace = () => {
     setNumMember(member?.group_members ?? 1);
 
     if (result) {
-      setVoteDetail(result);
-      setVotes(result.votes);
-      setDate(result.date);
-      setTimeBegin(result.time_begin);
-      setTimeEnd(result.time_end);
-    }
-  };
+      const voteCounts: { [key: number]: number } = {};
+      result.votes.forEach((vote) => {
+        if (vote.place_id) {
+          voteCounts[vote.place_id] = (voteCounts[vote.place_id] || 0) + 1;
+        }
+      });
 
-  // Get vote counts
-  const getVoteCounts = () => {
-    const voteCounts: { [key: number]: number } = {};
-    votes.forEach((vote) => {
-      if (vote.place_id) {
-        voteCounts[vote.place_id] = (voteCounts[vote.place_id] || 0) + 1;
-      }
-    });
-    return voteCounts;
-  };
+      const maxVotes = Math.max(...Object.values(voteCounts), 0);
 
-  const getUserVote = () => {
-    return votes.find((vote) => vote.user_id === user_id)?.place_id;
-  };
+      const mappedPlaces: PlaceVoting[] = result.options.map((opt) => {
+        const count = voteCounts[opt.place_id] || 0;
+        const isVoted = result.votes.some(
+          (v) => v.user_id === user_id && v.place_id === opt.place_id
+        );
+        return {
+          pit_id: opt.place_id,
+          place_id: opt.place_id,
+          address: opt.location,
+          place_picture_url:
+            opt.place_image ||
+            "https://via.placeholder.com/150?text=No+Image",
+          rating: opt.rating,
+          title: opt.title,
+          review_count: opt.review_count,
+          voting_count: count,
+          is_voted: isVoted,
+          is_most_voted: count === maxVotes && maxVotes > 0,
+        };
+      });
 
-  const getMostVotedOptions = (): number[] => {
-    const voteCounts = getVoteCounts();
-    let maxVotes = 0;
-    Object.values(voteCounts).forEach((count) => {
-      if (count > maxVotes) maxVotes = count;
-    });
-    return Object.entries(voteCounts)
-      .filter(([_, count]) => count === maxVotes)
-      .map(([placeId]) => parseInt(placeId));
-  };
-
-  useEffect(() => {
-    if (vote_id && plan_id) {
-      fetchVoteDetail(vote_id, plan_id);
+      setVoteData({
+        vote_id: result.id,
+        date: result.date,
+        time_start: result.time_begin,
+        time_end: result.time_end,
+        places_voting: mappedPlaces,
+      });
     }
   }, [plan_id, vote_id]);
 
-  const voteCounts = getVoteCounts();
-  const userVote = getUserVote();
-  const mostVotedOptions = getMostVotedOptions();
-
+  // ----------------- Render -----------------
   return (
     <ScrollView className="flex-1 bg-white">
       <Header title="Vote Place" onBackPress={handleBack} />
@@ -207,21 +233,23 @@ const ResultVotePlace = () => {
               <Text className="text-gray-500 text-lg font-medium mb-2">
                 Start
               </Text>
-              <Text className="text-black text-2xl font-bold">{timeBegin}</Text>
+              <Text className="text-black text-2xl font-bold">
+                {voteData?.time_start}
+              </Text>
             </View>
-
             <View className="flex-col items-center justify-center">
               <Feather name="clock" size={30} color="#6B7280" />
               <Text className="text-black text-base font-bold mt-2">
-                {formatDate(date)}
+                {voteData?.date ? formatDate(voteData.date) : ""}
               </Text>
             </View>
-
             <View className="items-center">
               <Text className="text-gray-500 text-lg font-medium mb-2">
                 End
               </Text>
-              <Text className="text-black text-2xl font-bold">{timeEnd}</Text>
+              <Text className="text-black text-2xl font-bold">
+                {voteData?.time_end}
+              </Text>
             </View>
           </View>
         </View>
@@ -239,81 +267,79 @@ const ResultVotePlace = () => {
 
         {/* Voting Results */}
         <Text className="text-right text-sm text-gray-500 mb-4">
-          Voting: {votes.length}/{String(numMember)}
+          Voting:{" "}
+          {voteData?.places_voting.reduce(
+            (acc, p) => acc + p.voting_count,
+            0
+          ) ?? 0}
+          /{String(numMember)}
         </Text>
 
         {/* Place Options */}
-        {voteDetail?.options?.map((opt) => {
-          const count = voteCounts[opt.place_id] || 0;
-          const isUserSelected = userVote === opt.place_id;
-          const isMostVoted = mostVotedOptions.includes(opt.place_id);
-
-          return (
-            <TouchableOpacity
-              key={opt.place_id}
-              activeOpacity={0.7}
-              onPress={() => handleToggleVote(opt.place_id)}
-              className={`flex-row p-3 bg-white rounded-lg mb-3 border ${
-                isUserSelected ? "border-green_2" : "border-gray_border"
-              }`}
-            >
-              <Image
-                source={{ uri: opt.place_image }}
-                className="w-20 h-20 rounded-lg"
-                resizeMode="cover"
-              />
-
-              <View className="flex-1 ml-3 justify-center">
+        {voteData?.places_voting.map((opt) => (
+          <TouchableOpacity
+            key={opt.place_id}
+            activeOpacity={0.7}
+            onPress={() => handleToggleVote(opt.place_id)}
+            className={`flex-row p-3 bg-white rounded-lg mb-3 border ${
+              opt.is_voted ? "border-green_2" : "border-gray_border"
+            }`}
+          >
+            <Image
+              source={{ uri: opt.place_picture_url }}
+              className="w-20 h-20 rounded-lg"
+              resizeMode="cover"
+            />
+            <View className="flex-1 ml-3 justify-center">
+              <Text
+                className="text-base font-semibold text-black mb-1"
+                numberOfLines={1}
+              >
+                {opt.title}
+              </Text>
+              <View className="flex-row items-center">
+                <Feather name="map-pin" size={14} color="#666" />
                 <Text
-                  className="text-base font-semibold text-black mb-1"
+                  className="text-xs text-dark_gray ml-2 font-semibold"
                   numberOfLines={1}
                 >
-                  {opt.title}
+                  {opt.address}
                 </Text>
-                <View className="flex-row items-center">
-                  <Feather name="map-pin" size={14} color="#666" />
-                  <Text
-                    className="text-xs text-dark_gray ml-2 font-semibold"
-                    numberOfLines={1}
-                  >
-                    {opt.location}
-                  </Text>
-                </View>
-                <View className="flex-row items-center mt-1">
-                  <Ionicons name="star" size={15} color="#FFD700" />
-                  <Text className="text-xs text-dark_gray ml-2 font-sf-semibold">
-                    {opt.rating} ({opt.review_count} Reviews)
-                  </Text>
-                </View>
               </View>
+              <View className="flex-row items-center mt-1">
+                <Ionicons name="star" size={15} color="#FFD700" />
+                <Text className="text-xs text-dark_gray ml-2 font-sf-semibold">
+                  {opt.rating} ({opt.review_count} Reviews)
+                </Text>
+              </View>
+            </View>
 
-              <View className="items-end justify-between">
-                <Text
-                  className={`px-2 py-1 text-xs rounded-full font-medium ${
-                    isMostVoted
-                      ? "bg-green_2 text-white"
-                      : "bg-gray-100 text-gray-700"
-                  }`}
+            <View className="items-end justify-between">
+              <Text
+                className={`px-2 py-1 text-xs rounded-full font-medium ${
+                  opt.is_most_voted
+                    ? "bg-green_2 text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {opt.voting_count} Votes
+              </Text>
+
+              {canEdit && (
+                <TouchableOpacity
+                  className="mt-4"
+                  onPress={() => handleDelete(opt.place_id)}
                 >
-                  {count} Votes
-                </Text>
-
-                {canEdit && (
-                  <TouchableOpacity
-                    className="mt-4"
-                    onPress={() => handleDelete(opt.place_id)}
-                  >
-                    <MaterialIcons
-                      name="delete-outline"
-                      size={24}
-                      color="black"
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+                  <MaterialIcons
+                    name="delete-outline"
+                    size={24}
+                    color="black"
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </TouchableOpacity>
+        ))}
 
         {canClose && (
           <CustomButton title="Close Vote" onPress={handleCloseVote} />
