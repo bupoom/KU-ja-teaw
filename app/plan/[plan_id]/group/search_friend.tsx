@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocalSearchParams } from "expo-router";
 import {
   SafeAreaView,
   View,
@@ -11,9 +12,12 @@ import {
 } from "react-native";
 import { Feather, Entypo } from "@expo/vector-icons";
 import { mockUserDetails } from "@/mock/mockDataComplete";
-import { search_user } from "@/service/APIserver/groupPage";
+import { search_user, invite_user } from "@/service/APIserver/groupPage";
+import { Alert } from "react-native";
 
 const SearchFriend = () => {
+  const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<UserDetails[]>([]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +42,7 @@ const SearchFriend = () => {
 
     setLoading(true);
     try {
-      const res = await search_user(query);
+      const res = await search_user(query, parseInt(plan_id));
       setResults(res);
     } catch (err) {
       console.error("Search failed:", err);
@@ -58,10 +62,17 @@ const SearchFriend = () => {
     setHasSearched(false);
   };
 
-  const handleAdd = (id: string) => {
-    console.log("✅ Add friend id:", id);
-    // TODO: logic เพิ่มเพื่อน
+  const handleAdd = async (username: string) => {
+    try {
+      await invite_user(username, parseInt(plan_id!));
+      console.log(`✅ Success to add username: ${username} to trip`);
+      Alert.alert("Success", `${username} has been invited to the trip`);
+    } catch (err) {
+      console.error("❌ Failed to invite:", err);
+      Alert.alert("Error", "Failed to invite user");
+    }
   };
+
 
   // empty state
   const renderEmptyState = () => (
