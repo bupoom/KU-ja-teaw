@@ -18,8 +18,10 @@ import {
 
 import Header from "@/components/common/Header";
 import { get_more_detail } from "@/service/APIserver/userService";
-import { get_trip_detail } from "@/service/APIserver/tripApi";
+import { get_trip_detail  , leaveTrips} from "@/service/APIserver/tripApi";
 import { Feather } from "@expo/vector-icons";
+
+
 
 const PlanSetting = () => {
     const router = useRouter();
@@ -144,6 +146,11 @@ const PlanSetting = () => {
                         style: "destructive",
                         onPress: () => {
                             console.log(`Leaving trip: ${plan_id}`);
+                            try {
+                                leaveTrips(parseInt(plan_id))
+                            } catch (err) {
+                                Alert.alert("fetch to leave trip. please try again later")
+                            }
                             router.replace("/tabs/(home)");
                         },
                     },

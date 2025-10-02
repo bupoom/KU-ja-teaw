@@ -133,3 +133,17 @@ export const get_trip_detail = async (trip_id:number): Promise<TripDetails> => {
         throw error;
     }
 };
+
+export const leaveTrips = async (trip_id: number , collab_id : number): Promise<void> => {
+    try {
+        const response = await apiClient.delete(
+            `/api/trips/${trip_id}/leave`, {
+                "collab_id" : collab_id
+            }
+        );
+        console.log("Leave trip response:", response.data);
+    } catch (error) {
+        console.error("Leave trip error:", error);
+        throw error;
+    }
+};
