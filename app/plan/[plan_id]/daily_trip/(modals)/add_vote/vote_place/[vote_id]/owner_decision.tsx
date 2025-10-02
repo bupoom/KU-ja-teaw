@@ -9,6 +9,7 @@ import { formatDate } from "@/util/formatFucntion/formatDate";
 import { mockActivityVotePlaces } from "@/mock/mockDataComplete";
 
 const OwnerDecision = () => {
+  // หน้านี้เเค่ fetch ข้อมูงของ pit_id ที้ส่งมากับ option ก็น่าจะได้เเละน่ะ 
   const router = useRouter();
   const { plan_id, vote_id, date, time_begin, time_end, options } =
     useLocalSearchParams<{
