@@ -7,7 +7,7 @@ import DateTimePicker, {
 import * as DocumentPicker from "expo-document-picker"; // เปิดไฟล์จากเครื่อง
 import * as FileSystem from "expo-file-system"; // โหลดไฟล์ลงเครื่อง
 import * as IntentLauncher from "expo-intent-launcher"; // เอาไว้เปิดไฟล์
-import { useLocalSearchParams, usePathname } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     Alert,
@@ -21,14 +21,15 @@ import {
     View,
 } from "react-native";
 
-import {
-    mockFileGroups,
-    mockFlights
-} from "@/mock/mockDataComplete";
+import { mockFileGroups, mockFlights } from "@/mock/mockDataComplete";
 
 import PlanHeader from "@/components/PlanHeader";
 import FilePool from "@/components/plan/FilePool";
-import { create_note, edit_note, get_overview_note } from "@/service/APIserver/Note";
+import {
+    create_note,
+    edit_note,
+    get_overview_note,
+} from "@/service/APIserver/Note";
 import { get_more_detail } from "@/service/APIserver/userService";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
 
@@ -75,6 +76,15 @@ const PlanIndex = () => {
     const [isFileModalVisible, setIsFileModalVisible] = useState(false); // Modal สำหรับ upload file
     const [selectedFile, setSelectedFile] = useState<any | null>(null); // เก็บไฟล์ที่เลือกไว้ก่อน confirm
 
+    const fetch_note_detail = async () => {
+        try {
+            const detail = await get_overview_note(parseInt(plan_id));
+            setOverviewNotes(detail);
+        } catch (err) {
+            console.error("Failed to fetch user more detail:", err);
+        }
+    };
+
     useEffect(() => {
         if (plan_id) {
             const fetch_user_detail = async () => {
@@ -85,19 +95,11 @@ const PlanIndex = () => {
                     setUserName(detail.username);
                     setUserUrl(detail.user_image);
                 } catch (err) {
-                console.error("Failed to fetch user more detail:", err);
+                    console.error("Failed to fetch user more detail:", err);
                 }
             };
             fetch_user_detail();
 
-            const fetch_note_detail = async() => {
-                try {
-                    const detail = await get_overview_note(parseInt(plan_id));
-                    setOverviewNotes(detail);
-                } catch (err) {
-                console.error("Failed to fetch user more detail:", err);
-                }
-            };
             fetch_note_detail();
 
             // Fetch flights
@@ -119,27 +121,38 @@ const PlanIndex = () => {
         note => note.refer_user_id === user_id
     ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ตรง กับ user_id เรา
 
-    const commentNotes = overviewNotes.filter(
-        note => note.refer_user_id !== user_id
-    ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ไม่ตรง กับ user_id เรา
-
     //  ---------- handle user action --------------
 
     const handleAddNote = async () => {
         try {
-            const newNote = await create_note(parseInt(plan_id), user_id, userUrl, userName);
+            const newNote = await create_note(
+                parseInt(plan_id),
+                user_id,
+                userUrl,
+                userName
+            );
             setOverviewNotes(prev => [...prev, newNote]);
         } catch (err) {
             console.error("Failed to add note:", err);
             Alert.alert("Error", "Failed to add note");
         }
     };
+
     const handleSaveEdit = async (noteId: number, editText: string) => {
         try {
-            const Edited = await edit_note(parseInt(plan_id), noteId, editText, user_id, userUrl, userName);
+            const Edited = await edit_note(
+                parseInt(plan_id),
+                noteId,
+                editText,
+                user_id,
+                userUrl,
+                userName
+            );
             setOverviewNotes(prev =>
                 prev.map(note =>
-                    note.id === noteId ? { ...note, note_text: Edited.note_text } : note
+                    note.id === noteId
+                        ? { ...note, note_text: Edited.note_text }
+                        : note
                 )
             );
         } catch (err) {
@@ -615,7 +628,11 @@ const PlanIndex = () => {
                             All Notes
                         </Text>
                         <TouchableOpacity
-                            onPress={() => setIsModalVisible(false)}
+                            onPress={() => {
+                                fetch_note_detail()
+                                setIsModalVisible(false)}
+                            }
+                                
                             className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center absolute top-4 right-4"
                         >
                             <Feather name="x" size={20} color="#6B7280" />
@@ -624,13 +641,13 @@ const PlanIndex = () => {
 
                     <View>
                         <Text className="text-xs font-semibold text-gray-400 flex-1 justify-end mr-2">
-                            ( {commentNotes.length} notes )
+                            ( {overviewNotes.length} notes )
                         </Text>
                     </View>
 
                     {/* Modal Content */}
                     <ScrollView className="flex-1 p-4">
-                        {commentNotes.map(note => (
+                        {overviewNotes.map(note => (
                             <NoteItem
                                 key={note.id}
                                 note={note}
