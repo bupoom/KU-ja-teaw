@@ -46,7 +46,6 @@ const PlanIndex = () => {
     // Note State
     const [overviewNotes, setOverviewNotes] = useState<Note[]>([]); // Note ทั้งหมด ในหน้า Overview
     const [isModalVisible, setIsModalVisible] = useState(false); // เอาไว้ โชว์ Note ของคนอื่นที่ไม่ใช่ของเรา
-    const [currentNoteId, setCurrentNoteId] = useState<number>(-1);
 
     // Flight State
     const [flights, setFlights] = useState<Flight[]>([]); // เก็บ Flights ของเราเอาไว้
