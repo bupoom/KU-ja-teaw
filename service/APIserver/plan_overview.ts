@@ -3,9 +3,6 @@ import apiClient from "../client";
 import { mockUserDetails } from "@/mock/mockDataComplete";
 
 const endpoints = {
-    user: {
-        getmoredetail: "/api/users/more_detail",
-    },
     trip: {
         by_trip: "/api/trips/by-trip",
     },
@@ -33,27 +30,6 @@ export const get_trip_detail = async (trip_id:number): Promise<TripDetails> => {
             trip_password: "k",
         };
         return trip
-    } catch (error) {
-        console.error("Response data:", error);
-        throw error;
-    }
-};
-
-export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> => {
-    try {
-        console.log("fetching user more detail");
-        const response = (await apiClient.get(`${endpoints.user.getmoredetail}/${trip_id}`)) as {
-            data: any;
-        };
-
-        console.log(response.data);
-        const detail : MoreUserDetail = {
-            user_id: response.data.user_id,
-            username: response.data.username,
-            role: response.data.role,
-            user_image: response.data.user_image
-        }
-        return detail;
     } catch (error) {
         console.error("Response data:", error);
         throw error;

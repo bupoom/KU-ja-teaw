@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Feather, Entypo } from "@expo/vector-icons";
 import { mockUserDetails } from "@/mock/mockDataComplete";
+import { search_user } from "@/service/APIserver/groupPage";
 
 const SearchFriend = () => {
   const [query, setQuery] = useState("");
@@ -25,36 +26,30 @@ const SearchFriend = () => {
     searchInputRef.current?.focus();
   }, []);
 
-  // ฟังก์ชัน search mock data
-  const searchWithQuery = (q: string): UserDetails[] => {
-    if (!q.trim()) return [];
-    return mockUserDetails.filter(
-      (u) =>
-        u.name.toLowerCase().includes(q.toLowerCase()) ||
-        u.email.toLowerCase().includes(q.toLowerCase())
-    );
-  };
-
   // debounce search 500ms
   useEffect(() => {
-    const delayed = setTimeout(() => {
-      if (!query.trim()) {
-        setResults([]);
-        setHasSearched(false);
-        setLoading(false);
-        return;
-      }
+  const delayed = setTimeout(async () => {
+    if (!query.trim()) {
+      setResults([]);
+      setHasSearched(false);
+      setLoading(false);
+      return;
+    }
 
-      setLoading(true);
-      setTimeout(() => {
-        const res = searchWithQuery(query);
-        setResults(res);
-        setHasSearched(true);
-        setLoading(false);
-      }, 300);
-    }, 500);
+    setLoading(true);
+    try {
+      const res = await search_user(query);
+      setResults(res);
+    } catch (err) {
+      console.error("Search failed:", err);
+      setResults([]);
+    } finally {
+      setHasSearched(true);
+      setLoading(false);
+    }
+  }, 500);
 
-    return () => clearTimeout(delayed);
+  return () => clearTimeout(delayed);
   }, [query]);
 
   const handleClear = () => {
@@ -63,7 +58,7 @@ const SearchFriend = () => {
     setHasSearched(false);
   };
 
-  const handleAdd = (id: number) => {
+  const handleAdd = (id: string) => {
     console.log("✅ Add friend id:", id);
     // TODO: logic เพิ่มเพื่อน
   };
@@ -152,7 +147,7 @@ const SearchFriend = () => {
             {/* Add button */}
             <TouchableOpacity
               className="px-4 py-2 bg-green_2 rounded-lg"
-              onPress={() => handleAdd(parseInt(item.user_id))}
+              onPress={() => handleAdd(item.name)}
             >
               <Text className="text-white text-sm font-semibold">Add</Text>
             </TouchableOpacity>

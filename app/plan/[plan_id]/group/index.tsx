@@ -13,19 +13,19 @@ import {
 } from "react-native";
 import { useEffect, useState, useCallback } from "react";
 import { Feather } from "@expo/vector-icons";
-
-import { mockTripMembers } from "@/mock/mockDataComplete";
+import { get_more_detail } from "@/service/APIserver/userService";
+import { get_trip_member, edit_role, delete_mem } from "@/service/APIserver/groupPage";
 
 const GroupIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
   const router = useRouter();
 
   const [members, setMembers] = useState<TripMember[]>([]);
-  const [role, setRole] = useState<string>("viewer");
+  const [role, setRole] = useState<string>("");
   const [refreshing, setRefreshing] = useState(false);
+  const [user_id, setUserID] = useState<string>("");
 
-  const user_id = 1; // current user
-  const isOwner = role === "owner";
+  const isOwner = role === "Owner";
 
   // refresh
   const onRefresh = useCallback(() => {
@@ -34,20 +34,33 @@ const GroupIndex = () => {
   }, []);
 
   useEffect(() => {
-    const member = mockTripMembers.filter(
-      (user) => user.trip_id === parseInt(plan_id)
-    );
-    setMembers(member);
+    const fetch_user_detail = async () => {
+      try {
+          const detail = await get_more_detail(parseInt(plan_id));
+          setUserID(detail.user_id);
+          setRole(detail.role);
+      } catch (err) {
+      console.error("Failed to fetch user more detail", err);
+      }
+    };
+    fetch_user_detail();
 
-    const user = member.find((mem) => mem.id === user_id);
-    setRole(user?.role ?? "viewer");
+    const fetch_member_detail = async () => {
+      try {
+        const detail = await get_trip_member(parseInt(plan_id));
+        setMembers(detail);
+      } catch (err) {
+      console.error("Failed to fetch members detail", err);
+      }
+    };
+    fetch_member_detail();
   }, [plan_id]);
 
   // handle role toggle with confirm
   const handleToggleRole = (id: number, currentRole: string) => {
     if (!isOwner) return;
 
-    const newRole = currentRole === "viewer" ? "editor" : "viewer";
+    const newRole = currentRole === "Viewer" ? "Editor" : "Viewer";
 
     Alert.alert(
       "Change Role",
@@ -58,9 +71,17 @@ const GroupIndex = () => {
           text: "Confirm",
           style: "default",
           onPress: () => {
+            const editrole = async() => {
+              try {
+                await edit_role(parseInt(plan_id), id, newRole);
+              } catch (err) {
+              console.error("Failed to edit member role", err);
+              }
+            };
+            editrole();
             setMembers((prev) =>
               prev.map((m) => {
-                if (m.id === id && m.role !== "owner") {
+                if (m.id === id && m.role !== "Owner") {
                   return { ...m, role: newRole };
                 }
                 return m;
@@ -85,6 +106,14 @@ const GroupIndex = () => {
           text: "Delete",
           style: "destructive",
           onPress: () => {
+            const deletejaa = async() => {
+              try {
+                await delete_mem(parseInt(plan_id), id);
+              } catch (err) {
+              console.error(`Failed to delete ${name}`, err);
+              }
+            };
+            deletejaa();
             setMembers((prev) => prev.filter((m) => m.id !== id));
           },
         },
@@ -148,9 +177,9 @@ const GroupIndex = () => {
 
               {/* Role Tag */}
               <RoleTag
-                role={mem.role as "owner" | "editor" | "viewer"}
+                role={mem.role as "Owner" | "Editor" | "Viewer"}
                 onPress={
-                  isOwner && mem.role !== "owner"
+                  isOwner && mem.role !== "Owner"
                     ? () => handleToggleRole(mem.id, mem.role)
                     : undefined
                 }
@@ -160,8 +189,8 @@ const GroupIndex = () => {
 
             {/* Right box */}
             {isOwner ? (
-              mem.role !== "owner" ? (
-                // ปุ่มลบ (สำหรับ member ที่ไม่ใช่ owner)
+              mem.role !== "Owner" ? (
+                // ปุ่มลบ (สำหรับ member ที่ไม่ใช่ Owner)
                 <TouchableOpacity
                   className="ml-2 w-12 bg-white border border-gray_border rounded-xl justify-center items-center"
                   onPress={() => handleDelete(mem.id, mem.name)}
@@ -169,7 +198,7 @@ const GroupIndex = () => {
                   <Feather name="trash-2" size={22} color="black" />
                 </TouchableOpacity>
               ) : (
-                // กล่องเปล่า (ถ้าเป็น owner)
+                // กล่องเปล่า (ถ้าเป็น Owner)
                 <View className="ml-2 w-12 bg-white border border-gray_border rounded-xl" />
               )
             ) : null}

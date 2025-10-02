@@ -9,6 +9,7 @@ export const endpoints = {
         getUserDetail: "/api/users",
         updateUserDetails: "/api/users",
         getUserInvited: "/api/users/invited",
+        getmoredetail: "/api/users/more_detail",
     },
     place: {
         getPlaceDetails:"/api/places",

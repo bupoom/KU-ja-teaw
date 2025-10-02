@@ -31,7 +31,8 @@ import {
 import PlanHeader from "@/components/PlanHeader";
 import FilePool from "@/components/plan/FilePool";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
-import { get_more_detail, get_overview_note, create_note, edit_note } from "@/service/APIserver/plan_overview";
+import { get_overview_note, create_note, edit_note } from "@/service/APIserver/plan_overview";
+import { get_more_detail } from "@/service/APIserver/userService";
 
 const PlanIndex = () => {
     const { plan_id } = useLocalSearchParams<{ plan_id: string }>();

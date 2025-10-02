@@ -64,3 +64,24 @@ export const getUserDetailById = async (userId?: string) => {
         throw error;
     }
 };
+
+export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> => {
+    try {
+        console.log("fetching user more detail");
+        const response = (await apiClient.get(`${endpoints.user.getmoredetail}/${trip_id}`)) as {
+            data: any;
+        };
+
+        console.log(response.data);
+        const detail : MoreUserDetail = {
+            user_id: response.data.user_id,
+            username: response.data.username,
+            role: response.data.role,
+            user_image: response.data.user_image
+        }
+        return detail;
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
