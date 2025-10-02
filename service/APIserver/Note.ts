@@ -1,11 +1,5 @@
 import apiClient from "../client";
 
-const endpoints = {
-    trip: {
-        by_trip: "/api/trips/by-trip",
-    },
-};
-
 export const get_overview_note = async (trip_id: number): Promise<Note[]> => {
     try {
         console.log("fetching overview notes");
