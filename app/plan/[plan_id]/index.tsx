@@ -46,6 +46,7 @@ const PlanIndex = () => {
     // Note State
     const [overviewNotes, setOverviewNotes] = useState<Note[]>([]); // Note ทั้งหมด ในหน้า Overview
     const [isModalVisible, setIsModalVisible] = useState(false); // เอาไว้ โชว์ Note ของคนอื่นที่ไม่ใช่ของเรา
+    const [currentNoteId, setCurrentNoteId] = useState<number>(-1);
 
     // Flight State
     const [flights, setFlights] = useState<Flight[]>([]); // เก็บ Flights ของเราเอาไว้
@@ -76,32 +77,61 @@ const PlanIndex = () => {
     const [isFileModalVisible, setIsFileModalVisible] = useState(false); // Modal สำหรับ upload file
     const [selectedFile, setSelectedFile] = useState<any | null>(null); // เก็บไฟล์ที่เลือกไว้ก่อน confirm
 
-    const fetch_note_detail = async () => {
+    const userNotes = overviewNotes.find(
+        note => note.refer_user_id === user_id
+    ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ตรง กับ user_id เรา
+
+    const fetch_note_detail = async (userId: string) => {
         try {
             const detail = await get_overview_note(parseInt(plan_id));
+            console.log(detail);
             setOverviewNotes(detail);
+
+            // หา userNote หลังจากได้ userId มาแล้ว
+            const userNote = detail.find(note => note.refer_user_id === userId);
+
+            // ถ้าไม่มี note ของ user นี้ ให้สร้างใหม่
+            if (!userNote) {
+                try {
+                    const NEWNOTE = await create_note(
+                        parseInt(plan_id),
+                        "Start your note Journey here!!"
+                    );
+                    setOverviewNotes(prev => [...prev, NEWNOTE]);
+                } catch (err) {
+                    console.error("Failed to create note:", err);
+                    Alert.alert("Error", "Failed to create new note");
+                }
+            }
+        } catch (err) {
+            console.error("Failed to fetch note detail:", err);
+        }
+    };
+
+    const fetch_user_detail = async () => {
+        try {
+            const detail = await get_more_detail(parseInt(plan_id));
+            setUserID(detail.user_id);
+            setUserRole(detail.role);
+            setUserName(detail.username);
+            setUserUrl(detail.user_image);
+            return detail.user_id; // return userId เพื่อใช้ต่อ
         } catch (err) {
             console.error("Failed to fetch user more detail:", err);
+            return null;
+        }
+    };
+
+    const fetchUserAndNote = async () => {
+        const userId = await fetch_user_detail();
+        if (userId) {
+            await fetch_note_detail(userId);
         }
     };
 
     useEffect(() => {
         if (plan_id) {
-            const fetch_user_detail = async () => {
-                try {
-                    const detail = await get_more_detail(parseInt(plan_id));
-                    setUserID(detail.user_id);
-                    setUserRole(detail.role);
-                    setUserName(detail.username);
-                    setUserUrl(detail.user_image);
-                } catch (err) {
-                    console.error("Failed to fetch user more detail:", err);
-                }
-            };
-            fetch_user_detail();
-
-            fetch_note_detail();
-
+            fetchUserAndNote();
             // Fetch flights
             const flightData = mockFlights.filter(
                 flight => flight.trip_id == parseInt(plan_id)
@@ -116,37 +146,14 @@ const PlanIndex = () => {
         }
     }, [plan_id]);
 
-    // Note management functions
-    const userNotes = overviewNotes.find(
-        note => note.refer_user_id === user_id
-    ); // กรองจาก Note Overview ทั้งหมด ให้เอาเเค่ ตรง กับ user_id เรา
-
     //  ---------- handle user action --------------
-
-    const handleAddNote = async () => {
-        try {
-            const newNote = await create_note(
-                parseInt(plan_id),
-                user_id,
-                userUrl,
-                userName
-            );
-            setOverviewNotes(prev => [...prev, newNote]);
-        } catch (err) {
-            console.error("Failed to add note:", err);
-            Alert.alert("Error", "Failed to add note");
-        }
-    };
 
     const handleSaveEdit = async (noteId: number, editText: string) => {
         try {
             const Edited = await edit_note(
                 parseInt(plan_id),
                 noteId,
-                editText,
-                user_id,
-                userUrl,
-                userName
+                editText
             );
             setOverviewNotes(prev =>
                 prev.map(note =>
@@ -443,39 +450,12 @@ const PlanIndex = () => {
 
                     {/* Notes Content */}
                     <View className="pb-4">
-                        {userNotes ? (
+                        {userNotes && (
                             <NoteItem
                                 note={userNotes}
                                 userId={user_id}
                                 onSave={handleSaveEdit}
                             />
-                        ) : (
-                            <View className="flex-col justify-center">
-                                <View className="bg-white rounded-lg p-4 border border-gray_border">
-                                    <View className="flex-row items-start">
-                                        <Image
-                                            source={{ uri: userUrl }}
-                                            className="w-8 h-8 rounded-full mr-3"
-                                        />
-                                        <View className="flex-1">
-                                            <Text className="font-medium text-gray-900 text-sm mb-1">
-                                                {userName}
-                                            </Text>
-                                            <Text className="text-gray-500 text-sm">
-                                                You have no notes yet
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </View>
-                                <TouchableOpacity
-                                    onPress={handleAddNote}
-                                    className="bg-green_2 rounded-lg py-3 mt-3"
-                                >
-                                    <Text className="text-white text-center font-medium">
-                                        Add Note
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
                         )}
                     </View>
                 </View>
@@ -629,10 +609,9 @@ const PlanIndex = () => {
                         </Text>
                         <TouchableOpacity
                             onPress={() => {
-                                fetch_note_detail()
-                                setIsModalVisible(false)}
-                            }
-                                
+                                fetch_note_detail(user_id);
+                                setIsModalVisible(false);
+                            }}
                             className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center absolute top-4 right-4"
                         >
                             <Feather name="x" size={20} color="#6B7280" />

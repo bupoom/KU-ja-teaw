@@ -30,21 +30,22 @@ export const get_overview_note = async (trip_id: number): Promise<Note[]> => {
     }
 };
 
-export const create_note = async (trip_id: number, user_id:string, user_image:string, username:string): Promise<Note> => {
+export const create_note = async (trip_id: number, note :string): Promise<Note> => {
     try {
         console.log("adding overview note");
-        const response = (await apiClient.post(`/api/trips/${trip_id}/notes`, {"note":"init"})) as {
+        const response = (await apiClient.post(`/api/trips/${trip_id}/notes`, {"note":note})) as {
             data: any;
         };
         console.log(response.data);
+        const _ = response.data
         const new_note : Note = {
-            id: response.data.nit_id,
-            note_text: response.data.note,
-            user_profile: user_image,
-            user_name: username,
-            is_editable: true,
+            id: _.nit_id,
+            note_text: _.note,
+            user_profile: _.profile_picture_path,
+            user_name: _.name,
+            is_editable: (_.is_editable === 1 )? true : false,
             created_at: response.data.note_time,
-            refer_user_id: user_id,
+            refer_user_id: _.user_id,
             trip_id: trip_id,
         }
         return new_note;
@@ -54,21 +55,22 @@ export const create_note = async (trip_id: number, user_id:string, user_image:st
     }
 };
 
-export const edit_note = async (trip_id: number, nit_id:number, editText:string, user_id:string, user_image:string, username:string): Promise<Note> => {
+export const edit_note = async (trip_id: number, nit_id:number, editText:string): Promise<Note> => {
     try {
         console.log("fetching overview notes");
         const response = (await apiClient.patch(`/api/trips/${trip_id}/${nit_id}/notes`, {"note":`${editText}`})) as {
             data: any;
         };
         console.log(response.data);
+        const data = response.data
         const new_note : Note = {
-            id: response.data.nit_id,
-            note_text: response.data.note,
-            user_profile: user_image,
-            user_name: username,
-            is_editable: true,
-            created_at: response.data.note_time,
-            refer_user_id: user_id,
+            id: data.nit_id,
+            note_text: data.note,
+            user_profile: data.profile_picture_path,
+            user_name: data.name,
+            is_editable: data.is_editable === 1 ? true : false,
+            created_at: data.note_time,
+            refer_user_id: data.user_id,
             trip_id: trip_id,
         }
         return new_note;
