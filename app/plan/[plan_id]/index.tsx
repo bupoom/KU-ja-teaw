@@ -28,12 +28,12 @@ import {
 
 import PlanHeader from "@/components/PlanHeader";
 import FilePool from "@/components/plan/FilePool";
-import { create_note, edit_note, get_more_detail, get_overview_note } from "@/service/APIserver/planOverview";
+import { create_note, edit_note, get_overview_note } from "@/service/APIserver/Note";
+import { get_more_detail } from "@/service/APIserver/userService";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
 
 const PlanIndex = () => {
     const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
-    const pathName = usePathname();
     const [user_id, setUserID] = useState<string>("");
     const [userRole, setUserRole] = useState<string>("");
     const [userName, setUserName] = useState<string>(""); // อันนี้ คือ เราได้ค่ามาตอนเเรกเลย
@@ -113,9 +113,6 @@ const PlanIndex = () => {
             setFileGroup(fileData);
         }
     }, [plan_id]);
-    console.log(`Current Path : ${pathName}`);
-    console.log(`Plan Id : ${plan_id}`);
-    console.log(`User Id : ${user_id} => Role : ${userRole}`);
 
     // Note management functions
     const userNotes = overviewNotes.find(
@@ -392,7 +389,7 @@ const PlanIndex = () => {
             file_name: selectedFile.name,
             file_size_mb: selectedFile.size / (1024 * 1024), // แปลง byte → MB
             file_url: selectedFile.uri,
-            uploaded_by: "You",
+            uploaded_by: "ไ",
             uploaded_date: new Date().toISOString(),
             trip_id: parseInt(plan_id!),
         };

@@ -19,6 +19,8 @@ import {
     View,
 } from "react-native";
 
+import { fetchAllTrips } from "@/service/APIserver/tripApi";
+
 interface TripSection {
     title: string;
     trips: TripBox[];
@@ -30,13 +32,6 @@ const ProfileScreen: React.FC = () => {
     const [tripSections, setTripSections] = useState<TripSection[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [refreshing, setRefreshing] = useState<boolean>(false)
-
-    const fetchTripsData = async (): Promise<TripBox[]> => {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        return mockTripBoxes;
-    };
-
     const organizeTrips = (trips: TripBox[]): TripSection[] => {
         const nowTrips: TripBox[] = [];
         const comingTrips: TripBox[] = [];
@@ -74,7 +69,7 @@ const ProfileScreen: React.FC = () => {
         try {
             const [userData, tripsData] = await Promise.all([
                 AuthService.getUserData(),
-                fetchTripsData(),
+                fetchAllTrips(),
             ]);
             setUser(userData);
             setTripSections(organizeTrips(tripsData));
@@ -102,7 +97,7 @@ const ProfileScreen: React.FC = () => {
 
     // Custom navigation function for END trips
     const handleEndTripPress = (trip_id: number) => {
-        router.push(`/dynamicPage/trips/${trip_id}`);
+        router.push(`/plan/${trip_id.toString()}`);
     };
 
     const handleSeeAllEndTrips = () => {

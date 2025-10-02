@@ -6,8 +6,11 @@ export const endpoints = {
         getUserDetail: "/api/users",
         updateUserDetails: "/api/users",
         getUserInvited: "/api/users/invited",
+        getmoredetail: "/api/users/more_detail",
     },
 }
+
+// user details กับ user details by id คือ function เดียวกัน
 
 export const updateUserDetails = async (data: {
     selectedImageFile?: {
@@ -68,6 +71,28 @@ export const getUserDetailById = async (userId?: string) => {
         return response;
     } catch (error) {
         console.error("Get user details error:", error);
+        throw error;
+    }
+};
+
+export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> => {
+    try {
+        console.log("fetching user more detail");
+        const response = (await apiClient.get(`${endpoints.user.getmoredetail}/${trip_id}`)) as {
+            data: any;
+        };
+
+        console.log(response.data);
+        const detail : MoreUserDetail = {
+            user_id: response.data.user_id,
+            username: response.data.username,
+            role: response.data.role,
+            user_image: response.data.user_image,
+            trip_code : response.data.trip_code
+        }
+        return detail;
+    } catch (error) {
+        console.error("Response data:", error);
         throw error;
     }
 };

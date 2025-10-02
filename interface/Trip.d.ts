@@ -25,8 +25,8 @@ interface TripBox {
     end_date: string;
     member_count: number;
     status_planning: "planning" | "completed";
-    owner_name: string;
-    owner_image: string;
+    owner_name: string | "self";
+    owner_image: string | "self";
 } // เเสดงในหน้า home เเละ user profile ใช้สำหรับ invite ด้วย
 
 interface CreateTrip {

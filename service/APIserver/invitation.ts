@@ -1,4 +1,3 @@
-import { statusCodes } from "@react-native-google-signin/google-signin";
 import apiClient from "../client";
 
 export const joinTrip = async (trip_id: number) => {
@@ -29,7 +28,7 @@ export const rejectTrip = async (trip_id: number) => {
 export const enterTrip = async (
     trip_code: string,
     trip_pass: string
-): Promise<boolean> => {
+): Promise<string> => {
     try {
         const res = await apiClient.post(
             `/api/trips/invite/self`, 
@@ -40,9 +39,14 @@ export const enterTrip = async (
         ) as {
             data : {
                 message : string
+                trip_id : number
             }
         };
-        return res.data.message === "join successfully";
+        if (res.data.message === "join successfully") {
+            return res.data.trip_id.toString() 
+        } else {
+            return "errorCode";
+        }
     } catch (error) {
         console.error("Response error:", error);
         throw error;

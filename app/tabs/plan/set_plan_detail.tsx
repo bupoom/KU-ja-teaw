@@ -40,9 +40,7 @@ export default function SetPlanDetail() {
     const onPickStart = (_: DateTimePickerEvent, d?: Date) => {
         setShowStart(false);
         if (!d) return;
-        // 1) เซ็ต startDate ก่อน
         setStartDate(d);
-        // 2) ถ้า endDate มีค่า → เช็ค logic
         if (endDate && d > endDate) {
             Alert.alert(
                 "Invalid date range",
@@ -53,9 +51,7 @@ export default function SetPlanDetail() {
     const onPickEnd = (_: DateTimePickerEvent, d?: Date) => {
         setShowEnd(false);
         if (!d) return;
-        // 1) เซ็ต endDate ก่อน
         setEndDate(d);
-        // 2) ถ้า startDate มีค่า → เช็ค logic
         if (startDate && startDate > d) {
             Alert.alert(
                 "Invalid date range",
@@ -89,11 +85,6 @@ export default function SetPlanDetail() {
         return null;
     };
 
-    // ฟังก์ชันสำหรับเช็คว่าควร disable button หรือไม่
-    const isNextDisabled = () => {
-        return validate() !== null;
-    };
-
     const onNext = () => {
         const validationError = validate();
         if (validationError) {
@@ -107,7 +98,7 @@ export default function SetPlanDetail() {
                 name: name ?? "",
                 start: startDate?.toISOString() ?? "",
                 end: endDate?.toISOString() ?? "",
-                posterUri: posterUri ?? "", // ส่ง URI ของรูป (string) ก็พอ แล้วหน้า set_plan_code เอา URI นั้นไปส่งต่อให้ backend ทีเดียว
+                posterUri: posterUri ?? "",
                 tripCode: generateTripCode(),
             },
         });
@@ -250,7 +241,7 @@ export default function SetPlanDetail() {
                 </View>
 
                 {/* Next Button */}
-                <NextButton onPress={onNext} disabled={isNextDisabled()} />
+                <NextButton onPress={onNext} disabled={validate() !== null} />
             </View>
         </View>
     );

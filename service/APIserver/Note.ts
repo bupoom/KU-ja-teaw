@@ -1,61 +1,9 @@
 import apiClient from "../client";
 
 const endpoints = {
-    user: {
-        getmoredetail: "/api/users/more_detail",
-    },
     trip: {
         by_trip: "/api/trips/by-trip",
     },
-};
-
-export const get_trip_detail = async (trip_id:number): Promise<TripDetails> => {
-    try {
-        console.log("fetching overview trip detail");
-        const response = (await apiClient.get(`${endpoints.trip.by_trip}/${trip_id}`)) as {data: any };
-
-        console.log(response.data);
-        const trip: TripDetails = {
-            trip_id: response.data.trip_id,
-            trip_name: response.data.title,
-            trip_image: response.data.poster_image_link,
-            start_date: response.data.start_date,
-            end_date: response.data.end_date,
-            copies: response.data.total_copied,
-            owner_name: "k",
-            owner_email: "k",
-            owner_image: "k",
-            group_members: response.data.joined_people,
-            trip_status: response.data.planning_status,
-            trip_code: "k",
-            trip_password: "k",
-        };
-        return trip
-    } catch (error) {
-        console.error("Response data:", error);
-        throw error;
-    }
-};
-
-export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> => {
-    try {
-        console.log("fetching user more detail");
-        const response = (await apiClient.get(`${endpoints.user.getmoredetail}/${trip_id}`)) as {
-            data: any;
-        };
-
-        console.log(response.data);
-        const detail : MoreUserDetail = {
-            user_id: response.data.user_id,
-            username: response.data.username,
-            role: response.data.role,
-            user_image: response.data.user_image
-        }
-        return detail;
-    } catch (error) {
-        console.error("Response data:", error);
-        throw error;
-    }
 };
 
 export const get_overview_note = async (trip_id: number): Promise<Note[]> => {

@@ -11,4 +11,5 @@ interface MoreUserDetail {
     username: string;
     role: string;
     user_image: string;
+    trip_code: string;
 }

@@ -12,7 +12,6 @@ import {
     View,
 } from "react-native";
 import Header from "../../../components/common/Header";
-
 import { enterTrip } from "@/service/APIserver/invitation";
 
 const JoinTripScreen = () => {
@@ -29,9 +28,11 @@ const JoinTripScreen = () => {
         const response = await enterTrip(tripCode , password)
         console.log("res : " , response)
         if (response) {
-            router.push(`/plan/${password}`);
+            router.push(`/plan/${response.toString()}`);
+        } else if (response === "errorCode") {
+            Alert.alert("Worng code or password.")
         } else {
-            Alert.alert("failed to join trips!")
+            return
         }
     };
 
@@ -72,9 +73,6 @@ const JoinTripScreen = () => {
                             placeholderTextColor="dark_gray"
                             maxLength={15}
                         />
-                        {/* <Text className="text-right text-dark_gray text-sm font-sf mt-2">
-                            {tripCode.length}/8 characters
-                        </Text> */}
                     </View>
 
                     {/* Password Input */}
@@ -113,9 +111,6 @@ const JoinTripScreen = () => {
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                        {/* <Text className="text-right text-dark_gray text-sm font-sf mt-2">
-                            {password.length}/20 characters
-                        </Text> */}
                     </View>
                 </View>
 

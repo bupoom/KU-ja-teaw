@@ -4,7 +4,7 @@ import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { createNewTrips } from "@/service/APIserver/tripInitApi";
+import { createNewTrips } from "@/service/APIserver/tripApi";
 
 
 const MAX_PWD = 20;
@@ -40,10 +40,10 @@ export default function SetTripCode() {
             trip_password:password,
             uri: posterUri
         }
-        const response = await createNewTrips(data) //, start , end , tripCode , password, imageFile ,)
-        if (response) {
+        const response = await createNewTrips(data)
+        if (response.trip_id) {
             Alert.alert("Success!");
-            router.replace(`/plan/${password}`);
+            router.replace(`/plan/${response.trip_id}`);
         } else {
             Alert.alert("Failed to Create new trips.");
 

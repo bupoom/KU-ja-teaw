@@ -1,5 +1,5 @@
 // components/TripHeader.tsx
-import { get_trip_detail } from "@/service/APIserver/planOverview";
+import { get_trip_detail } from "@/service/APIserver/tripApi";
 import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 import { truncateText } from "@/util/truncateText";
 import Feather from "@expo/vector-icons/Feather";
@@ -18,6 +18,7 @@ function PlanHeader({ planId }: { planId: string }) {
     useEffect(() => {
         const fetchTrip = async () => {
             try {
+                console.log("Call plan header with planid : " , trip_id)
                 const trip = await get_trip_detail(trip_id);
                 setTripData(trip);
             } catch (err) {
@@ -32,6 +33,7 @@ function PlanHeader({ planId }: { planId: string }) {
     }
 
     const handelHome = () => {
+        router.dismissAll()
         router.replace("/tabs/(home)");
     };
 
