@@ -66,7 +66,13 @@ export default function GuideDetail() {
     };
 
     const copyGuide = () => { // แก้ด้วย 
-        console.log("Copy Guide");
+        router.push({
+            pathname: '/dynamicPage/guides/set_plan_details',
+            params: {
+                guide_id: guide_id
+            }
+        });
+        
     };
 
     const toggleDescription = () => {
@@ -200,7 +206,7 @@ export default function GuideDetail() {
                                 />
                                 <View className="flex-col justify-center ml-4">
                                     <Text className="text-xl font-bold text-black">
-                                        {truncateText(guideDetail.title, 25)}
+                                        {truncateText(guideDetail.title, 20)}
                                     </Text>
                                     <Text className="text-sm text-gray-500">
                                         Owner: {guideDetail.owner_name}

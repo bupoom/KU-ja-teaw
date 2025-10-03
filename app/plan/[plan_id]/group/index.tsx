@@ -13,8 +13,13 @@ import {
 } from "react-native";
 import { useEffect, useState, useCallback } from "react";
 import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { get_more_detail } from "@/service/APIserver/userService";
-import { get_trip_member, edit_role, delete_mem } from "@/service/APIserver/groupPage";
+import {
+  get_trip_member,
+  edit_role,
+  delete_mem,
+} from "@/service/APIserver/groupPage";
 
 const GroupIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
@@ -30,29 +35,32 @@ const GroupIndex = () => {
   // refresh
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    fetch_user_detail();
+    fetch_member_detail();
     setTimeout(() => setRefreshing(false), 800);
   }, []);
 
-  useEffect(() => {
-    const fetch_user_detail = async () => {
-      try {
-          const detail = await get_more_detail(parseInt(plan_id));
-          setUserID(detail.user_id);
-          setRole(detail.role);
-      } catch (err) {
+  const fetch_user_detail = async () => {
+    try {
+      const detail = await get_more_detail(parseInt(plan_id));
+      setUserID(detail.user_id);
+      setRole(detail.role);
+    } catch (err) {
       console.error("Failed to fetch user more detail", err);
-      }
-    };
-    fetch_user_detail();
+    }
+  };
 
-    const fetch_member_detail = async () => {
-      try {
-        const detail = await get_trip_member(parseInt(plan_id));
-        setMembers(detail);
-      } catch (err) {
+  const fetch_member_detail = async () => {
+    try {
+      const detail = await get_trip_member(parseInt(plan_id));
+      setMembers(detail);
+    } catch (err) {
       console.error("Failed to fetch members detail", err);
-      }
-    };
+    }
+  };
+
+  useEffect(() => {
+    fetch_user_detail();
     fetch_member_detail();
   }, [plan_id]);
 
@@ -71,11 +79,11 @@ const GroupIndex = () => {
           text: "Confirm",
           style: "default",
           onPress: () => {
-            const editrole = async() => {
+            const editrole = async () => {
               try {
                 await edit_role(parseInt(plan_id), id, newRole);
               } catch (err) {
-              console.error("Failed to edit member role", err);
+                console.error("Failed to edit member role", err);
               }
             };
             editrole();
@@ -106,11 +114,11 @@ const GroupIndex = () => {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            const deletejaa = async() => {
+            const deletejaa = async () => {
               try {
                 await delete_mem(parseInt(plan_id), id);
               } catch (err) {
-              console.error(`Failed to delete ${name}`, err);
+                console.error(`Failed to delete ${name}`, err);
               }
             };
             deletejaa();
@@ -126,7 +134,7 @@ const GroupIndex = () => {
       <PlanHeader planId={plan_id} />
 
       {/* Search Bar (เฉพาะ Owner เท่านั้นที่เห็น) */}
-      {isOwner && (
+      {/* {isOwner && (
         <TouchableOpacity
           className="flex-row items-center mx-4 mt-4 mb-4 px-4 py-3 bg-gray-50 rounded-full border border-gray_border"
           activeOpacity={0.7}
@@ -139,17 +147,17 @@ const GroupIndex = () => {
             Search other users...
           </Text>
         </TouchableOpacity>
-      )}
+      )} */}
 
       {/* Members List */}
       <ScrollView
-        className={`flex-1 px-4`}
+        className={`flex-1 px-4 mt-4`}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {members.map((mem) => (
-          <View key={mem.id} className="flex-row items-stretch mb-2 mt-2">
+          <View key={mem.id} className="flex-row items-stretch mb-4">
             {/* Left box: User Info */}
             <View className="flex-1 flex-row items-center bg-white border border-gray_border rounded-xl p-4">
               {/* Avatar */}
@@ -205,6 +213,18 @@ const GroupIndex = () => {
           </View>
         ))}
       </ScrollView>
+      {isOwner && (
+        <TouchableOpacity
+          className="absolute bottom-12 right-4 flex-row items-center px-5 py-3 rounded-full bg-green_2"
+          activeOpacity={0.8}
+          onPress={() => {
+            router.push(`/plan/${plan_id}/group/search_friend`);
+          }}
+        >
+          <Ionicons name="search" size={22} color="white" />
+          <Text className="text-white font-medium ml-2">Add Member</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };

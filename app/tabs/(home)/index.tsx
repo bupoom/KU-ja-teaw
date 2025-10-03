@@ -26,7 +26,7 @@ import {
 
 export default function HomeScreen(): JSX.Element {
     // State Management
-    const [currentTrip, setCurrentTrip] = useState<TripBox | null>(null);
+    const [currentTrip, setCurrentTrip] = useState<TripBox[]>([]);
     const [tripInvitations, setTripInvitations] = useState<TripBox[]>([]);
     const [guidePlans, setGuidePlans] = useState<GuideBox[]>([]);
     const [loading, setLoading] = useState<LoadingState>({
@@ -48,7 +48,7 @@ export default function HomeScreen(): JSX.Element {
             const today = new Date().toISOString().split("T")[0]; // วันนี้ในรูปแบบ YYYY-MM-DD
 
             // หา trip ที่วันนี้อยู่ในช่วงระหว่าง start_date และ end_date
-            const activeTripData = data.find(trip => {
+            const activeTripData = data.filter(trip => {
                 const startDate = trip.start_date;
                 const endDate = trip.end_date;
 
@@ -56,7 +56,7 @@ export default function HomeScreen(): JSX.Element {
                 return today >= startDate && today <= endDate;
             });
 
-            setCurrentTrip(activeTripData || null);
+            setCurrentTrip(activeTripData);
         } catch (error) {
             console.error("Failed to fetch current trip:", error);
         } finally {
@@ -190,8 +190,18 @@ export default function HomeScreen(): JSX.Element {
 
                     {loading.currentTrip ? (
                         renderLoadingSpinner()
-                    ) : currentTrip ? (
-                        <TripBox tripData={currentTrip} />
+                    ) : currentTrip.length > 0 ? (
+                        <FlatList
+                            data={currentTrip}
+                            keyExtractor={item => item.trip_id.toString()}
+                            renderItem={({ item }) => (
+                                <View className="mt-3">
+                                    <TripBox tripData={item} />
+                                </View>
+                            )}
+                            showsVerticalScrollIndicator={false}
+                            scrollEnabled={false}
+                        />
                     ) : (
                         <View className="bg-gray-50 rounded-xl p-4 items-center">
                             <Text className="text-gray-500">

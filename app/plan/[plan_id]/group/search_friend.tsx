@@ -88,7 +88,7 @@ const SearchFriend = () => {
         <View className="items-center">
           <Text className="text-gray-500 text-lg mb-2">Start searching</Text>
           <Text className="text-gray-400 text-center">
-            Enter your friend’s name or email
+            Enter your friend’s name
           </Text>
         </View>
       )}
@@ -111,7 +111,7 @@ const SearchFriend = () => {
           <TextInput
             ref={searchInputRef}
             className="text-black ml-3 flex-1"
-            placeholder="Search..."
+            placeholder="Search to Add Member"
             value={query}
             onChangeText={setQuery}
             autoCorrect={false}
