@@ -84,6 +84,7 @@ export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> 
 
         console.log(response.data);
         const detail : MoreUserDetail = {
+            collab_id: response.data.collab_id,
             user_id: response.data.user_id,
             username: response.data.username,
             role: response.data.role,
