@@ -41,7 +41,7 @@ export default function PlaceDetail() {
     if (!placeDetail) {
         return (
             <View className="flex-1 bg-white">
-                <Header title="Place Details" />
+                <Header title="" />
                 <View className="flex-1 justify-center items-center">
                     <Text>Loading...</Text>
                 </View>
@@ -181,7 +181,7 @@ export default function PlaceDetail() {
                     title="Add Place Bookmark"
                     onPress={() => {
                         addPlaceToBookmark(placeDetail.id);
-                        router.dismissAll()
+                        router.back()
                     }}
                 />}
             </ScrollView>

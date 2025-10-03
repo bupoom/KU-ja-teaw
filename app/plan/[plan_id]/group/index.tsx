@@ -14,7 +14,11 @@ import {
 import { useEffect, useState, useCallback } from "react";
 import { Feather } from "@expo/vector-icons";
 import { get_more_detail } from "@/service/APIserver/userService";
-import { get_trip_member, edit_role, delete_mem } from "@/service/APIserver/groupPage";
+import {
+  get_trip_member,
+  edit_role,
+  delete_mem,
+} from "@/service/APIserver/groupPage";
 
 const GroupIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
@@ -30,29 +34,32 @@ const GroupIndex = () => {
   // refresh
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    fetch_user_detail();
+    fetch_member_detail();
     setTimeout(() => setRefreshing(false), 800);
   }, []);
 
-  useEffect(() => {
-    const fetch_user_detail = async () => {
-      try {
-          const detail = await get_more_detail(parseInt(plan_id));
-          setUserID(detail.user_id);
-          setRole(detail.role);
-      } catch (err) {
+  const fetch_user_detail = async () => {
+    try {
+      const detail = await get_more_detail(parseInt(plan_id));
+      setUserID(detail.user_id);
+      setRole(detail.role);
+    } catch (err) {
       console.error("Failed to fetch user more detail", err);
-      }
-    };
-    fetch_user_detail();
+    }
+  };
 
-    const fetch_member_detail = async () => {
-      try {
-        const detail = await get_trip_member(parseInt(plan_id));
-        setMembers(detail);
-      } catch (err) {
+  const fetch_member_detail = async () => {
+    try {
+      const detail = await get_trip_member(parseInt(plan_id));
+      setMembers(detail);
+    } catch (err) {
       console.error("Failed to fetch members detail", err);
-      }
-    };
+    }
+  };
+
+  useEffect(() => {
+    fetch_user_detail();
     fetch_member_detail();
   }, [plan_id]);
 
@@ -71,11 +78,11 @@ const GroupIndex = () => {
           text: "Confirm",
           style: "default",
           onPress: () => {
-            const editrole = async() => {
+            const editrole = async () => {
               try {
                 await edit_role(parseInt(plan_id), id, newRole);
               } catch (err) {
-              console.error("Failed to edit member role", err);
+                console.error("Failed to edit member role", err);
               }
             };
             editrole();
@@ -106,11 +113,11 @@ const GroupIndex = () => {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            const deletejaa = async() => {
+            const deletejaa = async () => {
               try {
                 await delete_mem(parseInt(plan_id), id);
               } catch (err) {
-              console.error(`Failed to delete ${name}`, err);
+                console.error(`Failed to delete ${name}`, err);
               }
             };
             deletejaa();
