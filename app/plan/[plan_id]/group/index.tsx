@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useEffect, useState, useCallback } from "react";
 import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { get_more_detail } from "@/service/APIserver/userService";
 import {
   get_trip_member,
@@ -133,7 +134,7 @@ const GroupIndex = () => {
       <PlanHeader planId={plan_id} />
 
       {/* Search Bar (เฉพาะ Owner เท่านั้นที่เห็น) */}
-      {isOwner && (
+      {/* {isOwner && (
         <TouchableOpacity
           className="flex-row items-center mx-4 mt-4 mb-4 px-4 py-3 bg-gray-50 rounded-full border border-gray_border"
           activeOpacity={0.7}
@@ -146,17 +147,17 @@ const GroupIndex = () => {
             Search other users...
           </Text>
         </TouchableOpacity>
-      )}
+      )} */}
 
       {/* Members List */}
       <ScrollView
-        className={`flex-1 px-4`}
+        className={`flex-1 px-4 mt-4`}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {members.map((mem) => (
-          <View key={mem.id} className="flex-row items-stretch mb-2 mt-2">
+          <View key={mem.id} className="flex-row items-stretch mb-4">
             {/* Left box: User Info */}
             <View className="flex-1 flex-row items-center bg-white border border-gray_border rounded-xl p-4">
               {/* Avatar */}
@@ -212,6 +213,18 @@ const GroupIndex = () => {
           </View>
         ))}
       </ScrollView>
+      {isOwner && (
+        <TouchableOpacity
+          className="absolute bottom-12 right-4 flex-row items-center px-5 py-3 rounded-full bg-green_2"
+          activeOpacity={0.8}
+          onPress={() => {
+            router.push(`/plan/${plan_id}/group/search_friend`);
+          }}
+        >
+          <Ionicons name="search" size={22} color="white" />
+          <Text className="text-white font-medium ml-2">Add Member</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };

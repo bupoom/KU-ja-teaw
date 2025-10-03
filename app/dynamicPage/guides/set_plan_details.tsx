@@ -8,6 +8,7 @@ import DateTimePicker, {
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 import {
   Alert,
   Image,
@@ -20,7 +21,8 @@ import {
 
 const MAX_NAME = 20;
 
-export default function SetPlanDetail() {
+export default function SetPlanDetailCopy() {
+  const { guide_id } = useLocalSearchParams<{ guide_id: string }>();
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -40,55 +42,10 @@ export default function SetPlanDetail() {
   const onPickStart = (_: DateTimePickerEvent, d?: Date) => {
     setShowStart(false);
     if (!d) return;
-
+    setStartDate(d);
     if (endDate && d > endDate) {
       Alert.alert("Invalid date range", "Start date cannot be after end date.");
-      setStartDate(null);
-      return;
     }
-
-    if (endDate) {
-      const diffTime = endDate.getTime() - d.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-      if (diffDays > 30) {
-        Alert.alert(
-          "Invalid date range",
-          "Trip duration cannot exceed 30 days."
-        );
-        setStartDate(null);
-        return;
-      }
-    }
-
-    setStartDate(d);
-  };
-
-  const onPickEnd = (_: DateTimePickerEvent, d?: Date) => {
-    setShowEnd(false);
-    if (!d) return;
-
-    if (startDate && startDate > d) {
-      Alert.alert("Invalid date range", "End date must be after start date.");
-      setEndDate(null);
-      return;
-    }
-
-    if (startDate) {
-      const diffTime = d.getTime() - startDate.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-      if (diffDays > 30) {
-        setEndDate(null);
-        Alert.alert(
-          "Invalid date range",
-          "Trip duration cannot exceed 30 days."
-        );
-        return;
-      }
-    }
-
-    setEndDate(d);
   };
 
   const pickPoster = async () => {
@@ -110,13 +67,7 @@ export default function SetPlanDetail() {
     if (!name.trim()) return "Please enter trip name.";
     if (name.trim().length > MAX_NAME)
       return `Trip name must be ≤ ${MAX_NAME} characters.`;
-    if (!startDate || !endDate) return "Please select start and end dates.";
-    if (startDate > endDate) return "End date must be after start date.";
-
-    const diffTime = endDate.getTime() - startDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    if (diffDays > 30) return "Trip duration cannot be more than 30 days.";
-
+    if (!startDate) return "Please select start dates.";
     return null;
   };
 
@@ -128,7 +79,7 @@ export default function SetPlanDetail() {
     }
 
     router.push({
-      pathname: "/tabs/plan/set_plan_code",
+      pathname: "/dynamicPage/guides/set_plan_code",
       params: {
         name: name ?? "",
         start: startDate?.toISOString() ?? "",
@@ -164,7 +115,6 @@ export default function SetPlanDetail() {
               value={name}
               onChangeText={setName}
               placeholder="Enter Your Trip Name"
-              placeholderTextColor="#9CA3AF"
               maxLength={MAX_NAME}
               className="text-black font-medium"
             />
@@ -176,40 +126,24 @@ export default function SetPlanDetail() {
         </View>
 
         {/* Date Duration */}
-        <View className="bg-white border border-gray_border rounded-lg p-4 mb-4">
-          <Text className="text-black font-sf-semibold mb-2 text-[16px]">
+        <View className="bg-white border border-gray_border rounded-lg p-4 mb-4 flex-row items-center justify-around">
+          <Text className="text-black font-sf-semibold text-[16px]">
             Date Duration
           </Text>
 
-          <View className="flex-row gap-3">
-            {/* Start */}
-            <TouchableOpacity
-              onPress={() => setShowStart(true)}
-              className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center"
-              activeOpacity={0.8}
+          {/* Start */}
+          <TouchableOpacity
+            onPress={() => setShowStart(true)}
+            className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center ml-2"
+            activeOpacity={0.8}
+          >
+            <Feather name="calendar" size={16} color="#9CA3AF" />
+            <Text
+              className={`ml-2 ${startDate ? "text-black" : "text-gray-400"}`}
             >
-              <Feather name="calendar" size={16} color="#9CA3AF" />
-              <Text
-                className={`ml-2 ${startDate ? "text-black" : "text-gray-400"} font-medium`}
-              >
-                {fmt(startDate)}
-              </Text>
-            </TouchableOpacity>
-
-            {/* End */}
-            <TouchableOpacity
-              onPress={() => setShowEnd(true)}
-              className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center"
-              activeOpacity={0.8}
-            >
-              <Feather name="calendar" size={16} color="#9CA3AF" />
-              <Text
-                className={`ml-2 ${endDate ? "text-black" : "text-gray-400"} font-medium`}
-              >
-                {fmt(endDate)}
-              </Text>
-            </TouchableOpacity>
-          </View>
+              {fmt(startDate)}
+            </Text>
+          </TouchableOpacity>
 
           {/* Date pickers */}
           {showStart && (
@@ -221,17 +155,6 @@ export default function SetPlanDetail() {
                 android: "default",
               })}
               onChange={onPickStart}
-            />
-          )}
-          {showEnd && (
-            <DateTimePicker
-              value={endDate ?? new Date()}
-              mode="date"
-              display={Platform.select({
-                ios: "spinner",
-                android: "default",
-              })}
-              onChange={onPickEnd}
             />
           )}
         </View>

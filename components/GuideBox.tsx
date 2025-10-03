@@ -223,7 +223,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
 
                     {/* Description */}
                     <Text
-                        className="text-sm text-gray-600 mb-1"
+                        className="text-xs text-gray-600 mb-1 font-semibold"
                         style={{
                             lineHeight: 18,
                             height: 54,
@@ -249,7 +249,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                                 {owner_name}
                             </Text>
                             <Text
-                                className="text-xs text-gray-500"
+                                className="text-xs text-gray-500 font-semibold"
                                 numberOfLines={1}
                             >
                                 {copies} References

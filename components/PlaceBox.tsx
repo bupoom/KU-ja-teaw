@@ -109,7 +109,7 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
                         <View className="flex-row items-center">
                             <Feather name="map-pin" size={15} color="#666" />
                             <Text className="text-sm text-dark_gray ml-2 font-semibold">
-                                {location}
+                                {truncateText(location, 28)}
                             </Text>
                         </View>
                     </View>

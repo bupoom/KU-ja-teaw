@@ -66,7 +66,13 @@ export default function GuideDetail() {
     };
 
     const copyGuide = () => { // แก้ด้วย 
-        console.log("Copy Guide");
+        router.push({
+            pathname: '/dynamicPage/guides/set_plan_details',
+            params: {
+                guide_id: guide_id
+            }
+        });
+        
     };
 
     const toggleDescription = () => {
