@@ -4,8 +4,12 @@ import InviteBox from "@/components/InviteBox";
 import TripBox from "@/components/TripBox";
 
 // api
-import { getinvitedtrip, getrecommendedguide, getuseralltrip } from "@/service/APIserver/homepage";
-import { joinTrip , rejectTrip } from "@/service/APIserver/invitation";
+import {
+    getInvitedTrip,
+    getRecommendedGuide,
+    getUserAllUrip,
+} from "@/service/APIserver/homepage";
+import { joinTrip, rejectTrip } from "@/service/APIserver/invitation";
 
 // common
 import { useRouter } from "expo-router";
@@ -25,10 +29,11 @@ import {
 } from "react-native";
 
 export default function HomeScreen(): JSX.Element {
-    // State Management
+    const router = useRouter();
     const [currentTrip, setCurrentTrip] = useState<TripBox[]>([]);
     const [tripInvitations, setTripInvitations] = useState<TripBox[]>([]);
     const [guidePlans, setGuidePlans] = useState<GuideBox[]>([]);
+
     const [loading, setLoading] = useState<LoadingState>({
         currentTrip: false,
         invitations: false,
@@ -36,29 +41,26 @@ export default function HomeScreen(): JSX.Element {
         guidePlans: false,
         refreshing: false,
     });
-    const [error, setError] = useState<string | null>(null);
-    const router = useRouter();
 
-    // ------------------------------- จำลองการ Fetch ------------------------------
+    const [error, setError] = useState<string | null>(null);
+
     const fetchCurrentTrip = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, currentTrip: true }));
         try {
-            console.log("Fetch user all trip")
-            const data = await getuseralltrip();
-            const today = new Date().toISOString().split("T")[0]; // วันนี้ในรูปแบบ YYYY-MM-DD
+            console.log("Fetch user all trip");
+            const data = await getUserAllUrip();
+            const today = new Date().toISOString().split("T")[0];
 
-            // หา trip ที่วันนี้อยู่ในช่วงระหว่าง start_date และ end_date
             const activeTripData = data.filter(trip => {
                 const startDate = trip.start_date;
                 const endDate = trip.end_date;
-
-                // เช็คว่าวันนี้อยู่ระหว่าง start_date และ end_date หรือไม่
                 return today >= startDate && today <= endDate;
             });
 
             setCurrentTrip(activeTripData);
         } catch (error) {
             console.error("Failed to fetch current trip:", error);
+            setError("Failed to fetch current trip:");
         } finally {
             setLoading(prev => ({ ...prev, currentTrip: false }));
         }
@@ -66,8 +68,8 @@ export default function HomeScreen(): JSX.Element {
     const fetchTripInvitations = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, invitations: true }));
         try {
-            console.log("Fetch invited trip")
-            const data = await getinvitedtrip();
+            console.log("Fetch invited trip");
+            const data = await getInvitedTrip();
             setTripInvitations(data);
         } catch (error) {
             console.error("Failed to fetch trip invitations:", error);
@@ -79,8 +81,8 @@ export default function HomeScreen(): JSX.Element {
     const fetchGuidePlans = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, guidePlans: true }));
         try {
-            console.log("Fetching guide recommended")
-            const data = await getrecommendedguide();
+            console.log("Fetching guide recommended");
+            const data = await getRecommendedGuide();
             setGuidePlans(data);
         } catch (error) {
             console.error("Failed to fetch guide plans:", error);
@@ -92,29 +94,28 @@ export default function HomeScreen(): JSX.Element {
     const handleJoinTrip = async (trip: TripBox): Promise<void> => {
         try {
             await joinTrip(trip.trip_id);
-            Alert.alert("Success", "You have successfully joined the trip!", [{
-                text: "OK",
-                onPress: () => {
-                    // router.push(`/trips/${trip.trip_id}`);
-                    router.push(`/plan/${trip.trip_id}`);
-                    setTripInvitations(prev =>
-                        prev.filter(inv => inv.trip_id !== trip.trip_id)
-                    );
+            Alert.alert("Success", "You have successfully joined the trip!", [
+                {
+                    text: "OK",
+                    onPress: () => {
+                        router.push(`/plan/${trip.trip_id}`);
+                        setTripInvitations(prev =>
+                            prev.filter(inv => inv.trip_id !== trip.trip_id)
+                        );
+                    },
                 },
-            },
             ]);
-        } catch (err){
+        } catch (err) {
             Alert.alert("Error", "Failed to join trip. Please try again.");
             console.error(err);
         }
-        
     };
 
     const handleRejectTrip = async (trip: TripBox): Promise<void> => {
         try {
             await rejectTrip(trip.trip_id);
             setTripInvitations(prev =>
-            prev.filter(inv => inv.trip_id !== trip.trip_id)
+                prev.filter(inv => inv.trip_id !== trip.trip_id)
             );
         } catch (err) {
             Alert.alert("Error", "Failed to reject trip. Please try again.");
@@ -125,27 +126,23 @@ export default function HomeScreen(): JSX.Element {
     const onRefresh = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, refreshing: true }));
         setError(null);
-        await Promise.all([
-            fetchCurrentTrip(),
-            fetchTripInvitations(),
-            fetchGuidePlans(),
-        ]);
-        setLoading(prev => ({ ...prev, refreshing: false }));
-    };
-
-    // Initial data loading
-    useEffect(() => {
-        const loadInitialData = async (): Promise<void> => {
+        try {
             await Promise.all([
                 fetchCurrentTrip(),
                 fetchTripInvitations(),
                 fetchGuidePlans(),
             ]);
-        };
-        loadInitialData();
+        } catch {
+            setError("Fails to Fetch trips");
+        }
+        setLoading(prev => ({ ...prev, refreshing: false }));
+    };
+
+    useEffect(() => {
+        onRefresh();
     }, []);
 
-    // ------------------------- Render Functions ------------------------------------------------------------
+    // ------------------ Render loading Function ----------
     const renderLoadingSpinner = (): JSX.Element => (
         <View className="flex-row justify-center items-center py-4">
             <ActivityIndicator size="small" color="#075952" />
@@ -158,7 +155,6 @@ export default function HomeScreen(): JSX.Element {
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-            {/* Header */}
             <View className="bg-green_2 p-2 flex-row items-center"></View>
 
             <ScrollView
@@ -173,14 +169,12 @@ export default function HomeScreen(): JSX.Element {
                     />
                 }
             >
-                {/* Error Message */}
                 {error && (
                     <View className="bg-red-100 border border-red-400 px-4 py-2 mx-4 mt-2 rounded">
                         <Text className="text-red-700 text-sm">{error}</Text>
                     </View>
                 )}
 
-                {/* ------------------------------- Continue Your Trip Section ------------------------------- */}
                 <View className="bg-white mt-4 px-4">
                     <View className="flex-row items-center justify-between mb-3">
                         <Text className="text-[24px] font-bold text-black pl-3">
@@ -211,7 +205,6 @@ export default function HomeScreen(): JSX.Element {
                     )}
                 </View>
 
-                {/* -------------------------------------- Picture Section --------------------- */}
                 <TouchableOpacity className="mt-6" activeOpacity={0.8}>
                     <Image
                         source={{
@@ -230,7 +223,6 @@ export default function HomeScreen(): JSX.Element {
                     </View>
                 </TouchableOpacity>
 
-                {/* ---------------------------- Trip Invitations Section -------------------*/}
                 <View className="mt-6 px-4">
                     <Text className="text-[24px] font-bold text-black pl-3">
                         Trip Invitations
@@ -263,7 +255,6 @@ export default function HomeScreen(): JSX.Element {
                     )}
                 </View>
 
-                {/* -------------------------------------- Picture Section --------------------- */}
                 <TouchableOpacity className="mt-6" activeOpacity={0.8}>
                     <Image
                         source={{
@@ -282,7 +273,6 @@ export default function HomeScreen(): JSX.Element {
                     </View>
                 </TouchableOpacity>
 
-                {/* ---------------------------------- Guides Section -------------------*/}
                 <View className="mt-6 mb-8">
                     <View className="px-4 mb-4">
                         <Text className="text-[24px] font-bold text-black pl-3">
@@ -294,7 +284,7 @@ export default function HomeScreen(): JSX.Element {
                         renderLoadingSpinner()
                     ) : (
                         <FlatList
-                            data={guidePlans.slice(0, 4)} // แสดงแค่ 4 อันแรก
+                            data={guidePlans.slice(0, 4)}
                             keyExtractor={item => item.id.toString()}
                             renderItem={({ item }) => (
                                 <GuideBox guideData={item} />
@@ -308,8 +298,6 @@ export default function HomeScreen(): JSX.Element {
                         />
                     )}
                 </View>
-
-                {/* Bottom spacing for tab bar */}
                 <View className="h-20" />
             </ScrollView>
         </SafeAreaView>

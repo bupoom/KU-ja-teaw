@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "expo-router";
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 import { UnbookmarkByGuideId } from "@/service/APIserver/bookmarkService";
 
-// Define GuideBox interface
 interface GuideBoxProps {
     guideData: GuideBox;
     onRemove?: (id: number) => void;

@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 import {
     Alert,
     Image,
@@ -16,8 +16,9 @@ import {
 import { updateUserDetails } from "@/service/APIserver/userService";
 import * as ImagePicker from "expo-image-picker";
 import { AuthService } from "@/service/authService";
+import PoliciesModal from "@/components/modals/PoliciesModals";
 
-const ProfileSetupScreen = () => {
+export default function ProfileSetupScreen(): JSX.Element {
     const router = useRouter();
     const { userName, userEmail, userPhoto } = useLocalSearchParams<{
         userName?: string;
@@ -25,13 +26,13 @@ const ProfileSetupScreen = () => {
         userPhoto?: string;
     }>();
 
-    const [username, setUsername] = useState(userName || ""); // ✅ ใช้ค่าจาก Google เป็นค่าเริ่มต้น
+    const [username, setUsername] = useState(userName || "");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [agreedToPolicies, setAgreedToPolicies] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const [profileImage, setProfileImage] = useState<string>(userPhoto || ""); // ✅ ใช้รูปจาก Google
+    const [profileImage, setProfileImage] = useState<string>(userPhoto || "");
     const [selectedImageFile, setSelectedImageFile] =
-        useState<ImageFile | null>(null); // ✅ เพิ่ม state สำหรับไฟล์
+        useState<ImageFile | null>(null);
 
     const validatePhone = (text: string) => {
         const cleaned = text.replace(/[\s-\.]/g, "");
@@ -69,16 +70,15 @@ const ProfileSetupScreen = () => {
             if (!result.canceled && result.assets[0]) {
                 const asset = result.assets[0];
                 setProfileImage(asset.uri);
-                
+
                 const newImageFile = {
                     uri: asset.uri,
                     type: "image/jpeg",
                     name: `profile_${Date.now()}.jpg`,
                 };
 
-                // ✅ ตั้งค่าและ log object เดียวกัน
                 setSelectedImageFile(newImageFile);
-                console.log("Selected image:", newImageFile); // ← ตรงนี้จะแสดงค่าที่ถูก
+                console.log("Selected image:", newImageFile);
             }
         } catch (error) {
             Alert.alert("Error", "Failed to pick image");
@@ -107,11 +107,10 @@ const ProfileSetupScreen = () => {
         try {
             console.log("🔄 Updating user profile...");
 
-            // ✅ ส่งรูปภาพที่เลือกไปด้วย (ถ้ามี)
             const response = await updateUserDetails({
                 username: username.trim(),
                 phoneNumber: phoneNumber.trim(),
-                selectedImageFile: selectedImageFile || undefined, // object ที่มี uri, type, name
+                selectedImageFile: selectedImageFile || undefined,
             });
 
             console.log("✅ Profile updated successfully:", response);
@@ -125,8 +124,7 @@ const ProfileSetupScreen = () => {
                 phone: phoneNumber,
                 email: userData.email,
                 profile_picture_link:
-                    selectedImageFile?.uri ?? userData.profile_picture_link ,
-                // ถ้าไม่มีรูปใหม่ → เก็บรูปเดิมไว้
+                    selectedImageFile?.uri ?? userData.profile_picture_link,
             };
             AuthService.saveUserData(newUserData);
             Alert.alert("Success", "Profile setup completed!", [
@@ -140,18 +138,16 @@ const ProfileSetupScreen = () => {
             Alert.alert("Error", "Network error. Please try again.");
         }
     };
-    
+
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" backgroundColor="white" />
 
-            {/* Header */}
             <View className="px-6 pt-8">
                 <Text className="text-center text-4xl text-gray-900 font-semibold mt-32 mb-12">
                     Set up your profile
                 </Text>
 
-                {/* แสดงข้อมูลจาก Google */}
                 {userName && (
                     <View className="mb-4 p-4 bg-gray-100 rounded-lg">
                         <Text className="text-sm text-gray-600">
@@ -163,7 +159,6 @@ const ProfileSetupScreen = () => {
                     </View>
                 )}
 
-                {/* Profile Avatar */}
                 <View className="items-center mb-12">
                     <View className="relative">
                         {profileImage ? (
@@ -171,7 +166,6 @@ const ProfileSetupScreen = () => {
                                 source={{ uri: profileImage }}
                                 className="w-48 h-48 rounded-full"
                                 style={{ width: 192, height: 192 }}
-                                // ✅ เพิ่ม fallback กรณีโหลดรูปไม่ได้
                                 defaultSource={{
                                     uri: "https://via.placeholder.com/192x192/0f766e/ffffff?text=User",
                                 }}
@@ -182,7 +176,6 @@ const ProfileSetupScreen = () => {
                             </View>
                         )}
 
-                        {/* Edit icon */}
                         <TouchableOpacity
                             className="absolute bottom-3 right-2 w-10 h-10 rounded-full bg-gray-600 items-center justify-center border-2 border-white"
                             onPress={pickImage}
@@ -190,7 +183,6 @@ const ProfileSetupScreen = () => {
                             <Feather name="edit-2" size={14} color="white" />
                         </TouchableOpacity>
 
-                        {/* ✅ แสดง indicator ว่าเลือกรูปใหม่แล้ว */}
                         {selectedImageFile && (
                             <View className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 items-center justify-center">
                                 <Feather name="check" size={12} color="white" />
@@ -199,9 +191,7 @@ const ProfileSetupScreen = () => {
                     </View>
                 </View>
 
-                {/* Form Fields */}
                 <View className="space-y-4">
-                    {/* Username Input */}
                     <View>
                         <TextInput
                             className="w-full px-4 py-4 border border-gray-200 rounded-xl text-xl text-gray-900"
@@ -218,7 +208,6 @@ const ProfileSetupScreen = () => {
                         )}
                     </View>
 
-                    {/* Phone Number Input */}
                     <View>
                         <TextInput
                             className="w-full px-4 py-4 border border-gray-200 rounded-xl text-xl text-gray-900 mt-6"
@@ -231,7 +220,6 @@ const ProfileSetupScreen = () => {
                     </View>
                 </View>
 
-                {/* Get Start Button */}
                 <TouchableOpacity
                     className={`w-full py-4 rounded-lg mt-8 ${
                         username.trim() &&
@@ -252,7 +240,6 @@ const ProfileSetupScreen = () => {
                     </Text>
                 </TouchableOpacity>
 
-                {/* Policies Checkbox */}
                 <View className="flex-row items-center mt-6 ml-48">
                     <TouchableOpacity
                         className={`w-5 h-5 rounded border-2 mr-3 items-center justify-center ${
@@ -283,110 +270,12 @@ const ProfileSetupScreen = () => {
                     </Text>
                 </View>
 
-                {/* Modal for Policies - เหมือนเดิม */}
-                <Modal
+                <PoliciesModal
                     visible={modalVisible}
-                    animationType="slide"
-                    presentationStyle="pageSheet"
-                    onRequestClose={() => setModalVisible(false)}
-                >
-                    {/* Modal content เหมือนเดิม... */}
-                    <SafeAreaView className="flex-1 bg-white">
-                        <View className="flex-1">
-                            <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
-                                <Text className="text-xl font-bold text-gray-800">
-                                    ข้อตกลงและเงื่อนไข
-                                </Text>
-                                <TouchableOpacity
-                                    onPress={() => setModalVisible(false)}
-                                    className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center"
-                                >
-                                    <Feather
-                                        name="x"
-                                        size={20}
-                                        color="#374151"
-                                    />
-                                </TouchableOpacity>
-                            </View>
-
-                            <ScrollView className="flex-1 px-6 py-4">
-                                {/* Terms content... */}
-                                <Text className="text-lg font-semibold text-gray-800 mb-4">
-                                    1. การยอมรับข้อตกลง
-                                </Text>
-                                <Text className="text-gray-600 mb-6 leading-6">
-                                    การใช้แอปพลิเคชันนี้แสดงว่าคุณยอมรับข้อตกลงและเงื่อนไขทั้งหมด
-                                    หากคุณไม่ยอมรับข้อตกลงเหล่านี้
-                                    กรุณาหยุดการใช้งานทันที
-                                </Text>
-
-                                <Text className="text-lg font-semibold text-gray-800 mb-4">
-                                    2. การใช้งานแอปพลิเคชัน
-                                </Text>
-                                <Text className="text-gray-600 mb-6 leading-6">
-                                    คุณสามารถใช้แอปพลิเคชันนี้เพื่อวัตถุประสงค์ที่ถูกต้องตามกฎหมายเท่านั้น
-                                    ห้ามใช้เพื่อการกระทำที่ผิดกฎหมายหรือเป็นอันตราย
-                                </Text>
-
-                                <Text className="text-lg font-semibold text-gray-800 mb-4">
-                                    3. ความเป็นส่วนตัวของข้อมูล
-                                </Text>
-                                <Text className="text-gray-600 mb-6 leading-6">
-                                    เราจะเก็บรักษาข้อมูลส่วนบุคคลของคุณอย่างปลอดภัย
-                                    และจะไม่เปิดเผยให้กับบุคคลที่สามโดยไม่ได้รับความยินยอมจากคุณ
-                                    ยกเว้นกรณีที่กฎหมายกำหนด
-                                </Text>
-
-                                <Text className="text-lg font-semibold text-gray-800 mb-4">
-                                    4. ความรับผิดชอบ
-                                </Text>
-                                <Text className="text-gray-600 mb-6 leading-6">
-                                    คุณมีความรับผิดชอบในการรักษาความปลอดภัยของบัญชีและรหัสผ่านของคุณ
-                                    หากมีการใช้งานโดยไม่ได้รับอนุญาต
-                                    กรุณาแจ้งให้เราทราบทันที
-                                </Text>
-
-                                <Text className="text-lg font-semibold text-gray-800 mb-4">
-                                    5. การเปลี่ยนแปลงข้อตกลง
-                                </Text>
-                                <Text className="text-gray-600 mb-6 leading-6">
-                                    เราสงวนสิทธิ์ในการเปลี่ยนแปลงข้อตกลงและเงื่อนไขนี้ได้ตลอดเวลา
-                                    การเปลี่ยนแปลงจะมีผลทันทีเมื่อได้รับการประกาศ
-                                </Text>
-
-                                <Text className="text-lg font-semibold text-gray-800 mb-4">
-                                    6. การติดต่อ
-                                </Text>
-                                <Text className="text-gray-600 mb-8 leading-6">
-                                    หากคุณมีคำถามเกี่ยวกับข้อตกลงและเงื่อนไขนี้
-                                    กรุณาติดต่อเราที่ support@example.com
-                                </Text>
-
-                                <Text className="text-sm text-gray-500 text-center mb-6">
-                                    อัปเดตล่าสุด: 4 กันยายน 2568
-                                </Text>
-                                {/* ... rest of terms ... */}
-                            </ScrollView>
-
-                            <View className="px-6 pb-8 pt-4 border-t border-gray-200">
-                                <TouchableOpacity
-                                    className="w-full py-4 bg-blue-500 rounded-xl"
-                                    onPress={() => {
-                                        setModalVisible(false);
-                                        setAgreedToPolicies(true);
-                                    }}
-                                >
-                                    <Text className="text-center text-white text-lg font-semibold">
-                                        ยอมรับ
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </SafeAreaView>
-                </Modal>
+                    onClose={() => setModalVisible(false)}
+                    onAccept={() => setAgreedToPolicies(true)}
+                />
             </View>
         </SafeAreaView>
     );
-};
-
-export default ProfileSetupScreen;
+}

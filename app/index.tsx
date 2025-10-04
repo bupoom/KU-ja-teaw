@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import "./global.css";
+import React, { JSX, useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -10,34 +11,32 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { AuthService } from "@/service/authService";
-import "./global.css"
 
-const GetStartScreen = () => {
+export default function GetStartScreen(): JSX.Element {
     const router = useRouter();
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
     useEffect(() => {
-        const checkLogin = async () => {
-            try {
-                const loggedIn = await AuthService.isLoggedIn();
-                if (loggedIn) {
-                    router.replace("/tabs/(home)");
-                }
-            } catch (error) {
-                console.error("Error checking login status:", error);
-            } finally {
-                setIsCheckingAuth(false); // ตั้งค่าให้เสร็จสิ้นการตรวจสอบ
-            }
-        };
-
         checkLogin();
     }, []);
 
     const handleGetStart = () => {
-        router.push("/auth"); // ใช้ push แทน replace
+        router.push("/auth");
     };
 
-    // แสดง loading ขณะตรวจสอบ authentication
+    const checkLogin = async () => {
+        try {
+            const loggedIn = await AuthService.isLoggedIn();
+            if (loggedIn) {
+                router.replace("/tabs/(home)");
+            }
+        } catch (error) {
+            console.error("Error checking login status:", error);
+        } finally {
+            setIsCheckingAuth(false);
+        }
+    };
+
     if (isCheckingAuth) {
         return (
             <SafeAreaView className="flex-1 bg-white">
@@ -56,7 +55,6 @@ const GetStartScreen = () => {
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-            {/* Hero Image Section */}
             <View className="h-[60%] w-full">
                 <Image
                     source={require("../assets/images/start_img.png")}
@@ -65,9 +63,7 @@ const GetStartScreen = () => {
                 />
             </View>
 
-            {/* Content Section */}
             <View className="flex-1 px-4 py-6 bg-white mt-4">
-                {/* Text Content */}
                 <View className="items-center mt-4">
                     <Text className="font-sf-semibold text-3xl font-bold text-black text-center mb-4 leading-9">
                         Welcome to KU JA TEAW 🏔️🌿
@@ -86,7 +82,6 @@ const GetStartScreen = () => {
                     </View>
                 </View>
 
-                {/* Get Started Button */}
                 <View className="px-4 pb-4 mt-10">
                     <TouchableOpacity
                         className="bg-green_2 py-4 rounded-xl w-full items-center shadow-lg"
@@ -100,6 +95,4 @@ const GetStartScreen = () => {
             </View>
         </SafeAreaView>
     );
-};
-
-export default GetStartScreen;
+}

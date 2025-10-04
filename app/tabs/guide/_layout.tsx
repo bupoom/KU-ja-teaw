@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack } from "expo-router";
 
 export default function Layout() {
@@ -8,9 +7,8 @@ export default function Layout() {
                 headerShown: false,
             }}
         >
-            <Stack.Screen name="index" options={{}} />
+            <Stack.Screen name="index" />
             <Stack.Screen name="search_guide" />
-            <Stack.Screen name="[guide_id]" />
         </Stack>
     );
 }

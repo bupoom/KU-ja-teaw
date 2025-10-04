@@ -13,17 +13,13 @@ const endpoints = {
     },
 };
 
-// getBookmarkPlaceList && getBookmarkGuideList อยู่หน้า tabs/place หรือ guide/index
-// UnbookmarkByPlaceId && UnbookmarkByGuideId อยู่ใน component
-
-export const getrecommendedguide = async (): Promise<GuideBox[]> => {
+export const getRecommendedGuide = async (): Promise<GuideBox[]> => {
     try {
         console.log("fetching recommended guide");
         const response = (await apiClient.get(endpoints.guide.recommend)) as {
             data: { guides: any[] };
         };
 
-        // console.log(response.data.guides);
         const guides = response.data.guides || [];
         const guide_list: GuideBox[] = [];
 
@@ -49,7 +45,7 @@ export const getrecommendedguide = async (): Promise<GuideBox[]> => {
     }
 };
 
-export const getuseralltrip = async (): Promise<TripBox[]> => {
+export const getUserAllUrip = async (): Promise<TripBox[]> => {
     try {
         console.log("fetching current guide");
         const response = (await apiClient.get(endpoints.trip.by_user)) as {
@@ -58,7 +54,6 @@ export const getuseralltrip = async (): Promise<TripBox[]> => {
         const user_res = (await apiClient.get(endpoints.user.getUserDetail))
             .data as UserDetails;
 
-        console.log("data : invited", response.data);
         const trips = response.data.trips || [];
         const trip_list: TripBox[] = [];
 
@@ -86,14 +81,13 @@ export const getuseralltrip = async (): Promise<TripBox[]> => {
     }
 };
 
-export const getinvitedtrip = async (): Promise<TripBox[]> => {
+export const getInvitedTrip = async (): Promise<TripBox[]> => {
     try {
         console.log("fetching invited trips");
         const response = (await apiClient.get(endpoints.trip.invited)) as {
             data: { trips: any[] };
         };
 
-        console.log(response.data.trips);
         const trips = response.data.trips || [];
         const trip_list: TripBox[] = [];
 

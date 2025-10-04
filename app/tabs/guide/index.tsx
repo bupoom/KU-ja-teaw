@@ -19,7 +19,7 @@ const GuideBookmarkScreen = () => {
     const [guides, setGuides] = useState<GuideBox[]>([]);
 
     useEffect(() => {
-        fetchPlaceBox();
+        onRefresh();
     }, []);
 
     const onRefresh = useCallback(async () => {
@@ -31,22 +31,15 @@ const GuideBookmarkScreen = () => {
 
     const fetchPlaceBox = async () => {
         try {
-            console.log("Fetching bookmark guides...");
             const data = await getBookmarkGuideList();
             setGuides(data);
-            console.log("Fetched guides count:", data.length);
         } catch (error) {
             console.error("Error fetching guides:", error);
         }
     };
 
     const handleRemove = useCallback((guideId: number) => {
-        console.log("Removing guide from local state:", guideId);
-        
-        // อัพเดท local state โดยเอา guide ที่ถูกลบออก
         setGuides(prevGuides => prevGuides.filter(guide => guide.id !== guideId));
-        
-        console.log("Guide removed from local state");
     }, []);
 
     const handleSearch = () => {

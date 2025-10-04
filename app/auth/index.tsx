@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import {
     View,
     Text,
-    TouchableOpacity,
     Image,
     StyleSheet,
     SafeAreaView,
@@ -19,13 +18,14 @@ import {
 } from "@react-native-google-signin/google-signin";
 import { AuthService } from "@/service/authService";
 
-const AuthScreen: React.FC = () => {
+export default function AuthScreen(): JSX.Element {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     useEffect(() => {
         GoogleSignin.configure({
-            webClientId: "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
+            webClientId:
+                "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
             profileImageSize: 150,
             offlineAccess: true,
         });
@@ -35,14 +35,12 @@ const AuthScreen: React.FC = () => {
         try {
             setIsSubmitting(true);
 
-            // check Play Services ( Android)
             await GoogleSignin.hasPlayServices();
             const response = await GoogleSignin.signIn();
             console.log(response);
             if (isSuccessResponse(response)) {
                 const { data } = response;
 
-                // ตรวจสอบว่ามี idToken หรือไม่
                 if (!data.idToken) {
                     Alert.alert("Error", "Failed to get authentication token.");
                     return;
@@ -57,7 +55,6 @@ const AuthScreen: React.FC = () => {
                     return;
                 }
                 if (!result.newUser) {
-                    // User เก่า - บันทึกข้อมูลแล้วไปหน้าหลัก
                     Alert.alert("Welcome Back.");
                     router.push("/tabs/(home)");
                 } else {
@@ -174,7 +171,7 @@ const AuthScreen: React.FC = () => {
             </View>
         </SafeAreaView>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -244,5 +241,3 @@ const styles = StyleSheet.create({
         color: "#bdc3c7",
     },
 });
-
-export default AuthScreen;
