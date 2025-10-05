@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { getPlaceDetails } from "@/service/APIserver/placeDetail";
 import { addPlaceToBookmark } from "@/service/APIserver/bookmarkService"
+import { truncateText } from "@/util/truncateText";
 
 export default function PlaceDetail() {
     const { id , type , from_bookmark} = useLocalSearchParams();
@@ -122,7 +123,7 @@ export default function PlaceDetail() {
                                 className="flex-row items-center"
                             >
                                 <Text className="text-sm text-gray-600 ml-2 mr-2">
-                                    {placeDetail.location}
+                                    {truncateText(placeDetail.location ,52)}
                                 </Text>
                                 <Feather
                                     name="external-link"

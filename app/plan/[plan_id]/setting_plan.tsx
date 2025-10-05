@@ -17,8 +17,11 @@ import {
 } from "react-native";
 
 import Header from "@/components/common/Header";
+
+//
 import { get_more_detail } from "@/service/APIserver/userService";
 import { get_trip_detail  , leaveTrips} from "@/service/APIserver/tripApi";
+
 import { Feather } from "@expo/vector-icons";
 
 

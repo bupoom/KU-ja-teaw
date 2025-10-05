@@ -1,7 +1,7 @@
 import  apiClient  from "../client";
 import { Image } from "react-native";
 
-export const endpoints = {
+const endpoints = {
     user: {
         getUserDetail: "/api/users",
         updateUserDetails: "/api/users",
@@ -74,6 +74,8 @@ export const getUserDetailById = async (userId?: string) => {
         throw error;
     }
 };
+
+const { } = 
 
 export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> => {
     try {
