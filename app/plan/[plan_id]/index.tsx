@@ -529,7 +529,7 @@ const PlanIndex = () => {
           {isShowFile && (
             <View className="pb-4">
               {file.length === 0 ? (
-                <View className="bg-gray-50 rounded-lg p-4">
+                <View className="bg-white rounded-lg p-3 border border-gray_border">
                   <Text className="text-gray-500 text-center">
                     No files uploaded yet
                   </Text>
@@ -583,7 +583,7 @@ const PlanIndex = () => {
                   onPress={() => {
                     setIsFileModalVisible(true);
                   }}
-                  className="bg-green_2 rounded-lg py-3 mt-3 mx-4"
+                  className="bg-green_2 rounded-lg py-3 mt-3 mx-2"
                 >
                   <Text className="text-white text-center font-medium">
                     Upload File
