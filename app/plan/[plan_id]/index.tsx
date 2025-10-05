@@ -102,24 +102,28 @@ const PlanIndex = () => {
     const fetch_note_detail = async (userId: string) => {
         try {
             const detail = await get_overview_note(parseInt(plan_id));
-            console.log(detail);
-            setOverviewNotes(detail);
+            console.log("Fetched notes:", detail);
 
-            // หา userNote หลังจากได้ userId มาแล้ว
             const userNote = detail.find(note => note.refer_user_id === userId);
+            console.log("Found userNote:", userNote);
 
-            // ถ้าไม่มี note ของ user นี้ ให้สร้างใหม่
             if (!userNote) {
+                console.log("Creating new note for userId:", userId);
                 try {
                     const NEWNOTE = await create_note(
                         parseInt(plan_id),
                         "Start your note Journey here!!"
                     );
-                    setOverviewNotes(prev => [...prev, NEWNOTE]);
+                    console.log("Created note:", NEWNOTE);
+
+                    // ตั้ง state พร้อมกันแบบรวม note ใหม่เข้าไป
+                    setOverviewNotes([...detail, NEWNOTE]);
                 } catch (err) {
                     console.error("Failed to create note:", err);
                     Alert.alert("Error", "Failed to create new note");
                 }
+            } else {
+                setOverviewNotes(detail);
             }
         } catch (err) {
             console.error("Failed to fetch note detail:", err);

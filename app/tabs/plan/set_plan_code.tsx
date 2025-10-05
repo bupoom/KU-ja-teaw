@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { createNewTrips } from "@/service/APIserver/tripApi";
-
+import { create_note } from "@/service/APIserver/Note";
 
 const MAX_PWD = 20;
 
@@ -43,6 +43,7 @@ export default function SetTripCode() {
         const response = await createNewTrips(data)
         if (response.trip_id) {
             Alert.alert("Success!");
+            create_note(response.trip_id ,"Start your note Journey here!!" )
             router.replace(`/plan/${response.trip_id}`);
         } else {
             Alert.alert("Failed to Create new trips.");

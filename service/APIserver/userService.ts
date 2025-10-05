@@ -75,8 +75,6 @@ export const getUserDetailById = async (userId?: string) => {
     }
 };
 
-const { } = 
-
 export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> => {
     try {
         console.log("fetching user more detail");

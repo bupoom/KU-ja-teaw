@@ -150,7 +150,7 @@ export default function SetPlanDetail() {
           Plan a new trip
         </Text>
         <Text className="text-dark_gray text-base">
-          It's a beginning of your journey
+          It&apos;s a beginning of your journey
         </Text>
 
         {/* Trip Name */}

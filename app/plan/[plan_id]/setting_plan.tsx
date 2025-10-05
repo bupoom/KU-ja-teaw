@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
     DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -19,21 +19,21 @@ import {
 import Header from "@/components/common/Header";
 
 //
+import { get_trip_member } from "@/service/APIserver/groupPage";
+import { get_trip_detail, leaveTrips } from "@/service/APIserver/tripApi";
 import { get_more_detail } from "@/service/APIserver/userService";
-import { get_trip_detail  , leaveTrips} from "@/service/APIserver/tripApi";
-
-import { Feather } from "@expo/vector-icons";
-
-
 
 const PlanSetting = () => {
     const router = useRouter();
     const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
     const [userRole, setUserRole] = useState<string>("");
-    
+    const [canEdit, setCanEdit] = useState<boolean>(false);
+
     const [planningStatus, setPlanningStatus] = useState<string>("");
-    const [tripBudget, setTripBudget] = useState<string>("");
-    
+    const [tripBudget, setTripBudget] = useState<number | undefined>(undefined);
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [posterUri, setPosterUri] = useState<string | null>(null);
     const [tripCode, setTripCode] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
@@ -42,31 +42,41 @@ const PlanSetting = () => {
     const [showLeaveModal, setShowLeaveModal] = useState(false);
 
     // Date
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
     const [showStartPicker, setShowStartPicker] = useState(false);
     const [showEndPicker, setShowEndPicker] = useState(false);
 
-    // Poster
-    const [posterUri, setPosterUri] = useState<string | null>(null);
-    
-    const [canEdit , setCanEdit] = useState<boolean>(false);
+    const fetch_data = async () => {
+        try {
+            const UserDetail = await get_more_detail(parseInt(plan_id)); // Viewer
+            console.log("this is response get_more_detail : ", UserDetail);
+            const TripsDetail = await get_trip_detail(parseInt(plan_id));
+            console.log("this is response get_trip_detail : ", TripsDetail);
+            const Member = await get_trip_member(parseInt(plan_id));
+            console.log("this is response get_trip_member : ", Member);
+            setPlanningStatus(
+                TripsDetail.trip_status === "completed"
+                    ? "planning"
+                    : "complete"
+            );
+            setTripBudget(TripsDetail.budget);
+            setStartDate(new Date(TripsDetail.start_date));
+            setEndDate(new Date(TripsDetail.end_date));
+            setPosterUri(TripsDetail.trip_image);
+            setTripCode(UserDetail.trip_code);
+
+            setUserRole(UserDetail.role);
+            setCanEdit(UserDetail.role === "Owner");
+            setOtherMembers(
+                Member.filter(member => member.id !== UserDetail.collab_id)
+            );
+        } catch (err) {
+            console.error("Failed to fetch detail:", err);
+        }
+    };
 
     useEffect(() => {
         if (plan_id) {
-            const fetch_user_detail = async () => {
-                try {
-                    const UserDetail = await get_more_detail(parseInt(plan_id)); // Viewer
-                    const TripsDetail = await get_trip_detail(parseInt(plan_id))
-                    setUserRole(UserDetail.role )
-                    setCanEdit(UserDetail.role === "Owner")
-
-
-                } catch (err) {
-                    console.error("Failed to fetch user more detail:", err);
-                }
-            };
-            fetch_user_detail();
+            fetch_data();
         }
     }, [plan_id]);
 
@@ -94,8 +104,6 @@ const PlanSetting = () => {
         }
     };
 
-    const handleBack = () => router.back();
-
     const handleStatusChange = (status: string) => {
         setPlanningStatus(status);
         console.log(`Updating plan ${plan_id} status to: ${status}`);
@@ -111,7 +119,7 @@ const PlanSetting = () => {
             Alert.alert("Error", "Please select both start and end dates");
             return;
         }
-        if (startDate >= endDate) {
+        if (startDate && endDate && startDate.getTime() >= endDate.getTime()) {
             Alert.alert("Error", "End date must be after start date");
             return;
         }
@@ -147,15 +155,7 @@ const PlanSetting = () => {
                     {
                         text: "Leave",
                         style: "destructive",
-                        onPress: () => {
-                            console.log(`Leaving trip: ${plan_id}`);
-                            try {
-                                leaveTrips(parseInt(plan_id))
-                            } catch (err) {
-                                Alert.alert("fetch to leave trip. please try again later")
-                            }
-                            router.replace("/tabs/(home)");
-                        },
+                        onPress: () => {},
                     },
                 ]
             );
@@ -166,6 +166,12 @@ const PlanSetting = () => {
         console.log(
             `Transferring ownership to user ${newOwner} and leaving trip: ${plan_id}`
         );
+        try {
+            leaveTrips(parseInt(plan_id), newOwner);
+        } catch (err) {
+            Alert.alert("fetch to leave trip. please try again later");
+        }
+        router.replace("/tabs/(home)");
         setShowLeaveModal(false);
         router.replace("/tabs/(home)");
     };
@@ -190,7 +196,7 @@ const PlanSetting = () => {
 
     return (
         <View className="flex-1 bg-white">
-            <Header title="Setting" onBackPress={handleBack} />
+            <Header title="Setting" onBackPress={router.back} />
 
             <ScrollView
                 className="flex-1 p-4"
@@ -253,10 +259,16 @@ const PlanSetting = () => {
                             Set Trip Budget :
                         </Text>
                         <TextInput
-                            value={tripBudget}
+                            value={
+                                tripBudget != null ? tripBudget.toString() : ""
+                            }
                             onChangeText={text => {
                                 const numericText = text.replace(/[^0-9]/g, "");
-                                setTripBudget(numericText);
+                                setTripBudget(
+                                    numericText
+                                        ? Number(numericText)
+                                        : undefined
+                                );
                             }}
                             className="border border-gray_border rounded-lg text-center self-center flex-1 ml-2 mr-2 mb-2"
                             keyboardType="numeric"
@@ -268,15 +280,17 @@ const PlanSetting = () => {
                         <Text className="text-black text-lg">Baht</Text>
                     </View>
 
-                    <TouchableOpacity
-                        onPress={handleConfirmBudget}
-                        disabled={!canEdit}
-                        className="bg-green_2 py-3 rounded-md"
-                    >
-                        <Text className="text-white text-center font-medium">
-                            Confirm Change Budget
-                        </Text>
-                    </TouchableOpacity>
+                    {canEdit && (
+                        <TouchableOpacity
+                            onPress={handleConfirmBudget}
+                            disabled={!canEdit}
+                            className="bg-green_2 py-3 rounded-md"
+                        >
+                            <Text className="text-white text-center font-medium">
+                                Confirm Change Budget
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Change Date Duration */}
@@ -340,25 +354,30 @@ const PlanSetting = () => {
                         )}
                     </View>
 
-                    <TouchableOpacity
-                        onPress={handleConfirmDate}
-                        disabled={!canEdit}
-                        className="bg-green_2 py-3 rounded-md mb-3"
-                    >
-                        <Text className="text-white text-center font-medium">
-                            Confirm Change Date
-                        </Text>
-                    </TouchableOpacity>
+                    {canEdit && (
+                        <TouchableOpacity
+                            onPress={handleConfirmDate}
+                            disabled={!canEdit}
+                            className="bg-green_2 py-3 rounded-md mb-3"
+                        >
+                            <Text className="text-white text-center font-medium">
+                                Confirm Change Date
+                            </Text>
+                        </TouchableOpacity>
+                    )}
 
-                    <View className="flex-col items-center justify-center">
-                        <Text className="text-gray-500 text-xs">
-                            The new schedule will follow the original date order
-                        </Text>
-                        <Text className="text-gray-500 text-xs">
-                            Dates falling before the original range will be
-                            removed
-                        </Text>
-                    </View>
+                    {canEdit && (
+                        <View className="flex-col items-center justify-center">
+                            <Text className="text-gray-500 text-xs">
+                                The new schedule will follow the original date
+                                order
+                            </Text>
+                            <Text className="text-gray-500 text-xs">
+                                Dates falling before the original range will be
+                                removed
+                            </Text>
+                        </View>
+                    )}
                 </View>
 
                 {/* Change Poster Trip */}
@@ -390,15 +409,17 @@ const PlanSetting = () => {
                             </>
                         )}
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={handleConfirmPoster}
-                        disabled={!canEdit}
-                        className="bg-green_2 py-3 rounded-md"
-                    >
-                        <Text className="text-white text-center font-medium">
-                            Confirm Change Poster
-                        </Text>
-                    </TouchableOpacity>
+                    {canEdit && (
+                        <TouchableOpacity
+                            onPress={handleConfirmPoster}
+                            disabled={!canEdit}
+                            className="bg-green_2 py-3 rounded-md"
+                        >
+                            <Text className="text-white text-center font-medium">
+                                Confirm Change Poster
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Trip Code & Password */}
@@ -470,14 +491,16 @@ const PlanSetting = () => {
                 animationType="slide"
                 onRequestClose={() => setShowLeaveModal(false)}
             >
-                <View
-                    className={`flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray_border`}
-                >
-                    <TouchableOpacity onPress={handleBack} className="p-2">
+                <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray_border">
+                    {/* ✅ ปุ่ม Back: ปิด modal ได้จริง */}
+                    <TouchableOpacity
+                        onPress={() => setShowLeaveModal(false)}
+                        className="p-2"
+                    >
                         <Ionicons name="chevron-back" size={24} color="#333" />
                     </TouchableOpacity>
 
-                    <Text className={`text-lg font-semibold text-black`}>
+                    <Text className="text-lg font-semibold text-black">
                         Leave Trip
                     </Text>
 
@@ -491,14 +514,21 @@ const PlanSetting = () => {
                         </Text>
                         <Text className="text-gray-600">
                             You&apos;re the trip Owner, Please assign your role
-                            before leaving
+                            before leaving.
                         </Text>
                     </View>
 
                     {/* Select New Owner */}
-                    <Text className="text-lg font-medium mb-3 ml-2">
-                        Select New Owner
-                    </Text>
+                    {otherMembers.length != 1 ? (
+                        <Text className="text-lg font-medium mb-3 ml-2">
+                            Select New Owner
+                        </Text>
+                    ) : (
+                        <Text className="text-lg text-red-500 font-medium mb-3 ml-2">
+                            No one is managing this trip anymore. If you wish to
+                            remove it, please tap 'Delete Trip' instead.
+                        </Text>
+                    )}
 
                     <ScrollView className="max-h-60 mb-4">
                         {otherMembers.map(member => (
@@ -515,7 +545,7 @@ const PlanSetting = () => {
                                     source={{ uri: member.user_image }}
                                     className="w-10 h-10 rounded-full"
                                 />
-                                <Text className="text-base font-medium">
+                                <Text className="text-base font-medium ml-3">
                                     {member.name}
                                 </Text>
                             </TouchableOpacity>
@@ -523,14 +553,16 @@ const PlanSetting = () => {
                     </ScrollView>
 
                     {/* Confirm Button */}
-                    <TouchableOpacity
-                        onPress={handleConfirmLeave}
-                        className="bg-red-500 py-4 rounded-lg"
-                    >
-                        <Text className="text-white text-center font-medium text-lg">
-                            Confirm
-                        </Text>
-                    </TouchableOpacity>
+                    {otherMembers.length !== 1 && (
+                        <TouchableOpacity
+                            onPress={handleConfirmLeave}
+                            className="bg-red-500 py-4 rounded-lg"
+                        >
+                            <Text className="text-white text-center font-medium text-lg">
+                                Confirm
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </Modal>
         </View>
