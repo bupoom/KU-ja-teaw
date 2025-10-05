@@ -74,7 +74,7 @@ const PlaceScreen = () => {
                     className="flex-row items-center bg-gray-50 rounded-full px-4 py-3 border border-gray_border"
                 >
                     <Feather name="search" size={20} color="#666" />
-                    <Text className="text-gray-400 ml-3 flex-1">Search...</Text>
+                    <Text className="text-gray-400 ml-3 flex-1">Search to Add Bookmark ...</Text>
                 </TouchableOpacity>
             </View>
 
