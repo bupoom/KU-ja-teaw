@@ -181,6 +181,17 @@ const PlanIndex = () => {
   };
 
   // ---  Flight management functions   ---
+
+  // const fetch_flight_detail = async () => {
+  //   try {
+  //     const detail = await get_flight_detail(parseInt(plan_id));
+  //     setFlights(detail);
+  //   } catch (err) {
+  //     console.error("Failed to fetch user more detail:", err);
+  //     return null;
+  //   }
+  // };
+
   const resetFlightForm = () => {
     setFlightForm({
       departure_date: "",
