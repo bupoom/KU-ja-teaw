@@ -128,10 +128,12 @@ const SearchPlaceVote: React.FC = () => {
       <StatusBar barStyle="dark-content" backgroundColor="#075952" />
 
       {/* Mode toggle */}
-      <View className="flex-row justify-center mb-4 mt-4">
+      <View className="flex-row justify-center p-4 mt-4">
         <TouchableOpacity
-          className={`px-6 py-3 rounded-full mx-2 ${
-            mode === "search" ? "bg-green_2" : "bg-gray-200"
+          className={`justify-center items-center rounded-full w-[48%] py-4 ${
+            mode === "search"
+              ? "bg-green_2"
+              : "bg-white border border-gray_border rounded-full"
           }`}
           onPress={() => setMode("search")}
         >
@@ -143,9 +145,12 @@ const SearchPlaceVote: React.FC = () => {
             Search
           </Text>
         </TouchableOpacity>
+        <View className="w-[2%]" />
         <TouchableOpacity
-          className={`px-6 py-3 rounded-full mx-2 ${
-            mode === "bookmark" ? "bg-green_2" : "bg-gray-200"
+          className={`justify-center items-center rounded-full w-[48%] py-4 ${
+            mode === "bookmark"
+              ? "bg-green_2"
+              : "bg-white border border-gray_border rounded-full"
           }`}
           onPress={() => setMode("bookmark")}
         >
