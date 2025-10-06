@@ -126,6 +126,7 @@ export const get_trip_detail = async (trip_id:number): Promise<TripDetails> => {
             trip_status: response.data.planning_status,
             trip_code: "k",
             trip_password: "k",
+            budget: response.data.budget,
         };
         return trip
     } catch (error) {

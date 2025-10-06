@@ -27,6 +27,7 @@ const PlanSetting = () => {
     const router = useRouter();
     const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
     const [userRole, setUserRole] = useState<string>("");
+    const [collab_id, setCollabID] = useState<number>(0);
     
     const [planningStatus, setPlanningStatus] = useState<string>("");
     const [tripBudget, setTripBudget] = useState<string>("");
@@ -57,7 +58,7 @@ const PlanSetting = () => {
                     const TripsDetail = await get_trip_detail(parseInt(plan_id))
                     setUserRole(UserDetail.role )
                     setCanEdit(UserDetail.role === "Owner")
-
+                    setCollabID(UserDetail.collab_id)
 
                 } catch (err) {
                     console.error("Failed to fetch user more detail:", err);
@@ -147,7 +148,7 @@ const PlanSetting = () => {
                         onPress: () => {
                             console.log(`Leaving trip: ${plan_id}`);
                             try {
-                                leaveTrips(parseInt(plan_id))
+                                leaveTrips(parseInt(plan_id), collab_id);
                             } catch (err) {
                                 Alert.alert("fetch to leave trip. please try again later")
                             }
