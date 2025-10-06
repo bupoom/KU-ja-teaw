@@ -47,3 +47,17 @@ interface TripMember {
     role: "Owner" | "Editor" | "Viewer";
     trip_id: number;
 } // เเสดงในหน้า trip details ที่จบไปเเล้วอ่ะ เเล้ว หน้า Group
+
+interface PatchTrip {
+    trip_id?: number;
+    title?: string;
+    description?: string | null;
+    start_date?: string;
+    end_date?: string;
+    visibility_status?: boolean;
+    budget?: number;
+    trip_url?: string | null;
+    trip_pass?: string;
+    trip_picture_path?: string;
+    planning_status?: boolean;
+}

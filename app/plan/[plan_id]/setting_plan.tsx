@@ -18,10 +18,14 @@ import {
 
 import Header from "@/components/common/Header";
 
-//
-import { get_trip_member } from "@/service/APIserver/groupPage";
-import { get_trip_detail, leaveTrips } from "@/service/APIserver/tripApi";
 import { get_more_detail } from "@/service/APIserver/userService";
+import { get_trip_member } from "@/service/APIserver/groupPage";
+import {
+    get_trip_detail,
+    leaveTrips,
+    deleteTrip,
+    updateTripDetail,
+} from "@/service/APIserver/tripApi";
 
 const PlanSetting = () => {
     const router = useRouter();
@@ -34,6 +38,7 @@ const PlanSetting = () => {
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [posterUri, setPosterUri] = useState<string | null>(null);
+
     const [tripCode, setTripCode] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
@@ -48,11 +53,8 @@ const PlanSetting = () => {
     const fetch_data = async () => {
         try {
             const UserDetail = await get_more_detail(parseInt(plan_id)); // Viewer
-            console.log("this is response get_more_detail : ", UserDetail);
             const TripsDetail = await get_trip_detail(parseInt(plan_id));
-            console.log("this is response get_trip_detail : ", TripsDetail);
             const Member = await get_trip_member(parseInt(plan_id));
-            console.log("this is response get_trip_member : ", Member);
             setPlanningStatus(
                 TripsDetail.trip_status === "completed"
                     ? "planning"
@@ -71,6 +73,54 @@ const PlanSetting = () => {
             );
         } catch (err) {
             console.error("Failed to fetch detail:", err);
+        }
+    };
+
+    const handleChangeTripDetails = async (
+        type: string,
+        value: any,
+        value2?: any
+    ): Promise<void> => {
+        // ใช้ Partial เพื่ออัปเดตบาง field ได้
+        const NewData: Partial<PatchTrip> = { trip_id: parseInt(plan_id) };
+
+        switch (type) {
+            case "planning_status":
+                NewData.planning_status = value === "complete";
+                break;
+
+            case "date":
+                if (value && value2) {
+                    NewData.start_date = value;
+                    NewData.end_date = value2;
+                } else {
+                    console.warn("Invalid date range");
+                    return;
+                }
+                break;
+
+            case "budget":
+                NewData.budget = Number(value);
+                break;
+
+            case "trip_pass":
+                NewData.trip_pass = String(value);
+                break;
+
+            case "trip_picture_path":
+                NewData.trip_picture_path = String(value);
+                break;
+
+            default:
+                console.warn("Invalid update type:", type);
+                return;
+        }
+
+        try {
+            const res = await updateTripDetail(NewData);
+        } catch (err) {
+            console.error("Update failed:", err);
+            Alert.alert("Failed to change", type);
         }
     };
 
@@ -106,11 +156,13 @@ const PlanSetting = () => {
 
     const handleStatusChange = (status: string) => {
         setPlanningStatus(status);
+        handleChangeTripDetails("planning_status", status);
         console.log(`Updating plan ${plan_id} status to: ${status}`);
     };
 
     const handleConfirmBudget = () => {
         console.log(`Update budget for plan: ${plan_id} : ${tripBudget} Baht`);
+        handleChangeTripDetails("budget", tripBudget);
         Alert.alert("Success", "Budget updated successfully!");
     };
 
@@ -123,6 +175,7 @@ const PlanSetting = () => {
             Alert.alert("Error", "End date must be after start date");
             return;
         }
+        handleChangeTripDetails("date", startDate, endDate);
         console.log(
             `Update dates for plan: ${plan_id} - Start: ${startDate}, End: ${endDate}`
         );
@@ -135,15 +188,18 @@ const PlanSetting = () => {
             return;
         }
         console.log(`Update poster for plan: ${plan_id} : ${posterUri}`);
+        handleChangeTripDetails("trip_picture_path",posterUri)
         Alert.alert("Success", "Trip poster updated successfully!");
     };
 
     const handleConfirmPassword = () => {
         console.log(`Update password for plan: ${plan_id} : ${password}`);
+        handleChangeTripDetails("trip_pass",password)
         Alert.alert("Success", "Password updated successfully!");
     };
 
     const handleLeaveTrip = () => {
+        // ของ user ธรรมดา
         if (canEdit) {
             setShowLeaveModal(true);
         } else {
@@ -155,7 +211,17 @@ const PlanSetting = () => {
                     {
                         text: "Leave",
                         style: "destructive",
-                        onPress: () => {},
+                        onPress: () => {
+                            console.log(`Leaving trip: ${plan_id}`);
+                            try {
+                                leaveTrips(parseInt(plan_id), 0);
+                                router.replace("/tabs/(home)");
+                            } catch (err) {
+                                Alert.alert(
+                                    "fetch to leave trip. please try again later"
+                                );
+                            }
+                        },
                     },
                 ]
             );
@@ -163,6 +229,7 @@ const PlanSetting = () => {
     };
 
     const handleConfirmLeave = () => {
+        // ของ owner
         console.log(
             `Transferring ownership to user ${newOwner} and leaving trip: ${plan_id}`
         );
@@ -185,9 +252,17 @@ const PlanSetting = () => {
                 {
                     text: "Delete",
                     style: "destructive",
-                    onPress: () => {
+                    onPress: async () => {
                         console.log(`Deleting trip: ${plan_id}`);
-                        router.replace("/tabs/(home)");
+                        try {
+                            const success = await deleteTrip(parseInt(plan_id));
+                            if (success) {
+                                console.log("Trip deleted successfully");
+                                router.replace("/tabs/(home)");
+                            }
+                        } catch (err) {
+                            console.error("Failed to delete trip:", err);
+                        }
                     },
                 },
             ]
@@ -519,14 +594,14 @@ const PlanSetting = () => {
                     </View>
 
                     {/* Select New Owner */}
-                    {otherMembers.length != 1 ? (
+                    {otherMembers.length >= 1 ? (
                         <Text className="text-lg font-medium mb-3 ml-2">
                             Select New Owner
                         </Text>
                     ) : (
                         <Text className="text-lg text-red-500 font-medium mb-3 ml-2">
                             No one is managing this trip anymore. If you wish to
-                            remove it, please tap 'Delete Trip' instead.
+                            remove it, please tap Delete Trip instead.
                         </Text>
                     )}
 
@@ -553,7 +628,7 @@ const PlanSetting = () => {
                     </ScrollView>
 
                     {/* Confirm Button */}
-                    {otherMembers.length !== 1 && (
+                    {otherMembers.length >= 1 && (
                         <TouchableOpacity
                             onPress={handleConfirmLeave}
                             className="bg-red-500 py-4 rounded-lg"
