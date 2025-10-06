@@ -1,5 +1,5 @@
 import apiClient from "../client";
-import { combineDateTime } from "@/util/combineDateTime";
+import { combineDateTime, getTime } from "@/util/combineDateTime";
 
 export const get_flight_detail = async (trip_id: number): Promise<Flight[]> => {
     try {
@@ -39,12 +39,59 @@ export const get_flight_detail = async (trip_id: number): Promise<Flight[]> => {
 
 export const add_flight = async (trip_id: number, flight: Flight): Promise<void> => {
     try {
-        console.log("Adding flight ...");
-        const response = (await apiClient.post(`/api/trips/${trip_id}/flights`,
-            flight
-        ))
+        console.log("Adding flight\n", flight);
+
+        const response = await apiClient.post(`/api/trips/${trip_id}/flights`, {
+        dep_date: flight.departure_date,
+        dep_time: getTime(flight.departure_date),
+        dep_country: flight.departure_country,
+        dep_airp_code: flight.departure_airport,
+
+        arr_date: flight.arrival_date,
+        arr_time: getTime(flight.arrival_date),
+        arr_country: flight.arrival_country,
+        arr_airp_code: flight.arrival_airport,
+
+        airl_name: flight.airline,
+        });
+
+        console.log("Flight added:", response.data);
     } catch (error) {
-        console.error("Response data:", error);
+        console.error("Add flight error:", error);
+        throw error;
+    }
+};
+
+export const delete_flight = async (trip_id:number, flight_id:number) : Promise<void> => {
+    try {
+        console.log("Deleting flight : ", flight_id);
+        const response = await apiClient.delete(`/api/trips/${trip_id}/flights/${flight_id}`);
+        console.log(`${flight_id} has been deleted`);
+    }  catch (error) {
+        console.error("Delete flight error:", error);
+        throw error;
+    }
+};
+
+export const edit_flight = async (trip_id:number, flight_id:number, flight: Flight) : Promise<void> => {
+    try {
+        console.log("Editing flight : ", flight);
+        const response = await apiClient.put(`/api/trips/${trip_id}/flights/${flight_id}`,{
+            dep_date: flight.departure_date,
+            dep_time: getTime(flight.departure_date),
+            dep_country: flight.departure_country,
+            dep_airp_code: flight.departure_airport,
+
+            arr_date: flight.arrival_date,
+            arr_time: getTime(flight.arrival_date),
+            arr_country: flight.arrival_country,
+            arr_airp_code: flight.arrival_airport,
+
+            airl_name: flight.airline,
+        });
+        console.log(`${flight_id} has been edited`);
+    }  catch (error) {
+        console.error("Delete flight error:", error);
         throw error;
     }
 };

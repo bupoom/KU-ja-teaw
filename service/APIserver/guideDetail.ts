@@ -1,6 +1,5 @@
 import { combineDateTime } from "@/util/combineDateTime";
 import apiClient from "../client";
-import { changeDateformat } from "@/util/formatFucntion/makeDateCorrect";
 
 const endpoints = {
     guide: {
@@ -33,7 +32,7 @@ export const getGuideDetails = async (Id:number): Promise<GuideAndFlight> => {
             copies: Data.trip_detail.total_copied, 
             owner_name: Data.owner_detail.name, 
             owner_image: Data.owner_detail.profile_picture_link, 
-            description: "", // server ไม่มีนะคับ
+            description: Data.trip_detail.description,
             owner_email: Data.owner_detail.email, 
             group_members: Data.trip_detail.joined_people, 
             budget: Data.trip_detail.budget, 

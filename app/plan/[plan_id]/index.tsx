@@ -33,7 +33,7 @@ import {
 } from "@/service/APIserver/Note";
 import { get_more_detail } from "@/service/APIserver/userService";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
-import { get_flight_detail } from "@/service/APIserver/Flight";
+import { add_flight, delete_flight, edit_flight, get_flight_detail } from "@/service/APIserver/Flight";
 
 const PlanIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
@@ -207,45 +207,63 @@ const PlanIndex = () => {
   };
   const handleEditFlight = (flight: Flight) => {
     if (canEdit) {
-      // Parse the date and time from the flight data
       const departureDateTime = new Date(flight.departure_date);
       const arrivalDateTime = new Date(flight.arrival_date);
 
+      // ✅ ดึง date/time แบบ local ไม่ใช้ toISOString()
+      const formatDate = (d: Date) => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`; // YYYY-MM-DD
+      };
+
+      const formatTime = (d: Date) => {
+        const hours = String(d.getHours()).padStart(2, "0");
+        const minutes = String(d.getMinutes()).padStart(2, "0");
+        return `${hours}:${minutes}`; // HH:mm
+      };
+
       setFlightForm({
-        departure_date: departureDateTime.toISOString().split("T")[0],
-        departure_time: departureDateTime.toTimeString().slice(0, 5),
+        departure_date: formatDate(departureDateTime),
+        departure_time: formatTime(departureDateTime),
         departure_country: flight.departure_country,
         departure_airport: flight.departure_airport,
-        arrival_date: arrivalDateTime.toISOString().split("T")[0],
-        arrival_time: arrivalDateTime.toTimeString().slice(0, 5),
+        arrival_date: formatDate(arrivalDateTime),
+        arrival_time: formatTime(arrivalDateTime),
         arrival_country: flight.arrival_country,
         arrival_airport: flight.arrival_airport,
         airline: flight.airline,
       });
+
       setEditingFlightId(flight.id);
       setIsFlightModalVisible(true);
     }
-  }; // เอาไว้กรองค่าใหม่ลง Flights Form
-  const handleSaveFlight = () => {
+  };
+ // เอาไว้กรองค่าใหม่ลง Flights Form
+  const handleSaveFlight = async () => {
     if (!validateFlightForm()) return; // เช็คว่าต้องมี Date เเละ Time ถ้าไม่เช็คมันจะ Error
 
     if (editingFlightId) {
       // Update existing flight
+      const updatedFlight: Flight = {
+        id: editingFlightId,
+        departure_date: `${flightForm.departure_date}T${flightForm.departure_time}:00`,
+        arrival_date: `${flightForm.arrival_date}T${flightForm.arrival_time}:00`,
+        departure_country: flightForm.departure_country,
+        departure_airport: flightForm.departure_airport,
+        arrival_country: flightForm.arrival_country,
+        arrival_airport: flightForm.arrival_airport,
+        airline: flightForm.airline,
+        trip_id: parseInt(plan_id!),
+      };
+
+      // ✅ ใช้ updatedFlight โดยตรง
+      await edit_flight(parseInt(plan_id), editingFlightId, updatedFlight);
+
+      // ✅ ค่อยอัปเดต state หลังจาก backend สำเร็จ
       setFlights((prev) =>
-        prev.map((flight) =>
-          flight.id === editingFlightId
-            ? {
-                ...flight,
-                departure_date: `${flightForm.departure_date}T${flightForm.departure_time}:00`,
-                arrival_date: `${flightForm.arrival_date}T${flightForm.arrival_time}:00`,
-                departure_country: flightForm.departure_country,
-                departure_airport: flightForm.departure_airport,
-                arrival_country: flightForm.arrival_country,
-                arrival_airport: flightForm.arrival_airport,
-                airline: flightForm.airline,
-              }
-            : flight
-        )
+        prev.map((f) => (f.id === editingFlightId ? updatedFlight : f))
       );
     } else {
       // Add new flight
@@ -260,6 +278,7 @@ const PlanIndex = () => {
         airline: flightForm.airline,
         trip_id: parseInt(plan_id!),
       };
+      await add_flight(parseInt(plan_id), newFlight);
       setFlights((prev) => [...prev, newFlight]);
     }
     setIsFlightModalVisible(false);
@@ -282,9 +301,10 @@ const PlanIndex = () => {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
+          onPress: async () => {
             setFlights((prev) => prev.filter((flight) => flight.id !== id));
             setIsFlightModalVisible(false);
+            await delete_flight(parseInt(plan_id), id);
           },
         },
       ]
