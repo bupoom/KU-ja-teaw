@@ -1,3 +1,4 @@
+import { combineDateTime } from "@/util/combineDateTime";
 import apiClient from "../client";
 import { changeDateformat } from "@/util/formatFucntion/makeDateCorrect";
 
@@ -43,12 +44,14 @@ export const getGuideDetails = async (Id:number): Promise<GuideAndFlight> => {
         const FlatList : Flight[] = [];
         for (let i = 0 ; i < FlightList.length; i++ ) {
             const Flight = FlightList[i];
+            const departure_date = combineDateTime(Flight.depart.dep_date, Flight.depart.dep_time);
+            const arrival_date = combineDateTime(Flight.arrive.arr_date, Flight.arrive.arr_time);
             FlatList.push({
                 id: Flight.flight_id,
                 departure_airport: Flight.depart.dep_airp_code,
                 arrival_airport: Flight.arrive.arr_airp_code,
-                departure_date: changeDateformat(Flight.depart.dep_date),
-                arrival_date: changeDateformat(Flight.arrive.arr_date),
+                departure_date,
+                arrival_date,
                 airline: Flight.airl_name,
                 departure_country: Flight.depart.dep_country,
                 arrival_country: Flight.arrive.arr_country,

@@ -28,12 +28,11 @@ interface TransportationOption {
 } // ตัวเลือกการเดินทาง
 
 interface NotificationBox {
-    id: number;
-    title: string;
-    message: string;
-    created_at: string;
-    // notification_type?: string;
-    trip_id: number;
+    noti_id: number;
+    noti_title: string;
+    noti_text: string;
+    noti_date: string;
+    noti_time: string;
 } // เเสดงหน้า notification ใน daily trip
 
 interface LoadingState {

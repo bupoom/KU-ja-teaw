@@ -1,69 +1,50 @@
 import apiClient from "../client";
-import { changeDateformat } from "@/util/formatFucntion/makeDateCorrect";
+import { combineDateTime } from "@/util/combineDateTime";
 
-const endpoints = {
-    guide: {
-        getGuideDetails:"/api/trips", // /{trips_id}/summarize
-    },
-};
-
-interface GuideAndFlight {
-    GuideData : GuideDetails;
-    FlightData: Flight[];
- }
-
-export const getGuideDetails = async (Id:number): Promise<GuideAndFlight> => {
+export const get_flight_detail = async (trip_id: number): Promise<Flight[]> => {
     try {
-        console.log("start : fetching Guide Deatails with guide ID : " ,Id);
-        const response_guide = (await apiClient.get(
-            `${endpoints.guide.getGuideDetails}/${Id}/summarize`
-        )) as {
-            data: any;
+        console.log("fetching flight detail");
+        const response = (await apiClient.get(`/api/trips/${trip_id}/flights`)) as {
+            data: { flights: any[]};
         };
 
-        const Data = response_guide.data;
+        console.log(response.data.flights);
+        const data = response.data.flights;
+        const flight_list: Flight[] = [];
+        for (let i = 0; i < data.length; i++){
+            const serverData = data[i];
 
-        const resultGuideDetails: GuideDetails = {
-            id: Data.trip_detail.trip_id, // backend ไม่แยก Trips id กับ Trips id !!
-            title: Data.trip_detail.title, 
-            start_date: Data.trip_detail.start_date, 
-            end_date: Data.trip_detail.end_date, 
-            guide_image: Data.trip_detail.poster_image_link, 
-            copies: Data.trip_detail.total_copied, 
-            owner_name: Data.owner_detail.name, 
-            owner_image: Data.owner_detail.profile_picture_link, 
-            description: "", // server ไม่มีนะคับ
-            owner_email: Data.owner_detail.email, 
-            group_members: Data.trip_detail.joined_people, 
-            budget: Data.trip_detail.budget, 
-            trip_id: Data.trip_detail.trip_id, 
-            note: [], 
-        }
-        const FlightList = Data.flight_detail;
-        const FlatList : Flight[] = [];
-        for (let i = 0 ; i < FlightList.length; i++ ) {
-            const Flight = FlightList[i];
-            FlatList.push({
-                id: Flight.flight_id,
-                departure_airport: Flight.depart.dep_airp_code,
-                arrival_airport: Flight.arrive.arr_airp_code,
-                departure_date: changeDateformat(Flight.depart.dep_date),
-                arrival_date: changeDateformat(Flight.arrive.arr_date),
-                airline: Flight.airl_name,
-                departure_country: Flight.depart.dep_country,
-                arrival_country: Flight.arrive.arr_country,
-                trip_id: Data.trip_detail.trip_id,
+            const departure_date = combineDateTime(serverData.depart_date, serverData.depart_time);
+            const arrival_date = combineDateTime(serverData.arrive_date, serverData.arrive_time);
+
+            flight_list.push({
+                id: serverData.flight_id,
+                departure_airport: serverData.dep_airport_code,
+                arrival_airport: serverData.arr_airport_code,
+                departure_date,
+                arrival_date,
+                airline: serverData.airline,
+                departure_country: serverData.dep_country,
+                arrival_country: serverData.arr_country,
+                trip_id: trip_id,
             });
         }
-
-        return {
-            GuideData: resultGuideDetails,
-            FlightData: FlatList
-        };
-
+        console.log("Flight list : ", flight_list);
+        return flight_list;
     } catch (error) {
         console.error("Response data:", error);
         throw error;
-        
+    }
+};
+
+export const add_flight = async (trip_id: number, flight: Flight): Promise<void> => {
+    try {
+        console.log("Adding flight ...");
+        const response = (await apiClient.post(`/api/trips/${trip_id}/flights`,
+            flight
+        ))
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
     }
 };

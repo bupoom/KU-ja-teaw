@@ -11,7 +11,6 @@ export default function DailyTripsLayout() {
       <Stack.Screen name="eventDetails/[event_detail_id]" />
       <Stack.Screen name="placeDetails/[place_detail_id]" />
       <Stack.Screen name="map"/>
-      <Stack.Screen name="notification" />
     </Stack>
   );
 }

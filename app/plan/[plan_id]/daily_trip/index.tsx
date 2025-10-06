@@ -184,19 +184,9 @@ const DailyTripsIndex = () => {
     }
   }, [dates, date]);
 
-  // <------------------------------------ Notification --------------------------------------------->
-  const [notifications, setNotifications] = useState<NotificationBox[]>([]);
-  const [newNotifications, setNewNotifications] = useState(false);
-
-  // <------------------------------------- Add and List Button ------------------------------------->
-
-  //Animation State
   const [showSelectAdd, setShowSelectAdd] = useState(false);
-  const [showSelectNotiMap, setShowSelectNotiMap] = useState(false);
-  const [isListOpen, setIsListOpen] = useState(false); // เพิ่ม state สำหรับเช็คสถานะของปุ่ม list
   const [isAddOpen, setIsAddOpen] = useState(false); // เพิ่ม state สำหรับเช็คสถานะของปุ่ม add
   const slideAnim = useRef(new Animated.Value(0)).current;
-  const listSlideAnim = useRef(new Animated.Value(0)).current; // เพิ่ม animation สำหรับ list
 
   // <-------------------------------------- Render Item -------------------------------------------->
 
@@ -399,17 +389,6 @@ const DailyTripsIndex = () => {
       toValue: 1,
       useNativeDriver: true,
     }).start();
-
-    const newNoti: NotificationBox = {
-      id: notifications.length + 1,
-      title: "New Activity Added",
-      message: "You added a new activity to your trip.",
-      created_at: new Date().toISOString(),
-      trip_id: parseInt(plan_id),
-    };
-    setNotifications((prev) => [...prev, newNoti]);
-    setNewNotifications(true); // ทำให้จุดแดงขึ้น
-
     console.log("Add Button clicked");
   };
 
@@ -424,27 +403,6 @@ const DailyTripsIndex = () => {
     console.log("Class Add Button clicked");
   };
 
-  const handleListPress = () => {
-    setIsListOpen(true);
-    setShowSelectNotiMap(true); // เปิด container เลย
-    Animated.spring(listSlideAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-    console.log("List view clicked");
-  };
-
-  const handleCloseList = () => {
-    setIsListOpen(false); // icon กลับทันที
-    Animated.spring(listSlideAnim, {
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
-
-    // ปิด container เร็วขึ้น ไม่ต้องรอ animation
-    setTimeout(() => setShowSelectNotiMap(false), 100);
-    console.log("Close List view clicked");
-  };
 
   const handleAddPlace = () => {
     console.log("Add Place clicked");
@@ -468,15 +426,7 @@ const DailyTripsIndex = () => {
 
   const handleMapPress = () => {
     console.log("Map view clicked");
-    handleCloseList();
     router.push(`/plan/${plan_id}/daily_trip/map`);
-  };
-
-  const handleNotificationPress = () => {
-    console.log("Notification view clicked");
-    handleCloseList();
-    setNewNotifications(false); // reset dot เมื่อกด
-    router.push(`/plan/${plan_id}/daily_trip/notification`);
   };
 
   // <----------------------- Function Activity -------------------------------->
@@ -536,7 +486,11 @@ const DailyTripsIndex = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <PlanHeader planId={plan_id} />
-      <DateSelector dates={dates} onDateSelect={handleselectDate} selectedDate={date}/>
+      <DateSelector
+        dates={dates}
+        onDateSelect={handleselectDate}
+        selectedDate={date}
+      />
 
       <View className="flex-row justify-between items-center mx-4 my-2 p-4 rounded-lg border border-gray_border">
         <Text className="text-black font-bold text-xl">
@@ -616,20 +570,10 @@ const DailyTripsIndex = () => {
 
       {/* List Button */}
       <TouchableOpacity
-        className="absolute bottom-12 left-10 w-16 h-16 rounded-full bg-white justify-center items-center border border-gray_border"
-        onPress={isListOpen ? handleCloseList : handleListPress}
-        activeOpacity={0.8}
+        className="absolute w-16 h-16 bottom-12 left-10 bg-white rounded-full border border-gray_border items-center justify-center"
+        onPress={handleMapPress}
       >
-        {isListOpen ? (
-          <AntDesign name="close" size={24} color="black" />
-        ) : (
-          <View>
-            <Feather name="list" size={24} color="black" />
-            {newNotifications && (
-              <View className="absolute top-0 right-0 w-2 h-2 bg-super_red rounded-full" />
-            )}
-          </View>
-        )}
+        <Feather name="map" size={24} color="black" />
       </TouchableOpacity>
 
       {/* Show Options Add*/}
@@ -729,79 +673,6 @@ const DailyTripsIndex = () => {
                   </TouchableOpacity>
                 </Animated.View>
               </Animated.View>
-            </View>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Show Options List */}
-      {showSelectNotiMap && (
-        <View className="absolute inset-0 bg-white/0">
-          <TouchableOpacity className="flex-1" activeOpacity={1}>
-            <View className="absolute bottom-12 left-10 flex-col items-center justify-center gap-2">
-              {/* Notification Button */}
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      translateY: listSlideAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [160, 0],
-                      }),
-                    },
-                  ],
-                  opacity: listSlideAnim,
-                }}
-              >
-                <TouchableOpacity
-                  className="w-16 h-16 bg-white rounded-full border border-gray_border items-center justify-center"
-                  onPress={() => {
-                    handleNotificationPress();
-                    setNewNotifications(false); // reset noti เมื่อกด
-                  }}
-                >
-                  <View>
-                    <Ionicons
-                      name="notifications-outline"
-                      size={24}
-                      color="black"
-                    />
-                    {newNotifications && (
-                      <View className="absolute top-0 right-0 w-2 h-2 bg-super_red rounded-full" />
-                    )}
-                  </View>
-                </TouchableOpacity>
-              </Animated.View>
-
-              {/* Map Button - เด้งจากด้านล่างขึ้นมา */}
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      translateY: listSlideAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [80, 0], // เริ่มต่ำกว่าเดิม 80px แล้วเลื่อนขึ้นมา
-                      }),
-                    },
-                  ],
-                  opacity: listSlideAnim,
-                }}
-              >
-                <TouchableOpacity
-                  className="w-16 h-16 bg-white rounded-full border border-gray_border items-center justify-center"
-                  onPress={handleMapPress}
-                >
-                  <Feather name="map" size={24} color="black" />
-                </TouchableOpacity>
-              </Animated.View>
-
-              {/* Close Button - ยังคงอยู่ที่เดิม */}
-              <TouchableOpacity
-                className="w-16 h-16 bg-white rounded-full border border-gray_border items-center justify-center"
-                onPress={handleCloseList}
-              >
-                <AntDesign name="close" size={24} color="black" />
-              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         </View>
