@@ -421,7 +421,7 @@ const PlanIndex = () => {
       file_name: selectedFile.name,
       file_size_mb: selectedFile.size / (1024 * 1024), // แปลง byte → MB
       file_url: selectedFile.uri,
-      uploaded_by: "ไ",
+      uploaded_by: "",
       uploaded_date: new Date().toISOString(),
       trip_id: parseInt(plan_id!),
     };
@@ -460,7 +460,7 @@ const PlanIndex = () => {
           </TouchableOpacity>
 
           {/* Notes Content */}
-          <View className="pb-4">
+          <View>
             {userNotes && (
               <NoteItem
                 note={userNotes}

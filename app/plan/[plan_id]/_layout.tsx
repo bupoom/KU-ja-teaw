@@ -12,6 +12,7 @@ export default function PlanLayout() {
             <Tabs.Screen name="daily_trip" />
             <Tabs.Screen name="group" />
             <Tabs.Screen name="setting_plan" />
+            <Tabs.Screen name="notification" />
         </Tabs>
     );
 }
