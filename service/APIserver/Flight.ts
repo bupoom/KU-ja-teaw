@@ -91,7 +91,7 @@ export const edit_flight = async (trip_id:number, flight_id:number, flight: Flig
         });
         console.log(`${flight_id} has been edited`);
     }  catch (error) {
-        console.error("Delete flight error:", error);
+        console.error("Edit flight error:", error);
         throw error;
     }
 };
