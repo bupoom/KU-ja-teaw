@@ -33,6 +33,7 @@ import {
 } from "@/service/APIserver/Note";
 import { get_more_detail } from "@/service/APIserver/userService";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
+import { get_flight_detail } from "@/service/APIserver/Flight";
 
 const PlanIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
@@ -86,10 +87,7 @@ const PlanIndex = () => {
     setRefreshing(true);
     fetchUserAndNote();
     // Fetch flights
-    const flightData = mockFlights.filter(
-      (flight) => flight.trip_id == parseInt(plan_id)
-    );
-    setFlights(flightData);
+    fetch_flight_detail();
 
     // Fetch File
     const fileData = mockFileGroups.filter(
@@ -151,10 +149,7 @@ const PlanIndex = () => {
     if (plan_id) {
       fetchUserAndNote();
       // Fetch flights
-      const flightData = mockFlights.filter(
-        (flight) => flight.trip_id == parseInt(plan_id)
-      );
-      setFlights(flightData);
+      fetch_flight_detail();
 
       // Fetch File
       const fileData = mockFileGroups.filter(
@@ -182,15 +177,15 @@ const PlanIndex = () => {
 
   // ---  Flight management functions   ---
 
-  // const fetch_flight_detail = async () => {
-  //   try {
-  //     const detail = await get_flight_detail(parseInt(plan_id));
-  //     setFlights(detail);
-  //   } catch (err) {
-  //     console.error("Failed to fetch user more detail:", err);
-  //     return null;
-  //   }
-  // };
+  const fetch_flight_detail = async () => {
+    try {
+      const detail = await get_flight_detail(parseInt(plan_id));
+      setFlights(detail);
+    } catch (err) {
+      console.error("Failed to fetch user more detail:", err);
+      return null;
+    }
+  };
 
   const resetFlightForm = () => {
     setFlightForm({
