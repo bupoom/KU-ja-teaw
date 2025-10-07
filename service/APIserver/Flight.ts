@@ -42,17 +42,17 @@ export const add_flight = async (trip_id: number, flight: Flight): Promise<void>
         console.log("Adding flight\n", flight);
 
         const response = await apiClient.post(`/api/trips/${trip_id}/flights`, {
-        dep_date: flight.departure_date,
-        dep_time: getTime(flight.departure_date),
-        dep_country: flight.departure_country,
-        dep_airp_code: flight.departure_airport,
+            dep_date: flight.departure_date.split('T')[0],
+            dep_time: flight.departure_date.split('T')[1],
+            dep_country: flight.departure_country,
+            dep_airp_code: flight.departure_airport,
 
-        arr_date: flight.arrival_date,
-        arr_time: getTime(flight.arrival_date),
-        arr_country: flight.arrival_country,
-        arr_airp_code: flight.arrival_airport,
+            arr_date: flight.arrival_date.split('T')[0],
+            arr_time: flight.arrival_date.split('T')[1],
+            arr_country: flight.arrival_country,
+            arr_airp_code: flight.arrival_airport,
 
-        airl_name: flight.airline,
+            airl_name: flight.airline,
         });
 
         console.log("Flight added:", response.data);
@@ -77,13 +77,13 @@ export const edit_flight = async (trip_id:number, flight_id:number, flight: Flig
     try {
         console.log("Editing flight : ", flight);
         const response = await apiClient.put(`/api/trips/${trip_id}/flights/${flight_id}`,{
-            dep_date: flight.departure_date,
-            dep_time: getTime(flight.departure_date),
+            dep_date: flight.departure_date.split('T')[0],
+            dep_time: flight.departure_date.split('T')[1],
             dep_country: flight.departure_country,
             dep_airp_code: flight.departure_airport,
 
-            arr_date: flight.arrival_date,
-            arr_time: getTime(flight.arrival_date),
+            arr_date: flight.arrival_date.split('T')[0],
+            arr_time: flight.arrival_date.split('T')[1],
             arr_country: flight.arrival_country,
             arr_airp_code: flight.arrival_airport,
 
