@@ -34,6 +34,7 @@ import {
 import { get_more_detail } from "@/service/APIserver/userService";
 import { formatFileSize } from "@/util/formatFucntion/formatFileSize";
 import { add_flight, delete_flight, edit_flight, get_flight_detail } from "@/service/APIserver/Flight";
+import { delete_file, get_all_file, get_download_link, upload_file } from "@/service/APIserver/File";
 
 const PlanIndex = () => {
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
@@ -88,12 +89,9 @@ const PlanIndex = () => {
     fetchUserAndNote();
     // Fetch flights
     fetch_flight_detail();
-
     // Fetch File
-    const fileData = mockFileGroups.filter(
-      (file) => file.trip_id == parseInt(plan_id)
-    );
-    setFileGroup(fileData);
+    fetch_file();
+
     setTimeout(() => setRefreshing(false), 800);
   }, []);
 
@@ -152,10 +150,7 @@ const PlanIndex = () => {
       fetch_flight_detail();
 
       // Fetch File
-      const fileData = mockFileGroups.filter(
-        (file) => file.trip_id == parseInt(plan_id)
-      );
-      setFileGroup(fileData);
+      fetch_file();
     }
   }, [plan_id]);
 
@@ -279,7 +274,7 @@ const PlanIndex = () => {
         trip_id: parseInt(plan_id!),
       };
       await add_flight(parseInt(plan_id), newFlight);
-      setFlights((prev) => [...prev, newFlight]);
+      fetch_flight_detail();
     }
     setIsFlightModalVisible(false);
     resetFlightForm();
@@ -354,6 +349,16 @@ const PlanIndex = () => {
 
   // File management functions
 
+  const fetch_file = async() => {
+    try {
+      const detail = await get_all_file(parseInt(plan_id));
+      setFileGroup(detail);
+    } catch (err) {
+      console.error("Failed to fetch file:", err);
+      return null;
+    }
+  };
+
   const calculateTotalSize = () => {
     const totalMB = file.reduce((sum, file) => sum + file.file_size_mb, 0);
     return {
@@ -365,7 +370,7 @@ const PlanIndex = () => {
   const handleDownloadFile = async (file: FileGroup) => {
     try {
       let localUri = "";
-
+      file.file_url = await get_download_link(file.trip_id, file.id);
       if (file.file_url.startsWith("http")) {
         // ถ้าเป็นไฟล์ออนไลน์ → โหลดมาเก็บ local ก่อน
         const fileUri = FileSystem.documentDirectory + file.file_name;
@@ -403,7 +408,8 @@ const PlanIndex = () => {
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => {
+        onPress: async () => {
+          await delete_file(parseInt(plan_id), fileId);
           setFileGroup((prev) => prev.filter((file) => file.id !== fileId));
         },
       },
@@ -425,23 +431,14 @@ const PlanIndex = () => {
     }
   };
 
-  const handleConfirmUpload = () => {
+  const handleConfirmUpload = async () => {
     if (!selectedFile) {
       Alert.alert("No File", "Please select a file before confirming.");
       return;
     }
 
-    const newFile: FileGroup = {
-      id: Math.max(...file.map((f) => f.id), 0) + 1,
-      file_name: selectedFile.name,
-      file_size_mb: selectedFile.size / (1024 * 1024), // แปลง byte → MB
-      file_url: selectedFile.uri,
-      uploaded_by: "",
-      uploaded_date: new Date().toISOString(),
-      trip_id: parseInt(plan_id!),
-    };
-
-    setFileGroup((prev) => [...prev, newFile]);
+    await upload_file(selectedFile, parseInt(plan_id));
+    fetch_file();
     setSelectedFile(null);
     setIsFileModalVisible(false);
   };
