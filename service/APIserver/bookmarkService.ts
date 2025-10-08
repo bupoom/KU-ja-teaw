@@ -17,7 +17,7 @@ const endpoints = {
 // fetch user bookmark ทั้งหมด
 export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
     try {
-        console.log("fetching User Bookmark..");
+        console.log("Fetching : User Place Bookmark..");
         const response = (await apiClient.get(endpoints.bookmark.place)) as {
             data: { bookmarks: any[] };
         };
@@ -36,8 +36,6 @@ export const getBookmarkPlaceList = async (): Promise<PlaceBox[]> => {
                 place_image: serverData.places_picture_path,
                 place_id: serverData.place_id,
             });
-
-            console.log(places[i]);
         }
         return places;
     } catch (error) {
@@ -106,7 +104,7 @@ export const SearchPlaceByInput = async (
     input: string
 ): Promise<SearchPlaces[]> => {
     try {
-        console.log("fetching by user input...");
+        console.log("Fetching : Search Place result by user input...");
         const response = (await apiClient.get(
             `${endpoints.bookmark.autoComplete}/${input}`
         )) as {
@@ -135,7 +133,7 @@ export const SearchPlaceByInput = async (
 // fetch user bookmark ทั้งหมด
 export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
     try {
-        console.log("fetching User Bookmark..");
+        console.log("Fetching : User Bookmark..");
         const response = (await apiClient.get(endpoints.bookmark.guide)) as {
             data: { guide_bookmarks: any[] };
         };
@@ -158,7 +156,6 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
                 trip_id: serverData.trip_id,
             });
         }
-        console.log("FUCK REACT NATIVE : ", guides[0]);
         return guides;
     } catch (error) {
         console.error("Response data:", error);
@@ -176,10 +173,7 @@ export const BookmarkByGuideId = async (
         const response = (await apiClient.post(
             `${endpoints.bookmark.guide}/${bookmarkid}`
         )) as { data: { message: string } };
-        console.log("API Response:", response.data);
         const message = response.data.message || "";
-
-        console.log("Processed result:", message);
         return message;
     } catch (error) {
         console.error("Unbookmark error:", error);
@@ -198,8 +192,6 @@ export const UnbookmarkByGuideId = async (
             `${endpoints.bookmark.guide}/${bookmarkid}`
         )) as { data: { message: string } };
 
-        console.log("API Response:", response.data);
-
         // Object mapping แทน switch case
         const messageMap: Record<string, string> = {
             "Removed Guide from user's bookmark": "completed",
@@ -210,8 +202,6 @@ export const UnbookmarkByGuideId = async (
 
         const message = response.data.message || "";
         const result = messageMap[message] || "invalid guideId";
-
-        console.log("Processed result:", result);
         return result === "completed";
     } catch (error) {
         console.error("Unbookmark error:", error);
@@ -223,7 +213,7 @@ export const SearchGuideByInput = async (
     input: string
 ): Promise<GuideBox[]> => {
     try {
-        console.log("fetching Search results by user input...");
+        console.log("Fetching : Search results by user input...");
         const response = (await apiClient.get(
             `${endpoints.bookmark.searchGuideByid}/${input}`
         )) as {
@@ -248,7 +238,6 @@ export const SearchGuideByInput = async (
                 trip_id: Data.trip_id,
             });
         }
-        console.log("result : ", guides);
         return guides;
     } catch (error) {
         console.error("Response data:", error);

@@ -3,12 +3,11 @@ import { combineDateTime, getTime } from "@/util/combineDateTime";
 
 export const get_flight_detail = async (trip_id: number): Promise<Flight[]> => {
     try {
-        console.log("fetching flight detail");
+        console.log("Fetching : flight detail");
         const response = (await apiClient.get(`/api/trips/${trip_id}/flights`)) as {
             data: { flights: any[]};
         };
 
-        console.log(response.data.flights);
         const data = response.data.flights;
         const flight_list: Flight[] = [];
         for (let i = 0; i < data.length; i++){
@@ -29,7 +28,6 @@ export const get_flight_detail = async (trip_id: number): Promise<Flight[]> => {
                 trip_id: trip_id,
             });
         }
-        console.log("Flight list : ", flight_list);
         return flight_list;
     } catch (error) {
         console.error("Response data:", error);
@@ -54,8 +52,6 @@ export const add_flight = async (trip_id: number, flight: Flight): Promise<void>
 
             airl_name: flight.airline,
         });
-
-        console.log("Flight added:", response.data);
     } catch (error) {
         console.error("Add flight error:", error);
         throw error;
@@ -66,7 +62,6 @@ export const delete_flight = async (trip_id:number, flight_id:number) : Promise<
     try {
         console.log("Deleting flight : ", flight_id);
         const response = await apiClient.delete(`/api/trips/${trip_id}/flights/${flight_id}`);
-        console.log(`${flight_id} has been deleted`);
     }  catch (error) {
         console.error("Delete flight error:", error);
         throw error;
@@ -89,7 +84,6 @@ export const edit_flight = async (trip_id:number, flight_id:number, flight: Flig
 
             airl_name: flight.airline,
         });
-        console.log(`${flight_id} has been edited`);
     }  catch (error) {
         console.error("Edit flight error:", error);
         throw error;

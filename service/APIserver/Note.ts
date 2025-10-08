@@ -7,7 +7,6 @@ export const get_overview_note = async (trip_id: number): Promise<Note[]> => {
             data: { notes: any[]};
         };
 
-        console.log(response.data.notes);
         const data = response.data.notes;
         const note_list: Note[] = [];
         for (let i = 0; i < data.length; i++){
@@ -36,7 +35,6 @@ export const create_note = async (trip_id: number, note :string): Promise<Note> 
         const response = (await apiClient.post(`/api/trips/${trip_id}/notes`, {"note":note})) as {
             data: any;
         };
-        console.log(response.data);
         const _ = response.data
         const new_note : Note = {
             id: _.nit_id,
@@ -61,7 +59,6 @@ export const edit_note = async (trip_id: number, nit_id:number, editText:string)
         const response = (await apiClient.patch(`/api/trips/${trip_id}/${nit_id}/notes`, {"note":`${editText}`})) as {
             data: any;
         };
-        console.log(response.data);
         const data = response.data
         const new_note : Note = {
             id: data.nit_id,

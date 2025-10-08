@@ -15,7 +15,7 @@ const endpoints = {
 
 export const getRecommendedGuide = async (): Promise<GuideBox[]> => {
     try {
-        console.log("fetching recommended guide");
+        console.log("Fetching : Recommended guide");
         const response = (await apiClient.get(endpoints.guide.recommend)) as {
             data: { guides: any[] };
         };
@@ -47,7 +47,7 @@ export const getRecommendedGuide = async (): Promise<GuideBox[]> => {
 
 export const getUserAllUrip = async (): Promise<TripBox[]> => {
     try {
-        console.log("fetching current guide");
+        console.log("Fetching : Current guide");
         const response = (await apiClient.get(endpoints.trip.by_user)) as {
             data: { trips: any[] };
         };
@@ -83,7 +83,7 @@ export const getUserAllUrip = async (): Promise<TripBox[]> => {
 
 export const getInvitedTrip = async (): Promise<TripBox[]> => {
     try {
-        console.log("fetching invited trips");
+        console.log("Fetching : Invited trips");
         const response = (await apiClient.get(endpoints.trip.invited)) as {
             data: { trips: any[] };
         };

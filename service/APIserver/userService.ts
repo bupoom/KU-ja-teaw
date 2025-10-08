@@ -39,7 +39,6 @@ export const updateUserDetails = async (data: {
             };
         }
 
-        console.log("📸 Final Image:", data.selectedImageFile);
         formData.append("image", {
             uri: data.selectedImageFile.uri,
             name: data.selectedImageFile.name,
@@ -77,12 +76,11 @@ export const getUserDetailById = async (userId?: string) => {
 
 export const get_more_detail = async (trip_id: number): Promise<MoreUserDetail> => {
     try {
-        console.log("fetching user more detail");
+        console.log("Fetching : user more detail");
         const response = (await apiClient.get(`${endpoints.user.getmoredetail}/${trip_id}`)) as {
             data: any;
         };
 
-        console.log(response.data);
         const detail : MoreUserDetail = {
             collab_id: response.data.collab_id,
             user_id: response.data.user_id,

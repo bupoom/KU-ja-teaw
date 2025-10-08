@@ -194,7 +194,6 @@ export const AuthService = {
                     Refresh_token: "mock_refresh_token_here",
                 };
                 newUser = true;
-                console.log("📄 Using mock data for development");
             } else {
                 console.log("🔄 Starting API login at SERVER");
 
@@ -216,8 +215,6 @@ export const AuthService = {
                 }
 
                 data = await response.json();
-                console.log("📄 Response data received", data);
-
                 newUser = response.status === 201;
             }
 
@@ -232,7 +229,7 @@ export const AuthService = {
 
             const savedRefreshToken = await AuthService.getRefreshToken();
             console.log("✅ Saved refresh token:", savedRefreshToken);
-
+            console.log("✅ Saved access token:", AuthService.getAccessToken);
             // Save user data
             const userData: UserDetails = {
                 user_id: data.user_id,
@@ -243,7 +240,6 @@ export const AuthService = {
             };
 
             await AuthService.saveUserData(userData);
-
             return { success: true, user: userData, newUser: newUser };
         } catch (error) {
             console.error("Login error:", error);

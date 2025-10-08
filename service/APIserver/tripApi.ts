@@ -68,7 +68,6 @@ export const createNewTrips = async (data: {
             owner_name: "", //(await ownerData).name,
             owner_image: "", //(await ownerData).profile_picture_link,
         };
-        console.log("create trips response:", CreatedTrips);
         return CreatedTrips;
     } catch (error) {
         console.error("Response error:", error);
@@ -141,7 +140,6 @@ export const updateTripDetail = async (NewValue: PatchTrip) => {
             }
         );
 
-        console.log("✅ Update trip success:", response.data);
         return response.data;
     } catch (error: any) {
         console.error(
@@ -156,12 +154,11 @@ export const get_trip_detail = async (
     trip_id: number
 ): Promise<TripDetails> => {
     try {
-        console.log("fetching overview trip detail");
+        console.log("Fetching :  overview trip detail");
         const response = (await apiClient.get(
             `${endpoints.trip.ByTrip}/${trip_id}`
         )) as { data: any };
 
-        console.log(response.data);
         const trip: TripDetails = {
             trip_id: response.data.trip_id,
             trip_name: response.data.title,

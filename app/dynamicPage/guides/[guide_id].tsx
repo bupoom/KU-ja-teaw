@@ -36,7 +36,6 @@ interface DailyActivity {
 export default function GuideDetail() {
     const router = useRouter();
     const { isFromBookmark } = useLocalSearchParams()
-    console.log("variable is : ", isFromBookmark)
     const { guide_id } = useLocalSearchParams<{ guide_id: string }>();
 
     const [loading, setLoading] = useState<boolean>(true);
