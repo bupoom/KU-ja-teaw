@@ -34,10 +34,9 @@ export default function AuthScreen(): JSX.Element {
     const handleSignIn = async (): Promise<void> => {
         try {
             setIsSubmitting(true);
-
+            console.log("verifing auth by google...")
             await GoogleSignin.hasPlayServices();
             const response = await GoogleSignin.signIn();
-            console.log(response);
             if (isSuccessResponse(response)) {
                 const { data } = response;
 

@@ -98,7 +98,6 @@ const PlanIndex = () => {
   const fetch_note_detail = async (userId: string) => {
     try {
       const detail = await get_overview_note(parseInt(plan_id));
-      console.log(detail);
       setOverviewNotes(detail);
 
       // หา userNote หลังจากได้ userId มาแล้ว
@@ -651,7 +650,7 @@ const PlanIndex = () => {
           <ScrollView className="flex-1 p-4">
             {overviewNotes.map((note) => (
               <NoteItem
-                key={note.id}
+                key={note.id }
                 note={note}
                 userId={user_id}
                 onSave={handleSaveEdit}

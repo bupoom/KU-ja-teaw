@@ -1,10 +1,12 @@
 import apiClient from "../client";
+import { create_note } from "./Note";
 
 export const joinTrip = async (trip_id: number) => {
     try {
         const res = await apiClient.patch(
             `/api/trips/${trip_id}/invite/accept`
         );
+        await create_note(trip_id, `Welcome to our Trip. You can insert Note here!!`);
         return res.data;
     } catch (error) {
         console.error("Response data:", error);
@@ -30,20 +32,18 @@ export const enterTrip = async (
     trip_pass: string
 ): Promise<string> => {
     try {
-        const res = await apiClient.post(
-            `/api/trips/invite/self`, 
-            {
-                trip_code: trip_code,
-                trip_pass: trip_pass,
-            }
-        ) as {
-            data : {
-                message : string
-                trip_id : number
-            }
+        const res = (await apiClient.post(`/api/trips/invite/self`, {
+            trip_code: trip_code,
+            trip_pass: trip_pass,
+        })) as {
+            data: {
+                message: string;
+                trip_id: number;
+            };
         };
         if (res.data.message === "join successfully") {
-            return res.data.trip_id.toString() 
+            await create_note(res.data.trip_id, `Welcome to our Trip. You can insert Note here!!`);
+            return res.data.trip_id.toString();
         } else {
             return "errorCode";
         }

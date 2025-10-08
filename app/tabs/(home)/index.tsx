@@ -47,7 +47,6 @@ export default function HomeScreen(): JSX.Element {
     const fetchCurrentTrip = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, currentTrip: true }));
         try {
-            console.log("Fetch user all trip");
             const data = await getUserAllUrip();
             const today = new Date().toISOString().split("T")[0];
 
@@ -68,7 +67,6 @@ export default function HomeScreen(): JSX.Element {
     const fetchTripInvitations = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, invitations: true }));
         try {
-            console.log("Fetch invited trip");
             const data = await getInvitedTrip();
             setTripInvitations(data);
         } catch (error) {
@@ -81,7 +79,6 @@ export default function HomeScreen(): JSX.Element {
     const fetchGuidePlans = async (): Promise<void> => {
         setLoading(prev => ({ ...prev, guidePlans: true }));
         try {
-            console.log("Fetching guide recommended");
             const data = await getRecommendedGuide();
             setGuidePlans(data);
         } catch (error) {

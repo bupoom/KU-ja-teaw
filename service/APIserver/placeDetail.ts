@@ -30,9 +30,7 @@ export const getPlaceDetails = async (Id:string , type :string): Promise<PlaceDe
         };
 
         const Data = response.data;
-        console.log("end : data: " , Data)
         const map_link_: string = `https://www.google.com/maps/place/?q=${Data.address}`
-        console.log("Google maps link : " , map_link_)
         return {
             id:Data.place_id ,
             title:Data.name ,
