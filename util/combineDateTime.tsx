@@ -8,4 +8,8 @@ export const combineDateTime = (dateStr: string, timeStr: string) => {
   } catch {
     return dateStr;
   }
-}
+};
+
+export const getTime = (isoString: string): string => {
+    return new Date(isoString).toISOString().split("T")[1].split(".")[0]; // "21:40:00"
+};
