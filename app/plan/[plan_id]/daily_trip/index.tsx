@@ -7,6 +7,7 @@ import {
     Animated,
     ScrollView,
     Image,
+    Alert,
 } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { RefreshControl } from "react-native";
@@ -32,7 +33,11 @@ import {
     mockTripDetails,
     mockTripMembers,
 } from "@/mock/mockDataComplete";
+
 import { getActivitiesInTrip } from "@/service/APIserver/activity";
+import { get_trip_detail } from "@/service/APIserver/tripApi";
+import { get_more_detail } from "@/service/APIserver/userService";
+
 
 type Activity =
     | ActivityPlaceBox
@@ -45,29 +50,34 @@ const DailyTripsIndex = () => {
         plan_id: string;
         date?: string;
     }>();
-    console.log("date :",date)
     const user_id = 1;
     const [role, setRole] = useState<string>("viewer");
     const [refreshing, setRefreshing] = useState(false);
+    const [TripDetail, setTripDetail] = useState<TripDetails>();
 
-    const canEdit = role === "owner" || role === "editor";
+    const canEdit = role === "Owner" || role === "Editor";
+
+    const fetchTripsDetails = async () => {
+        try {
+            const response = await get_trip_detail(parseInt(plan_id));
+            const UserDetail = await get_more_detail(parseInt(plan_id));
+            setTripDetail(response);
+            setRole(UserDetail.role);
+        } catch (err) {
+            Alert.alert("Can't get Trip details from server.");
+        }
+    };
 
     useEffect(() => {
-        const trip = mockTripDetails.find(
-            trip => trip.trip_id === parseInt(plan_id)
-        );
-        if (trip) {
-            setDates(extractDates(trip.start_date, trip.end_date));
-
-            const memberData = mockTripMembers.find(
-                member =>
-                    member.trip_id === parseInt(plan_id) &&
-                    member.id === user_id
-            );
-            setRole(memberData?.role ?? "viewer");
-            fetchActivity(trip.start_date);
-        }
+        fetchTripsDetails();
     }, [plan_id]);
+
+    useEffect(() => {
+        if (TripDetail) {
+            setDates(extractDates(TripDetail.start_date, TripDetail.end_date));
+            fetchActivity(TripDetail.start_date);
+        }
+    }, [TripDetail]);
 
     // <---------------------------- Refresh -------------------------------->
     const onRefresh = () => {
@@ -103,16 +113,10 @@ const DailyTripsIndex = () => {
 
     const fetchActivity = async (date: string) => {
         const tripId = parseInt(plan_id);
-        const response = await getActivitiesInTrip(tripId)
-        // รวม filter ทีเดียว
-        // const allActivities = [
-        //     ...mockActivityPlaceBoxes,
-        //     ...mockActivityEventBoxes,
-        //     ...mockActivityVotePlaces,
-        //     ...mockActivityVoteEvents,
-        // ].filter(
-        //     activity => activity.trip_id === tripId && activity.date === date
-        // );
+        const response = await (getActivitiesInTrip(tripId ,date));
+        const filteredData = response.filter(
+            activity => activity.trip_id === tripId && activity.date === date
+        );
 
         // ฟังก์ชัน parse เวลาแบบกันพลาด
         const parseTime = (time?: string): number => {
@@ -123,10 +127,10 @@ const DailyTripsIndex = () => {
         };
 
         // sort ตามเวลา
-        const sortedActivities = response.sort(
+        const sortedActivities = filteredData.sort(
             (a, b) => parseTime(a.time_begin) - parseTime(b.time_begin)
         );
-        await setDailyActivities(sortedActivities);
+        setDailyActivities(sortedActivities);
     };
 
     useEffect(() => {
@@ -135,6 +139,7 @@ const DailyTripsIndex = () => {
             fetchActivity(date);
         } else if (dates.length > 0) {
             setSelectDate(dates[0]);
+            console.log("date: ", dates[0])
             fetchActivity(dates[0]);
         }
     }, [dates, date]);
