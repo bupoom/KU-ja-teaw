@@ -27,13 +27,6 @@ import { extractDates } from "@/util/extractDates";
 import { formatDate } from "@/util/formatFucntion/formatDate";
 import { truncateText } from "@/util/truncateText";
 
-import {
-    mockActivityVoteEvents,
-    mockActivityVotePlaces,
-    mockTripDetails,
-    mockTripMembers,
-} from "@/mock/mockDataComplete";
-
 import { getActivitiesInTrip } from "@/service/APIserver/activity";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
 import { get_more_detail } from "@/service/APIserver/userService";

@@ -27,6 +27,7 @@ import { truncateText } from "@/util/truncateText";
 
 import { getGuideDetails } from "@/service/APIserver/guideDetail";
 import { BookmarkByGuideId } from "@/service/APIserver/bookmarkService";
+import { getAllActivitiesInTrip } from "@/service/APIserver/activity";
 
 interface DailyActivity {
     date: string;
@@ -35,7 +36,7 @@ interface DailyActivity {
 
 export default function GuideDetail() {
     const router = useRouter();
-    const { isFromBookmark } = useLocalSearchParams()
+    const { isFromBookmark } = useLocalSearchParams();
     const { guide_id } = useLocalSearchParams<{ guide_id: string }>();
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -56,22 +57,22 @@ export default function GuideDetail() {
     };
 
     const addBookmark = async () => {
-        const response = await BookmarkByGuideId(Number(guide_id))
+        const response = await BookmarkByGuideId(Number(guide_id));
         if (response === "Bookmark added") {
             Alert.alert("Added to Bookmark");
         } else {
-            Alert.alert(response)
+            Alert.alert(response);
         }
     };
 
-    const copyGuide = () => { // แก้ด้วย 
+    const copyGuide = () => {
+        // แก้ด้วย
         router.push({
-            pathname: '/dynamicPage/guides/set_plan_details',
+            pathname: "/dynamicPage/guides/set_plan_details",
             params: {
-                guide_id: guide_id
-            }
+                guide_id: guide_id,
+            },
         });
-        
     };
 
     const toggleDescription = () => {
@@ -93,12 +94,14 @@ export default function GuideDetail() {
 
     const fetchGuidesDetails = async () => {
         try {
-            const { GuideData ,FlightData } = await getGuideDetails(parseInt(guide_id as string));
+            const { GuideData, FlightData } = await getGuideDetails(
+                parseInt(guide_id as string)
+            );
             setGuideDetail(GuideData);
             setFlights(FlightData);
             return true;
         } catch (error) {
-            console.log("In GuideDetails Screen Found error: " , error);
+            console.log("In GuideDetails Screen Found error: ", error);
             return false;
         }
     };
@@ -120,14 +123,6 @@ export default function GuideDetail() {
         try {
             setLoading(true);
             await fetchGuidesDetails();
-            if (guideDetail) {
-                const activitiesData = await organizeActivitiesByDay(
-                    guideDetail.trip_id,
-                    guideDetail.start_date,
-                    guideDetail.end_date
-                )
-                setDailyActivities(activitiesData);
-            }
             const initialExpandedState: Record<string, boolean> = {};
             dailyActivities.forEach((day, index) => {
                 initialExpandedState[day.date] = index === 0;
@@ -146,6 +141,25 @@ export default function GuideDetail() {
             loadData();
         }
     }, [guide_id]);
+
+    useEffect(() => {
+        const fetchActivities = async () => {
+            if (guideDetail) {
+                try {
+                    const activitiesData = await organizeActivitiesByDay(
+                        guideDetail.trip_id,
+                        guideDetail.start_date,
+                        guideDetail.end_date
+                    );
+                    setDailyActivities(activitiesData);
+                } catch (error) {
+                    console.error("Error loading activities:", error);
+                }
+            }
+        };
+
+        fetchActivities();
+    }, [guideDetail]);
 
     if (loading) {
         return (
@@ -285,7 +299,9 @@ export default function GuideDetail() {
                 {/* Flight Section */}
                 <View className="bg-white p-6 m-6 border-gray_border border-2 rounded-xl">
                     <TouchableOpacity
-                        onPress={() => {setShowFlights(!showFlights);}}
+                        onPress={() => {
+                            setShowFlights(!showFlights);
+                        }}
                         className="flex-row justify-between items-center mb-4"
                     >
                         <Text className="text-xl font-bold text-black">
@@ -368,10 +384,12 @@ export default function GuideDetail() {
                     ))}
                 </View>
 
-                {(isFromBookmark === "0") && <CustomButton
-                    onPress={addBookmark}
-                    title="Add Guide Bookmark"
-                />}
+                {isFromBookmark === "0" && (
+                    <CustomButton
+                        onPress={addBookmark}
+                        title="Add Guide Bookmark"
+                    />
+                )}
             </ScrollView>
 
             {showDescription && (

@@ -1,49 +1,43 @@
-import {
-  mockActivityPlaceBoxes,
-  mockActivityEventBoxes,
-} from "@/mock/mockDataComplete";
 import { extractDates } from "@/util/extractDates";
+import { getAllActivitiesInTrip } from "@/service/APIserver/activity";
 
 export interface DailyActivity {
-  date: string;
-  activities: (ActivityPlaceBox | ActivityEventBox)[];
+    date: string;
+    activities: (ActivityPlaceBox | ActivityEventBox)[];
 }
 
-export const organizeActivitiesByDay = (
-  tripId: number,
-  startDate: string,
-  endDate: string
-): DailyActivity[] => {
-  try {
-    // 1. กรองข้อมูลตาม trip_id
-    const filteredPlaces = mockActivityPlaceBoxes.filter(
-      (place) => place.trip_id === tripId
-    );
-    const filteredEvents = mockActivityEventBoxes.filter(
-      (event) => event.trip_id === tripId
-    );
+export const organizeActivitiesByDay = async (
+    tripId: number,
+    startDate: string,
+    endDate: string
+): Promise<DailyActivity[]> => {
+    try {
+        const allActivities = await getAllActivitiesInTrip(tripId);
 
-    const allActivities = [...filteredPlaces, ...filteredEvents];
+        const allDates = extractDates(startDate, endDate);
 
-    // 2. เอาช่วงวันทั้งหมดจาก trip
-    const allDates = extractDates(startDate, endDate);
+        const dailyActivities: DailyActivity[] = allDates.map(date => {
+            const activities = allActivities
+                .filter(activity => {
+                    const activityDate = new Date(activity.date)
+                        .toLocaleDateString("en-CA");
+                    const compareDate = new Date(date)
+                        .toLocaleDateString("en-CA");
 
-    // 3. แมปทุกวันเข้า array
-    const dailyActivities: DailyActivity[] = allDates.map((date) => {
-      // หากิจกรรมของวันนั้น
-      const activities = allActivities
-        .filter((activity) => activity.date === date)
-        .sort((a, b) => a.time_begin.localeCompare(b.time_begin));
+                    return activityDate === compareDate;
+                })
+                .sort((a, b) => a.time_begin.localeCompare(b.time_begin));
 
-      return {
-        date,
-        activities,
-      };
-    });
+            return {
+                date,
+                activities,
+            };
+        });
 
-    return dailyActivities;
-  } catch (error) {
-    console.error("Error organizing activities:", error);
-    return [];
-  }
+        console.log("result!! : ", dailyActivities);
+        return dailyActivities;
+    } catch (error) {
+        console.error("Error organizing activities:", error);
+        return [];
+    }
 };

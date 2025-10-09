@@ -58,6 +58,7 @@ const PlaceScreen = () => {
         });
     };
 
+    
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="light-content" backgroundColor="#284D44" />

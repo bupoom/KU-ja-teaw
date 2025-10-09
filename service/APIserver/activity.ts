@@ -1,99 +1,189 @@
 import apiClient from "../client";
 
-type Activity = (
-            | ActivityPlaceBox
-            | ActivityEventBox
-            | ActivityVotePlace
-            | ActivityVoteEvent
-            
-        )[]
+type ActivityPlace = (
+    | ActivityPlaceBox
+    | ActivityEventBox
+    | ActivityVotePlace
+    | ActivityVoteEvent
+)[];
 
-export const getActivitiesInTrip = async (trip_id: number , Date: string): Promise<Activity> => {
+type ActivityGuide = (ActivityPlaceBox | ActivityEventBox)[];
+
+export const getActivitiesInTrip = async (
+    trip_id: number,
+    Date: string
+): Promise<ActivityPlace> => {
     try {
-        console.log("fetching activity in trips : " , trip_id , "In date : " , Date);
-        const response = (await apiClient.get(`/api/trips/${trip_id}/activities/${Date}`)) as {
-            data: { activities: any[]};
+        console.log(
+            "fetching activity in trips : ",
+            trip_id,
+            "In date : ",
+            Date
+        );
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/${Date}`
+        )) as {
+            data: { activities: any[] };
         };
 
         const data = response.data.activities;
-        const ActivityList: Activity = [];
-        for (let i = 0; i < data.length; i++){
+        const ActivityList: ActivityPlace = [];
+        for (let i = 0; i < data.length; i++) {
             const serverData = data[i];
-            if (serverData.is_event) { // เป็น event
-                const item:ActivityEventBox = {
+            if (serverData.is_event) {
+                // เป็น event
+                const item: ActivityEventBox = {
                     id: serverData.pit_id,
                     title: serverData.event_title,
                     date: serverData.date,
-                    time_begin: serverData.time_start, 
+                    time_begin: serverData.time_start,
                     time_end: serverData.time_end,
                     transportation: serverData.event_name,
-                    notes: [], // อย่าลืม ตัวกุในอนาคต
+                    notes: [],
                     trip_id: serverData.trip_id,
-                }
-                ActivityList.push(item)
+                };
+                ActivityList.push(item);
             } else {
-                const item:ActivityPlaceBox = {
-                    id:serverData.pit_id,
-                    title:serverData.address,
-                    date:serverData.date,
-                    time_begin:serverData.time_start,
-                    time_end:serverData.time_end,
-                    location:serverData.address,
-                    place_id:serverData.place_id,
-                    place_image:serverData.photo_url,
-                    trip_id:serverData.trip_id,
-                    notes: [], // อย่าลืม ตัวกุในอนาคต
-                }
-                ActivityList.push(item)
+                const item: ActivityPlaceBox = {
+                    id: serverData.pit_id,
+                    title: serverData.address,
+                    date: serverData.date,
+                    time_begin: serverData.time_start,
+                    time_end: serverData.time_end,
+                    location: serverData.address,
+                    place_id: serverData.place_id,
+                    place_image: serverData.photo_url,
+                    trip_id: serverData.trip_id,
+                    notes: [],
+                };
+                ActivityList.push(item);
             }
-        };
-        return ActivityList
+        }
+        return ActivityList;
     } catch (error) {
         console.error("Response data:", error);
         throw error;
     }
 };
 
-export const getAllActivitiesInTrip = async (trip_id: number): Promise<Activity> => {
+export const getAllActivitiesInTrip = async (
+    trip_id: number
+): Promise<ActivityGuide> => {
     try {
-        console.log("fetching all activity in trips : " , trip_id);
-        const response = (await apiClient.get(`/api/trips/${trip_id}/activities/AllDate`)) as {
-            data: { activities: any[]};
+        console.log("fetching all activity in trips : ", trip_id);
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/AllDate`
+        )) as {
+            data: { activities: any[] };
         };
 
         const data = response.data.activities;
-        const ActivityList: Activity = [];
-        for (let i = 0; i < data.length; i++){
+        const ActivityList: ActivityGuide = [];
+        for (let i = 0; i < data.length; i++) {
             const serverData = data[i];
-            if (serverData.is_event) { // เป็น event
-                const item:ActivityEventBox = {
+            if (serverData.is_event) {
+                // เป็น event
+                const item: ActivityEventBox = {
                     id: serverData.pit_id,
                     title: serverData.event_title,
                     date: serverData.date,
-                    time_begin: serverData.time_start, 
+                    time_begin: serverData.time_start,
                     time_end: serverData.time_end,
                     transportation: serverData.event_name,
                     notes: [], // อย่าลืม ตัวกุในอนาคต
                     trip_id: serverData.trip_id,
-                }
-                ActivityList.push(item)
+                };
+                ActivityList.push(item);
             } else {
-                const item:ActivityPlaceBox = {
-                    id:serverData.pit_id,
-                    title:serverData.address,
-                    date:serverData.date,
-                    time_begin:serverData.time_start,
-                    time_end:serverData.time_end,
-                    location:serverData.address,
-                    place_id:serverData.place_id,
-                    place_image:serverData.photo_url,
-                    trip_id:serverData.trip_id,
+                const item: ActivityPlaceBox = {
+                    id: serverData.pit_id,
+                    title: serverData.address,
+                    date: serverData.date,
+                    time_begin: serverData.time_start,
+                    time_end: serverData.time_end,
+                    location: serverData.address,
+                    place_id: serverData.place_id,
+                    place_image: serverData.photo_url,
+                    trip_id: serverData.trip_id,
                     notes: [], // อย่าลืม ตัวกุในอนาคต
-                }
-                ActivityList.push(item)
+                };
+                ActivityList.push(item);
             }
-        };
-        return ActivityList
+        }
+        return ActivityList;
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
+
+// {
+//   "trip_id": 0,
+//   "place_id": 0,
+//   "date": "5830-09-48",
+//   "time_start": "21:19",
+//   "time_end": "21:03",
+//   "event_name": "string",
+//   "is_vote": false,
+//   "is_event": true,
+//   "event_title": "string"
+// }
+export const addPlaceToTrip = async (
+    trip_id: number,
+    place_id: number,
+    date: string,
+    time_start: string,
+    time_end: string
+): Promise<string> => {
+    try {
+        const response = await apiClient.post(
+            `/api/trips/${trip_id}/activities/places`,
+            {
+                place_id: place_id,
+                date: date,
+                time_start: time_start,
+                time_end: time_end,
+                is_vote: false,
+                event_name: "",
+                event_title: "",
+                is_event: false,
+            }
+        );
+        if (response.data === "Time overlap detected") {
+            return "time_overlap";
+        }
+        return "success";
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
+
+export const addEventToTrip = async (
+    trip_id: number,
+    place_id: number,
+    date: string,
+    time_start: string,
+    time_end: string
+): Promise<string> => {
+    try {
+        const response = await apiClient.post(
+            `/api/trips/${trip_id}/activities/places`,
+            {
+                place_id: place_id,
+                date: date,
+                time_start: time_start,
+                time_end: time_end,
+                is_vote: false,
+                event_name: "",
+                event_title: "",
+                is_event: false,
+            }
+        );
+        if (response.data === "Time overlap detected") {
+            return "time_overlap";
+        }
+        return "success";
     } catch (error) {
         console.error("Response data:", error);
         throw error;

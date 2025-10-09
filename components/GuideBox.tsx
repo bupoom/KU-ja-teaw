@@ -45,12 +45,7 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
 
                     try {
                         console.log("Calling UnbookmarkByGuideId API...");
-
-                        // ✅ แก้ไข: ใช้ await กับ async function
                         const res = await UnbookmarkByGuideId(id);
-                        console.log("API result:", res);
-
-                        // ✅ เช็ค result ที่ถูกต้อง
                         if (res) {
                             if (onRemove) {
                                 console.log("Calling onRemove function");

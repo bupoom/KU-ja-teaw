@@ -18,46 +18,46 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
     const give_bookmark = pathname === "/tabs/place";
 
     const handleUnbookmark = () => {
-        Alert.alert(
-            "Remove Bookmark",
-            `remove "${title}" from bookmarks?`,
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel",
+        Alert.alert("Remove Bookmark", `remove "${title}" from bookmarks?`, [
+            {
+                text: "Cancel",
+                style: "cancel",
+            },
+            {
+                text: "Remove",
+                style: "destructive",
+                onPress: () => {
+                    // กด Remove เเล้วจะไปใช้ function onremove ที่หน้า place bookmark
+                    if (onRemove) {
+                        onRemove(id);
+                    }
+                    // You can also add API call here for real implementation
+                    // fetch API ลบ bookmark ทิ้ง
                 },
-                {
-                    text: "Remove",
-                    style: "destructive",
-                    onPress: () => {
-                        // กด Remove เเล้วจะไปใช้ function onremove ที่หน้า place bookmark
-                        if (onRemove) {
-                            onRemove(id);
-                        }
-                        // You can also add API call here for real implementation
-                        // fetch API ลบ bookmark ทิ้ง
-                    },
-                },
-            ]
-        );
+            },
+        ]);
     };
 
     // Default image if place_image is not provided
     const imageUri =
         place_image ||
         "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop";
-
     // Place bookmark page layout
-    if (pathname === "/tabs/place" || pathname === "/tabs/place/search_place") {
+    if (
+        pathname === "/tabs/place" ||
+        pathname === "/tabs/place/search_place" ||
+        (pathname.startsWith("/plan/") &&
+            pathname.includes("/daily_trip/add_place/search_place"))
+    ) {
         return (
             <TouchableOpacity
                 key={id}
                 className="bg-white rounded-xl p-3 mb-3 mr-1 ml-1 border border-gray_border"
                 onPress={() => {
-                    if ( place_id != null) {
-                        onPressPlace?.(place_id)}
+                    if (place_id != null) {
+                        onPressPlace?.(place_id);
                     }
-                } 
+                }}
             >
                 <View className="flex-row">
                     {/* Place Image */}
