@@ -63,8 +63,8 @@ export const getUserAllUrip = async (): Promise<TripBox[]> => {
                 trip_id: serverData.trip_id,
                 trip_name: serverData.title,
                 trip_image: serverData.poster_image_link,
-                start_date: serverData.start_date,
-                end_date: serverData.end_date,
+                start_date: new Date(serverData.start_date).toISOString(),
+                end_date: new Date(serverData.end_date).toISOString(),
                 member_count: serverData.joined_people,
                 status_planning:
                     serverData.planning_status === true

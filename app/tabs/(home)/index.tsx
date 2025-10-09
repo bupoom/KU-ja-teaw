@@ -48,11 +48,11 @@ export default function HomeScreen(): JSX.Element {
         setLoading(prev => ({ ...prev, currentTrip: true }));
         try {
             const data = await getUserAllUrip();
-            const today = new Date().toISOString().split("T")[0];
+            const today = new Date();
 
             const activeTripData = data.filter(trip => {
-                const startDate = trip.start_date;
-                const endDate = trip.end_date;
+                const startDate = new Date(trip.start_date);
+                const endDate = new Date(trip.end_date);
                 return today >= startDate && today <= endDate;
             });
 

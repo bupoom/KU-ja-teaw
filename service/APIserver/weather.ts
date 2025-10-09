@@ -1,3 +1,4 @@
+import { Weather } from "@/interface/weather";
 import apiClient from "../client";
 
 export const getWeatherByDate = async (trip_id:number ,Date:string):Promise<Weather[]> => {
