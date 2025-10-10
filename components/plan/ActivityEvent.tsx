@@ -20,7 +20,7 @@ const ActivityEvent: React.FC<ActivityEventEndProps> = ({ activity }) => {
                 <View className="flex-row items-center font-semibold">
                     <Feather name="clock" size={14} color="#666" />
                     <Text className="text-xs text-dark_gray ml-1 font-semibold">
-                        {activity.time_begin} - {activity.time_end}
+                        {activity.time_begin.slice(0,5)} - {activity.time_end.slice(0,5)}
                     </Text>
                     {activity.transportation && (
                         <>

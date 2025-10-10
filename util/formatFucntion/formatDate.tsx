@@ -4,6 +4,6 @@ export const formatDate = (dateString: string) => {
     const dayName = days[date.getDay()];
     const dayNumber = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear().toString().slice(-2);
-    return `${dayName}: ${dayNumber}/${month}/${year}`;
+    const year = date.getFullYear().toString();
+    return `${dayName} : ${dayNumber}/${month}/${year}`;
 };
