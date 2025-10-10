@@ -140,12 +140,12 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
 
         const bookmarks = response.data.guide_bookmarks || [];
         const guides: GuideBox[] = [];
-
+        console.log(bookmarks.length)
         for (let i = 0; i < bookmarks.length; i++) {
             const serverData = bookmarks[i];
             guides.push({
                 id: serverData.gbookmark_id,
-                title: serverData.trip_url, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
+                title: serverData.title, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 start_date: changeDateformat(serverData.start_date), // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 end_date: changeDateformat(serverData.end_date), // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 guide_image: serverData.trip_picture_path,
