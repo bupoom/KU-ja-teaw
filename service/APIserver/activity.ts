@@ -197,13 +197,46 @@ export const deleteActivityInTrip = async (
     pit_id: number
 ): Promise<string> => {
     try {
-        console.log("Deleting Trip activity: " ,pit_id );
+        console.log("Deleting Trip activity: ", pit_id);
         const response = await apiClient.delete(
-            `/api/trips/${trip_id}/activities/${pit_id}`,
+            `/api/trips/${trip_id}/activities/${pit_id}`
         );
         return "success";
     } catch (error) {
         console.error("Response data:", error);
         throw error;
+    }
+};
+
+export const getActivitiesForMap = async (
+    trip_id: number,
+    date: string
+): Promise<MarkerPlacePros[]> => {
+    try {
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/onlyPlaces/${date}`
+        )) as { data: any[] };
+
+        const activities = response.data;
+        const result: MarkerPlacePros[] = [];
+
+        for (let i = 0; i < activities.length; i++) {
+            const item = activities[i];
+            result.push({
+                title: item.name || item.title || `Activity ${i + 1}`,
+                coordinates: {
+                    latitude: Number(item.latitude ?? item.lat ?? 0),
+                    longitude: Number(item.longitude ?? item.lng ?? 0),
+                },
+                draggable: false,
+            });
+        }
+        return result;
+    } catch (error: any) {
+        console.error(
+            "Error fetching activities for map:",
+            error.response?.data || error
+        );
+        throw new Error("Failed to fetch activities for map");
     }
 };

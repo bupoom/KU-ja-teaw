@@ -21,3 +21,9 @@ interface ActivityEventBox {
     notes?: Note[];
     trip_id: number;
 } // เเสดงในหน้า daily trip, eventDetails
+
+interface MarkerPlacePros {
+    title: string;
+    coordinates: { latitude: number; longitude: number };
+    draggable: boolean;
+}
