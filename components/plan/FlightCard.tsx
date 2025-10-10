@@ -1,4 +1,5 @@
 import { formatDateRange, formatTimeRange } from "@/util/formatFucntion/formatDate&TimeRange";
+import { formatDateTime } from "@/util/formatFucntion/formatDateTime";
 import Feather from "@expo/vector-icons/Feather";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -30,10 +31,10 @@ export default function FlightCard({ flight, onPress }: Props) {
 
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-sm font-medium text-gray-900">
-          {formatDateRange(flight.departure_date, flight.arrival_date)}
+          {formatDateTime(flight.departure_date).time} : {formatDateTime(flight.departure_date).date}
         </Text>
         <Text className="text-sm font-medium text-gray-900">
-          {formatTimeRange(flight.departure_date, flight.arrival_date)}
+          {formatDateTime(flight.arrival_date).time} : {formatDateTime(flight.arrival_date).date}
         </Text>
       </View>
 

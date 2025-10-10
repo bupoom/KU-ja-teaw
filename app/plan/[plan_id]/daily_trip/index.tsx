@@ -498,14 +498,13 @@ const DailyTripsIndex = () => {
             />
 
             <View className="flex-row justify-between items-center mx-4 my-2 p-4 rounded-lg border border-gray_border">
-                <Text className="text-black font-bold text-xl">
-                    {formatDate(selectDate)}
-                </Text>
                 <WeatherIcon
                     trip_id={parseInt(plan_id)}
                     date={selectDate}
                     size={30}
+                    showText={true}
                 />
+                {/* เอาชื่อสถานที่เเรกมาโชว์ เเละถ้ายังไม่มีก็บอกว่า เพิ่มสถานที่ถึงจะเห็น */}
             </View>
 
             <ScrollView

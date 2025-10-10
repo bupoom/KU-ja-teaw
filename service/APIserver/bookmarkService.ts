@@ -138,7 +138,7 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
             data: { guide_bookmarks: any[] };
         };
 
-        const bookmarks = response.data.guide_bookmarks || [];
+        const bookmarks = response.data.guide_bookmarks ?? [];
         const guides: GuideBox[] = [];
         console.log(bookmarks.length)
         for (let i = 0; i < bookmarks.length; i++) {
@@ -156,6 +156,7 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
                 trip_id: serverData.trip_id,
             });
         }
+        console.log(guides)
         return guides;
     } catch (error) {
         console.error("Response data:", error);

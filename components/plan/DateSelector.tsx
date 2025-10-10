@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { formatDateTime } from "@/util/formatFucntion/formatDateTime";
+import { formatDate } from "@/util/formatFucntion/formatDate";
 
 interface DateSelectorProps {
   dates: string[];
@@ -75,7 +75,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({
                   isSelected ? "text-white" : "text-dark_gray"
                 }`}
               >
-                {formatDateTime(date).date.split("/").slice(0, 2).join("/")}
+                {formatDate(date)}
               </Text>
             </TouchableOpacity>
           );

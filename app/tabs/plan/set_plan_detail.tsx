@@ -28,14 +28,19 @@ export default function SetPlanDetail() {
   const [showEnd, setShowEnd] = useState(false);
   const [posterUri, setPosterUri] = useState<string | null>(null);
 
-  const fmt = (d?: Date | null) =>
+  const fmt_start = (d?: Date | null) =>
     d
-      ? d.toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
-      : "Select Date";
+      ? `${String(d.getDate()).padStart(2, "0")}/${String(
+          d.getMonth() + 1
+        ).padStart(2, "0")}/${d.getFullYear()}`
+      : "Select Start Date";
+
+  const fmt_end = (d?: Date | null) =>
+    d
+      ? `${String(d.getDate()).padStart(2, "0")}/${String(
+          d.getMonth() + 1
+        ).padStart(2, "0")}/${d.getFullYear()}`
+      : "Select End Date";
 
   const onPickStart = (_: DateTimePickerEvent, d?: Date) => {
     setShowStart(false);
@@ -150,7 +155,7 @@ export default function SetPlanDetail() {
           Plan a new trip
         </Text>
         <Text className="text-dark_gray text-base">
-          It&apos;s a beginning of your journey
+          It's a beginning of your journey
         </Text>
 
         {/* Trip Name */}
@@ -192,7 +197,7 @@ export default function SetPlanDetail() {
               <Text
                 className={`ml-2 ${startDate ? "text-black" : "text-gray-400"} font-medium`}
               >
-                {fmt(startDate)}
+                {fmt_start(startDate)}
               </Text>
             </TouchableOpacity>
 
@@ -206,7 +211,7 @@ export default function SetPlanDetail() {
               <Text
                 className={`ml-2 ${endDate ? "text-black" : "text-gray-400"} font-medium`}
               >
-                {fmt(endDate)}
+                {fmt_end(endDate)}
               </Text>
             </TouchableOpacity>
           </View>

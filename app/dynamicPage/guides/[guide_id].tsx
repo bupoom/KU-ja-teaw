@@ -297,7 +297,7 @@ export default function GuideDetail() {
                 </TouchableOpacity>
 
                 {/* Flight Section */}
-                <View className="bg-white p-6 m-6 border-gray_border border-2 rounded-xl">
+                <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
                     <TouchableOpacity
                         onPress={() => {
                             setShowFlights(!showFlights);

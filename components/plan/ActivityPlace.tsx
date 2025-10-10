@@ -38,16 +38,15 @@ const ActivityPlace: React.FC<ActivityPlaceEndProps> = ({ activity }) => {
                 <View className="flex-row items-center mb-2">
                     <Feather name="clock" size={14} color="#666" />
                     <Text className="text-xs text-dark_gray ml-2 font-semibold">
-                        {activity.time_begin} - {activity.time_end}
+                        {activity.time_begin.slice(0, 5)} - {activity.time_end.slice(0, 5)}
                     </Text>
                 </View>
                 <View className="flex-row items-center">
                     <Feather name="map-pin" size={14} color="#666" />
                     <Text
                         className="text-xs text-dark_gray ml-2 font-semibold"
-                        numberOfLines={1}
                     >
-                        {activity.location}
+                        {truncateText(activity.location, 30)}
                     </Text>
                 </View>
             </View>
