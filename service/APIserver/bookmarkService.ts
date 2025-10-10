@@ -138,14 +138,14 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
             data: { guide_bookmarks: any[] };
         };
 
-        const bookmarks = response.data.guide_bookmarks || [];
+        const bookmarks = response.data.guide_bookmarks ?? [];
         const guides: GuideBox[] = [];
 
         for (let i = 0; i < bookmarks.length; i++) {
             const serverData = bookmarks[i];
             guides.push({
                 id: serverData.gbookmark_id,
-                title: serverData.trip_url, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
+                title: serverData.title, // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 start_date: changeDateformat(serverData.start_date), // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 end_date: changeDateformat(serverData.end_date), // อย่าลืมเปลี่ยนกลับด้วยตัวกุในอนาคต
                 guide_image: serverData.trip_picture_path,
@@ -156,6 +156,7 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
                 trip_id: serverData.trip_id,
             });
         }
+        console.log(guides)
         return guides;
     } catch (error) {
         console.error("Response data:", error);
