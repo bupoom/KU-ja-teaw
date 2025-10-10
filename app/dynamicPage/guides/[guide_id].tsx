@@ -436,7 +436,7 @@ export default function GuideDetail() {
                                         by {guideDetail.owner_name}
                                     </Text>
                                 </View>
-                            </View>
+w                            </View>
 
                             <Text className="text-base text-gray-700 leading-6">
                                 {guideDetail.description ||

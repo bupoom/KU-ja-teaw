@@ -14,7 +14,6 @@ import { RefreshControl } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
@@ -27,10 +26,12 @@ import { extractDates } from "@/util/extractDates";
 import { formatDate } from "@/util/formatFucntion/formatDate";
 import { truncateText } from "@/util/truncateText";
 
-import { getActivitiesInTrip } from "@/service/APIserver/activity";
+import {
+    deleteActivityInTrip,
+    getActivitiesInTrip,
+} from "@/service/APIserver/activity";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
 import { get_more_detail } from "@/service/APIserver/userService";
-
 
 type Activity =
     | ActivityPlaceBox
@@ -106,7 +107,7 @@ const DailyTripsIndex = () => {
 
     const fetchActivity = async (date: string) => {
         const tripId = parseInt(plan_id);
-        const response = await (getActivitiesInTrip(tripId ,date));
+        const response = await getActivitiesInTrip(tripId, date);
         const filteredData = response.filter(
             activity => activity.trip_id === tripId && activity.date === date
         );
@@ -132,7 +133,7 @@ const DailyTripsIndex = () => {
             fetchActivity(date);
         } else if (dates.length > 0) {
             setSelectDate(dates[0]);
-            console.log("date: ", dates[0])
+            console.log("date: ", dates[0]);
             fetchActivity(dates[0]);
         }
     }, [dates, date]);
@@ -461,15 +462,14 @@ const DailyTripsIndex = () => {
         );
     };
 
-    const handleDeleteActivity = (activityId: number) => {
+    const handleDeleteActivity = async (activityId: number) => {
+        if (!TripDetail) {
+            Alert.alert("There's any Trips here.");
+            return;
+        }
+        const res = await deleteActivityInTrip(TripDetail.trip_id, activityId);
         setDailyActivities(prev =>
             prev.filter(activity => activity.id !== activityId)
-        );
-
-        // ถ้าอยาก log ดูว่าเหลืออะไรบ้าง
-        console.log(
-            "After delete:",
-            dailyActivities.filter(a => a.id !== activityId)
         );
     };
 

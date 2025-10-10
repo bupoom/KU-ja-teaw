@@ -14,8 +14,6 @@ import DateTimePicker, {
     DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 
-import { mockTripDetails } from "@/mock/mockDataComplete";
-
 import NextButton from "@/components/common/NextButton";
 import Header from "@/components/common/Header";
 

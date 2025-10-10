@@ -161,28 +161,46 @@ export const addPlaceToTrip = async (
 
 export const addEventToTrip = async (
     trip_id: number,
-    place_id: number,
     date: string,
     time_start: string,
-    time_end: string
+    time_end: string,
+    event_name: string,
+    evet_title: string
 ): Promise<string> => {
     try {
         const response = await apiClient.post(
-            `/api/trips/${trip_id}/activities/places`,
+            `/api/trips/${trip_id}/activities/events`,
             {
-                place_id: place_id,
+                trip_id: trip_id,
+                place_id: 0,
                 date: date,
                 time_start: time_start,
                 time_end: time_end,
+                event_name: event_name,
                 is_vote: false,
-                event_name: "",
-                event_title: "",
-                is_event: false,
+                is_event: true,
+                event_title: evet_title,
             }
         );
         if (response.data === "Time overlap detected") {
             return "time_overlap";
         }
+        return "success";
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
+
+export const deleteActivityInTrip = async (
+    trip_id: number,
+    pit_id: number
+): Promise<string> => {
+    try {
+        console.log("Deleting Trip activity: " ,pit_id );
+        const response = await apiClient.delete(
+            `/api/trips/${trip_id}/activities/${pit_id}`,
+        );
         return "success";
     } catch (error) {
         console.error("Response data:", error);
