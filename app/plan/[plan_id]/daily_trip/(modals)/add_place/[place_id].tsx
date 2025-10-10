@@ -54,7 +54,13 @@ export default function PlaceDetail() {
                 router.back();
                 return
             }
-            router.replace(`/plan/${plan_id}/daily_trip`);
+            router.replace({
+                pathname: `/plan/[plan_id]/daily_trip`,
+                params: {
+                    plan_id: plan_id as string,
+                    date: selectDate
+                }
+            });
         }
     };
 
@@ -146,7 +152,7 @@ export default function PlaceDetail() {
                                 className="flex-row items-center"
                             >
                                 <Text className="text-sm text-gray-600 ml-2 mr-2">
-                                    {truncateText(placeDetail.location, 52)}
+                                    {truncateText(placeDetail.location, 45)}
                                 </Text>
                                 <Feather
                                     name="external-link"

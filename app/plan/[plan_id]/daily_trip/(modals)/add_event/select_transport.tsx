@@ -41,8 +41,8 @@ const SelectTransport = () => {
             String(selectDate),
             String(start),
             String(end),
-            String(title),
-            String(selected)
+            String(selected),
+            String(title)
         );
         if (res === "time_overlap") {
             Alert.alert("There's already Event on this Time.")

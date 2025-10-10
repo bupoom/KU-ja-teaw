@@ -30,14 +30,16 @@ export const getActivitiesInTrip = async (
         const ActivityList: ActivityPlace = [];
         for (let i = 0; i < data.length; i++) {
             const serverData = data[i];
+            const new_start_date = String(serverData.time_start).slice(0,5)
+            const new_end_date = String(serverData.time_end).slice(0,5)
             if (serverData.is_event) {
                 // เป็น event
                 const item: ActivityEventBox = {
                     id: serverData.pit_id,
                     title: serverData.event_title,
                     date: serverData.date,
-                    time_begin: serverData.time_start,
-                    time_end: serverData.time_end,
+                    time_begin: new_start_date,
+                    time_end: new_end_date,
                     transportation: serverData.event_name,
                     notes: [],
                     trip_id: serverData.trip_id,
@@ -48,8 +50,8 @@ export const getActivitiesInTrip = async (
                     id: serverData.pit_id,
                     title: serverData.address,
                     date: serverData.date,
-                    time_begin: serverData.time_start,
-                    time_end: serverData.time_end,
+                    time_begin: new_start_date,
+                    time_end: new_end_date,
                     location: serverData.address,
                     place_id: serverData.place_id,
                     place_image: serverData.photo_url,
