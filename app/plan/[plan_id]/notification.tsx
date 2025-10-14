@@ -13,6 +13,57 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { formatDateTimeNote } from "@/util/formatFucntion/formatDateTimeNote";
 
+const getUnreadCount = async (plan_id: number, user_id: number) => {
+  return { unread_count: 2 };
+  // const res = await fetch(`${API_BASE_URL}/notification/unread_count?plan_id=${plan_id}&user_id=${user_id}`);
+  // return await res.json();
+};
+
+const getNotificationByPlan = async (plan_id: number, user_id: number) => {
+  return {
+    count: 5,
+    noti: [
+      {
+        noti_id: 1,
+        noti_title: "OSHI",
+        noti_text: "WE LOVE OSHI",
+        noti_date: "2023-05-05",
+        noti_time: "06:55:00",
+      },
+      {
+        noti_id: 2,
+        noti_title: "OSHI",
+        noti_text: "WE LOVE OSHI",
+        noti_date: "2025-08-31",
+        noti_time: "06:55:00",
+      },
+      {
+        noti_id: 3,
+        noti_title: "Vote Created",
+        noti_text: "New vote for 'Dinner Place' has been started.",
+        noti_date: "2025-10-05",
+        noti_time: "10:00:00",
+      },
+      {
+        noti_id: 4,
+        noti_title: "Member Joined",
+        noti_text: "Alice joined your trip.",
+        noti_date: "2025-10-04",
+        noti_time: "09:00:00",
+      },
+      {
+        noti_id: 5,
+        noti_title: "Trip Updated",
+        noti_text: "Your itinerary has been changed.",
+        noti_date: "2025-10-03",
+        noti_time: "14:45:00",
+      },
+    ],
+  };
+  // const res = await fetch(`${API_BASE_URL}/notification/all?plan_id=${plan_id}&user_id=${user_id}`);
+  // return await res.json();
+};
+
 const Notification = () => {
   const [notifications, setNotifications] = useState<NotificationBox[]>([]);
   const [displayedNotifications, setDisplayedNotifications] = useState<
@@ -23,6 +74,7 @@ const Notification = () => {
 
   const router = useRouter();
   const { plan_id } = useLocalSearchParams<{ plan_id: string }>();
+  const user_id = 1;
 
   const handleBack = () => router.back();
 
@@ -31,114 +83,35 @@ const Notification = () => {
     setShowSeeAllButton(false);
   };
 
-  const fetchNoti = async () => {
+  const fetchNotifications = async () => {
     try {
       setLoading(true);
-      //   const response = await getNotificationByPlan(parseInt(plan_id), 1);
-      const response = {
-        noti: [
-          {
-            noti_id: 458,
-            noti_title: "New Vote Created",
-            noti_text: "A new vote for 'Best Restaurant' has been started.",
-            noti_date: "2025-10-05",
-            noti_time: "14:30",
-          },
-          {
-            noti_id: 457,
-            noti_title: "Trip Updated",
-            noti_text: "Your trip itinerary has been updated.",
-            noti_date: "2025-10-05",
-            noti_time: "12:00",
-          },
-          {
-            noti_id: 456,
-            noti_title: "Member Joined",
-            noti_text: "Alice has joined your trip group.",
-            noti_date: "2025-10-04",
-            noti_time: "18:45",
-          },
-          {
-            noti_id: 455,
-            noti_title: "Vote Result Announced",
-            noti_text: "Results for 'Dinner Place' voting are now available.",
-            noti_date: "2025-10-04",
-            noti_time: "10:10",
-          },
-          {
-            noti_id: 454,
-            noti_title: "New Comment",
-            noti_text: "Bob commented on your trip discussion.",
-            noti_date: "2025-10-03",
-            noti_time: "22:20",
-          },
-          {
-            noti_id: 453,
-            noti_title: "Trip Reminder",
-            noti_text: "Your trip starts in 3 days. Get ready!",
-            noti_date: "2025-10-02",
-            noti_time: "08:00",
-          },
-          {
-            noti_id: 452,
-            noti_title: "Poll Created",
-            noti_text: "New poll: 'Which place should we visit first?'",
-            noti_date: "2025-10-01",
-            noti_time: "15:30",
-          },
-          {
-            noti_id: 451,
-            noti_title: "Member Left",
-            noti_text: "John has left your trip group.",
-            noti_date: "2025-09-30",
-            noti_time: "09:45",
-          },
-          {
-            noti_id: 450,
-            noti_title: "Trip Created",
-            noti_text:
-              "Your trip 'Kyoto Adventure' has been successfully created.",
-            noti_date: "2025-09-29",
-            noti_time: "11:00",
-          },
-          {
-            noti_id: 449,
-            noti_title: "Trip Created",
-            noti_text:
-              "Your trip 'Kyoto Adventure' has been successfully created.",
-            noti_date: "2025-09-29",
-            noti_time: "11:00",
-          },
-          {
-            noti_id: 448,
-            noti_title: "Trip Created",
-            noti_text:
-              "Your trip 'Kyoto Adventure' has been successfully created.",
-            noti_date: "2025-09-29",
-            noti_time: "11:00",
-          },
-        ],
-        last_seen_noti_id: 453,
-        unread_count: 3,
-      };
-      const { noti, last_seen_noti_id, unread_count } = response;
-      setNotifications(noti)
+      const planIdNum = parseInt(plan_id);
+
       // -------------------------------
-      // ถ้ามี unread (unread_count !== 0)
-      // → แสดงอันใหม่ทั้งหมด (id > last_seen_noti_id)
-      // และเติมอันเก่าเพิ่มจนถึง last_seen_noti_id
+      // Step 1: เช็ค unread_count ก่อน
+      // -------------------------------
+      const unreadRes = await getUnreadCount(planIdNum, user_id);
+      const unread_count = unreadRes.unread_count ?? 0;
+      console.log("Unread count:", unread_count);
+
+      // -------------------------------
+      // Step 2: ดึง noti ทั้งหมด เเล้ว backend จะset unread_count = 0
+      // -------------------------------
+      const notiRes = await getNotificationByPlan(planIdNum, user_id);
+      const { noti } = notiRes;
+      setNotifications(noti);
+
+      // -------------------------------
+      // ✅ Step 3: จัดการตาม unread_count
       // -------------------------------
       if (unread_count !== 0) {
-        // noti ใหม่ทั้งหมด
-        const unreadList = noti.filter((n) => n.noti_id > last_seen_noti_id);
-
+        // แสดง noti ตามจำนวน unread_count
+        const unreadList = noti.slice(0, unread_count);
         setDisplayedNotifications(unreadList);
-        setShowSeeAllButton(noti.length > unreadList.length);
+        setShowSeeAllButton(noti.length > unread_count);
       } else {
-        // -------------------------------
-        // ถ้า unread_count === 0
-        // → แสดง 10 อันล่าสุดเท่านั้น
-        // -------------------------------
+        // แสดง 10 อันแรก
         const latestTen = noti.slice(0, 10);
         setDisplayedNotifications(latestTen);
         setShowSeeAllButton(noti.length > 10);
@@ -151,13 +124,12 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    fetchNoti();
+    fetchNotifications();
   }, [plan_id]);
 
   const renderNotificationItem = ({ item }: { item: NotificationBox }) => (
     <View
-      className={`rounded-lg p-4 mx-6 mb-3 border shadow-sm bg-white border-gray_border"
-      }`}
+      className={`rounded-lg p-4 mx-6 mb-3 border shadow-sm bg-white border-gray_border`}
     >
       <Text className="text-base font-semibold text-black mb-2">
         {item.noti_title}
