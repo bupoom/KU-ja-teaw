@@ -47,7 +47,9 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
         pathname === "/tabs/place" ||
         pathname === "/tabs/place/search_place" ||
         (pathname.startsWith("/plan/") &&
-            pathname.includes("/daily_trip/add_place/search_place"))
+            pathname.includes("/daily_trip/add_place/search_place")) ||
+        (pathname.startsWith("/plan/") &&
+            pathname.includes("/search_place"))
     ) {
         return (
             <TouchableOpacity

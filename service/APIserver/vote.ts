@@ -1,0 +1,137 @@
+import apiClient from "../client";
+
+export const createBlockVote = async (
+    trip_id: number,
+    selectDate: string,
+    start: string,
+    end: string,
+    event_title: string,
+    type: string
+): Promise<number> => {
+    try {
+        console.log("Creating vote activities : ", trip_id);
+        let pit: number = 0;
+        if (type === "places") {
+            const response = (await apiClient.post(
+                `/api/trips/${trip_id}/activities/votes/${type}`,
+                {
+                    trip_id: trip_id,
+                    place_id: 0,
+                    date: selectDate,
+                    time_start: start,
+                    time_end: end,
+                    is_vote: true,
+                    is_event: false,
+                }
+            )) as { data: any };
+            console.log(response.data);
+            pit = response.data.pit_id;
+        } else if (type === "events") {
+            const response = (await apiClient.post(
+                `/api/trips/${trip_id}/activities/votes/${type}`,
+                {
+                    trip_id: trip_id,
+                    place_id: 1,
+                    date: selectDate,
+                    time_start: start,
+                    time_end: end,
+                    is_vote: true,
+                    is_event: false,
+                    event_title: "",
+                }
+            )) as { data: any };
+            console.log(response.data);
+            pit = response.data.pit_id;
+        }
+        return pit;
+    } catch (error) {
+        console.error("Response date:", error);
+        throw error;
+    }
+};
+
+// ✅ แก้ไข: รับ response จาก Backend และแปลงเป็น ActivityVotePlace format
+export const getPlaceInVoteBlock = async (
+    trip_id: number,
+    pit_id: number
+): Promise<ActivityVotePlace | null> => {
+    try {
+        console.log("Getting place vote Block: ", pit_id);
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/${pit_id}/votes`
+        )) as { data: any };
+
+        // ตรวจสอบว่าไม่มีข้อมูล
+        if (!response.data || response.data.message) {
+            console.log("No candidates found");
+            return null;
+        }
+        const backendData = response.data;
+
+        const options: PlaceBox[] = backendData.places_voting.map(
+            (place: any) => ({
+                id: String(place.place_id), // แปลง number เป็น string
+                title: place.title || "Unknown Place",
+                rating: place.rating,
+                review_count: place.review_count,
+                location: place.address || "",
+                place_image: place.place_picture_url,
+                place_id: place.place_id,
+            })
+        );
+
+        // สร้าง Vote[] (ดึงจาก Backend ถ้ามี หรือสร้างจาก voting_count)
+        const votes: Vote[] = [];
+        backendData.places_voting.forEach((place: any) => {
+            // ถ้า Backend ส่ง votes มาแยกต่างหาก ให้ใช้ตรงนี้
+            // แต่ถ้าไม่มี เราจะสร้าง mock votes จาก is_voted
+            if (place.is_voted) {
+                votes.push({
+                    id: place.place_id,
+                    user_id: 1, // backend ไม่ให้มา
+                    activity_id: pit_id,
+                    vote_type: "place",
+                    place_id: place.place_id,
+                    username: "current_user", // backend ไม่ให้มา
+                    trip_id: trip_id,
+                });
+            }
+        });
+
+        // นับ total votes
+        const totalVotes = backendData.places_voting.reduce(
+            (sum: number, place: any) => sum + place.voting_count,
+            0
+        );
+
+        // สร้าง ActivityVotePlace object
+        const activityVotePlace: ActivityVotePlace = {
+            id: pit_id,
+            date: backendData.date,
+            time_begin: backendData.time_start,
+            time_end: backendData.time_end,
+            number_of_votes: totalVotes,
+            options: options,
+            votes: votes,
+            trip_id: trip_id,
+            vote_type: "place",
+        };
+
+        return activityVotePlace;
+    } catch (error: any) {
+        console.error("Error fetching place vote block:", error);
+
+        if (error.response && error.response.status === 500) {
+            const errorMessage = error.response.data?.message;
+            if (
+                typeof errorMessage === "string" &&
+                errorMessage.includes("No candidates found for block")
+            ) {
+                console.log(`Specific error caught: ${errorMessage}`);
+                return null;
+            }
+        }
+
+        throw error;
+    }
+};
