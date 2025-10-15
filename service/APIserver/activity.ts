@@ -30,35 +30,66 @@ export const getActivitiesInTrip = async (
         const ActivityList: ActivityPlace = [];
         for (let i = 0; i < data.length; i++) {
             const serverData = data[i];
-            const new_start_date = String(serverData.time_start).slice(0,5)
-            const new_end_date = String(serverData.time_end).slice(0,5)
-            if (serverData.is_event) {
-                // เป็น event
-                const item: ActivityEventBox = {
-                    id: serverData.pit_id,
-                    title: serverData.event_title,
-                    date: serverData.date,
-                    time_begin: new_start_date,
-                    time_end: new_end_date,
-                    transportation: serverData.event_name,
-                    notes: [],
-                    trip_id: serverData.trip_id,
-                };
-                ActivityList.push(item);
+            const new_start_date = String(serverData.time_start).slice(0, 5);
+            const new_end_date = String(serverData.time_end).slice(0, 5);
+            if (serverData.is_vote) {
+                if (serverData.is_event) {
+                    const item: ActivityVoteEvent = {
+                        id: serverData.pit_id,
+                        title: serverData.event_name,
+                        date: serverData.date,
+                        time_begin: serverData.time_start,
+                        time_end: serverData.time_end,
+                        number_of_votes: 0, // backend ไม่ได้ให้มาคับพรี่
+                        options: [], // backend ไม่ได้ให้มาคับพรี่
+                        votes: [], // backend ไม่ได้ให้มาคับพรี่
+                        trip_id: trip_id,
+                        vote_type: serverData.event,
+                    };
+                    ActivityList.push(item);
+                } else {
+                    const item: ActivityVotePlace = {
+                        id: serverData.pit_id,
+                        date: serverData.date,
+                        time_begin: serverData.time_start,
+                        time_end: serverData.time_end,
+                        number_of_votes: 0, // backend ไม่ได้ให้มาคับพรี่
+                        options: [], // backend ไม่ได้ให้มาคับพรี่
+                        votes: [], // backend ไม่ได้ให้มาคับพรี่
+                        trip_id: trip_id,
+                        vote_type: "place",
+                    };
+                    ActivityList.push(item);
+                }
             } else {
-                const item: ActivityPlaceBox = {
-                    id: serverData.pit_id,
-                    title: serverData.address,
-                    date: serverData.date,
-                    time_begin: new_start_date,
-                    time_end: new_end_date,
-                    location: serverData.address,
-                    place_id: serverData.place_id,
-                    place_image: serverData.photo_url,
-                    trip_id: serverData.trip_id,
-                    notes: [],
-                };
-                ActivityList.push(item);
+                if (serverData.is_event) {
+                    // เป็น event
+                    const item: ActivityEventBox = {
+                        id: serverData.pit_id,
+                        title: serverData.event_title,
+                        date: serverData.date,
+                        time_begin: new_start_date,
+                        time_end: new_end_date,
+                        transportation: serverData.event_name,
+                        notes: [],
+                        trip_id: serverData.trip_id,
+                    };
+                    ActivityList.push(item);
+                } else {
+                    const item: ActivityPlaceBox = {
+                        id: serverData.pit_id,
+                        title: serverData.address,
+                        date: serverData.date,
+                        time_begin: new_start_date,
+                        time_end: new_end_date,
+                        location: serverData.address,
+                        place_id: serverData.place_id,
+                        place_image: serverData.photo_url,
+                        trip_id: serverData.trip_id,
+                        notes: [],
+                    };
+                    ActivityList.push(item);
+                }
             }
         }
         return ActivityList;

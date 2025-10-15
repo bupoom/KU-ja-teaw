@@ -1,3 +1,4 @@
+import { AuthService } from "../authService";
 import apiClient from "../client";
 
 export const createBlockVote = async (
@@ -37,7 +38,7 @@ export const createBlockVote = async (
                     time_end: end,
                     is_vote: true,
                     is_event: false,
-                    event_title: "",
+                    event_title: event_title,
                 }
             )) as { data: any };
             console.log(response.data);
@@ -50,7 +51,6 @@ export const createBlockVote = async (
     }
 };
 
-// ✅ แก้ไข: รับ response จาก Backend และแปลงเป็น ActivityVotePlace format
 export const getPlaceInVoteBlock = async (
     trip_id: number,
     pit_id: number
@@ -88,11 +88,11 @@ export const getPlaceInVoteBlock = async (
             if (place.is_voted) {
                 votes.push({
                     id: place.place_id,
-                    user_id: 1, // backend ไม่ให้มา
+                    user_id: 1,
                     activity_id: pit_id,
                     vote_type: "place",
                     place_id: place.place_id,
-                    username: "current_user", // backend ไม่ให้มา
+                    username: "current_user",
                     trip_id: trip_id,
                 });
             }
@@ -133,5 +133,99 @@ export const getPlaceInVoteBlock = async (
         }
 
         throw error;
+    }
+};
+
+export const DeleteBlockVote = async (
+    trip_id: number,
+    vote_id: number
+): Promise<boolean> => {
+    try {
+        console.log("Deleting vote activities : ", trip_id);
+        const response = (await apiClient.delete(
+            `/api/trips/${trip_id}/activities/${vote_id}/votes`
+        )) as { data: any };
+        if (response) {
+            // check condition ด้วยตัวผมในอนาคต
+        }
+        return true;
+    } catch (error) {
+        console.error("Response date:", error);
+        throw error;
+    }
+};
+
+export const checkIsUserVoted = async (
+    trip_id: number,
+    vote_id: number
+): Promise<boolean> => {
+    try {
+        console.log("Deleting vote activities : ", trip_id);
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/${vote_id}/voted`
+        )) as { data: any };
+        return response.data.votedd;
+    } catch (error) {
+        console.error("Response date:", error);
+        throw error;
+    }
+};
+
+export const patchNewVoteTime = async (
+    trip_id: number,
+    vote_id: number,
+    date: string,
+    start_time: string,
+    end_time: string
+): Promise<void> => {
+    try {
+        console.log("Deleting vote activities : ", trip_id);
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/${vote_id}/voted`,
+            {
+                date: date,
+                start_time: start_time,
+                end_time: end_time,
+            }
+        )) as { data: any };
+    } catch (error) {
+        console.error("Response date:", error);
+        throw error;
+    }
+};
+
+export const votePlace = async (
+    trip_id: number,
+    pit_id: number,
+    place_id: number
+): Promise<boolean> => {
+    try {
+        console.log("Voting for place:", { trip_id, pit_id, place_id });
+        const userdata = await AuthService.getUserData();
+
+        if (!userdata?.user_id) {
+            console.error("User not found");
+            return false;
+        }
+        const response = await apiClient.post(
+            `/api/trips/${trip_id}/activities/${pit_id}/voted/places`,
+            {
+                user_id: userdata.user_id,
+                pit_id: pit_id,
+                trip_id: trip_id,
+                place_id: place_id,
+            }
+        );
+
+        console.log("Vote response:", response.data);
+        return true;
+    } catch (error: any) {
+        console.error("Error voting for place:", error);
+
+        if (error.response) {
+            console.error("Error response:", error.response.data);
+        }
+
+        return false;
     }
 };

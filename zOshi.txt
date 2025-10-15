@@ -1,0 +1,37 @@
+const vote_id = await createBlockVote(
+    123,              // trip_id
+    "2025-01-20",     // date
+    "09:00",          // start
+    "12:00",          // end
+    "eventsname",     // events name
+    "places"          // "places" หรือ "events"
+); // return vote_id 
+
+const result = await getPlaceInVoteBlock(
+    123,    // trip_id
+    456     // vote_id (pit_id)
+); // return ActivityVotePlace ตามที่มีงเขียนไว้ใน interface เลย
+
+const success = await DeleteBlockVote(
+    123,    // trip_id
+    456     // vote_id
+); // DeleteBlockVote return true ถ้าทำได้
+
+const hasVoted = await checkIsUserVoted(
+    123,    // trip_id
+    456     // vote_id
+); // check ว่า user vote ไปแล้วหรือยัง อันนี้กุก็ไม่รู้หมือนกันว่ามึงเอาไปใช้ตรงไหน แต่เซนเขียนมาก็เลยเขียนไว้ก่อน
+
+await patchNewVoteTime(
+    123,              // trip_id
+    456,              // vote_id
+    "2025-01-21",     // date
+    "10:00",          // start
+    "14:00"           // end
+); // patch ไม่ return ไม่ต้อง check เชื่อใจ
+
+const IsVoted = await votePlace(
+    123,        // trip_id
+    456,        // vote_id
+    23,         // place_id
+) // return true false บอกว่าสำเร็จมั้ย
