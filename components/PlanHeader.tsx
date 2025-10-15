@@ -23,15 +23,15 @@ function PlanHeader({ planId }: { planId: string }) {
     }
   };
 
-//   const fetchNotificationStatus = async () => {
-//     try {
-//       const res = await get_notification_status(user_id, trip_id);
-//       // ตัวอย่าง response: { "user_id":123, "plan_id":1234, "last_seen_noti_id":453, "unread_count":5 }
-//       setUnreadCount(res.unread_count || 0);
-//     } catch (err) {
-//       console.error("Failed to fetch notification status:", err);
-//     }
-//   };
+  // const fetchNotificationStatus = async () => {
+  //   try {
+  //     const res = await get_notification_status(user_id, trip_id);
+  //     // ตัวอย่าง response: { "unread_count": 5 }
+  //     setUnreadCount(res.unread_count || 0);
+  //   } catch (err) {
+  //     console.error("Failed to fetch notification status:", err);
+  //   }
+  // };
 
   useEffect(() => {
     fetchTrip();
