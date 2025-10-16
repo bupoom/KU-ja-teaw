@@ -1,5 +1,6 @@
 import Header from "@/components/common/Header";
 import NextButton from "@/components/common/NextButton";
+import { create_note } from "@/service/APIserver/Note";
 import { copyTrips } from "@/service/APIserver/tripApi";
 import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -41,10 +42,11 @@ export default function SetTripCodeCopy() {
             duration: parseInt(duration),
             password: password,
         };
+        
         const response = await copyTrips(data);
-
-        if (response === "Success") {
+        if (response.message === "Success") {
             Alert.alert("Success!");
+            await create_note(response.trip_id ,"Start your note Journey here!!" )
             router.replace(`/plan/${response.trip_id}`);
         } else {
             Alert.alert("Failed to Create new trips.");

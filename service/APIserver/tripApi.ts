@@ -261,6 +261,9 @@ export const copyTrips = async (data: {
             `/api/trips/${data.guide_id}/copyTrip`,
             {
                 trip_code: data.tripCode,
+                trips_name: data.name,
+                start_date: data.start,
+                trip_password: data.password,
             }
         )) as { data: { message: string; trip_id: number } };
 
@@ -283,9 +286,9 @@ export const copyTrips = async (data: {
             planning_status: false,
         };
 
-        await updateTripDetail(NewData);
-
-        return { message: "Success", trip_id: response.data.trip_id };
+        const res = await updateTripDetail(NewData);
+        console.log("create note res : " , res)
+        return { message: "Success", trip_id: NewData.trip_id };
     } catch (error) {
         console.error("Copy trip error:", error);
         return "failed";
