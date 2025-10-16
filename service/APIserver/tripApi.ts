@@ -26,7 +26,6 @@ export const createNewTrips = async (data: {
         formData.append("trip_code", data.trip_code);
         formData.append("trip_pass", data.trip_password);
 
-        console.log("here : ", data.uri);
         if (data.uri) {
             formData.append("file", {
                 uri: data.uri,
@@ -228,7 +227,6 @@ export const leaveTrips = async (
                 collab_id: collab_id,
             },
         });
-        console.log("Leave trip response:", response.data);
         return true;
     } catch (error) {
         console.error("Leave trip error:", error);
@@ -266,7 +264,6 @@ export const copyTrips = async (data: {
                 trip_password: data.password,
             }
         )) as { data: { message: string; trip_id: number } };
-
         if (response.data.message !== "Trip Copied") {
             return "failed";
         }
@@ -287,7 +284,6 @@ export const copyTrips = async (data: {
         };
 
         const res = await updateTripDetail(NewData);
-        console.log("create note res : " , res)
         return { message: "Success", trip_id: NewData.trip_id };
     } catch (error) {
         console.error("Copy trip error:", error);

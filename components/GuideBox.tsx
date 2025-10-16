@@ -29,8 +29,6 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
     } = guideData;
 
     const handleUnbookmark = () => {
-        console.log("handleUnbookmark called for id:", id);
-
         Alert.alert("Remove Bookmark", `remove "${title}" from bookmarks?`, [
             {
                 text: "Cancel",
@@ -44,7 +42,6 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                     console.log("Remove button pressed for id:", id);
 
                     try {
-                        console.log("Calling UnbookmarkByGuideId API...");
                         const res = await UnbookmarkByGuideId(id);
                         if (res) {
                             if (onRemove) {
@@ -117,7 +114,6 @@ const GuideBox: React.FC<GuideBoxProps> = ({ guideData, onRemove }) => {
                                     className="ml-2"
                                     onPress={e => {
                                         e.stopPropagation(); // ป้องกัน event bubbling
-                                        console.log("Bookmark icon pressed");
                                         handleUnbookmark();
                                     }}
                                 >

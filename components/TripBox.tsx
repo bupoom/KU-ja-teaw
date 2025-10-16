@@ -29,7 +29,6 @@ const TripBox: React.FC<TripBoxProps> = ({
 
   const router = useRouter();
   const handleTripPress = (): void => {
-    console.log(`trip_id: ${trip_id}`);
     // If custom onPress function is provided, use it
     if (onPress) {
       onPress(trip_id);

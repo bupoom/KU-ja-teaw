@@ -37,7 +37,6 @@ export const get_flight_detail = async (trip_id: number): Promise<Flight[]> => {
 
 export const add_flight = async (trip_id: number, flight: Flight): Promise<void> => {
     try {
-        console.log("Adding flight\n", flight);
 
         const response = await apiClient.post(`/api/trips/${trip_id}/flights`, {
             dep_date: flight.departure_date.split('T')[0],

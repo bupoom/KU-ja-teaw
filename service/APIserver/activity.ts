@@ -273,3 +273,35 @@ export const getActivitiesForMap = async (
         throw new Error("Failed to fetch activities for map");
     }
 };
+
+export const getActivitiesDetails = async (
+    trip_id: number,
+    pit_id: number
+): Promise<ActivityEventBox> => {
+    try {
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/${pit_id}/detail`
+        )) as { data: any };
+
+        console.log(response)
+        const activities = response.data[0];
+
+        const result: ActivityEventBox =  {
+            id: activities.pit_id,
+            title: activities.event_title,
+            date: activities.date,
+            time_begin: activities.time_start,
+            time_end: activities.time_end,
+            transportation: activities.event_name,
+            notes: [],
+            trip_id: trip_id,
+        };
+        return result;
+    } catch (error: any) {
+        console.error(
+            "Error fetching activities for map:",
+            error.response?.data || error
+        );
+        throw new Error("Failed to fetch activities for map");
+    }
+};

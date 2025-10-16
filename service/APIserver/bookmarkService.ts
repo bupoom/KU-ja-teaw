@@ -60,8 +60,6 @@ export const addPlaceToBookmark = async (
         };
         const message = response.data.message || "";
         const result = messageMap[message] || "invalid placeId";
-
-        console.log("bookmark completed!!", result);
         return result === "completed";
     } catch (error) {
         console.error("bookmark error:", error);
@@ -79,8 +77,6 @@ export const UnbookmarkByPlaceId = async (
             `${endpoints.bookmark.place}/${bookmarkid}`
         )) as { data: { message: string } };
 
-        console.log("API Response:", response.data);
-
         // Object mapping แทน switch case
         const messageMap: Record<string, string> = {
             "Place from user's bookmark removed": "completed",
@@ -92,7 +88,6 @@ export const UnbookmarkByPlaceId = async (
         const message = response.data.message || "";
         const result = messageMap[message] || "invalid placeId";
 
-        console.log("Unbookmark completed!! :", result);
         return result === "completed";
     } catch (error) {
         console.error("Unbookmark error:", error);
@@ -121,7 +116,6 @@ export const SearchPlaceByInput = async (
                 placeId: Data.placePrediction.placeId,
             });
         }
-        console.log("result : ", places);
         return places;
     } catch (error) {
         console.error("Response data:", error);
@@ -140,7 +134,6 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
 
         const bookmarks = response.data.guide_bookmarks ?? [];
         const guides: GuideBox[] = [];
-        console.log(bookmarks.length)
         for (let i = 0; i < bookmarks.length; i++) {
             const serverData = bookmarks[i];
             guides.push({
@@ -156,7 +149,6 @@ export const getBookmarkGuideList = async (): Promise<GuideBox[]> => {
                 trip_id: serverData.trip_id,
             });
         }
-        console.log(guides)
         return guides;
     } catch (error) {
         console.error("Response data:", error);

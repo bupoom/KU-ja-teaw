@@ -398,8 +398,6 @@ const PlanIndex = () => {
         throw new Error("Unsupported file path");
       }
 
-      console.log("Ready to open:", localUri);
-
       const cUri = await FileSystem.getContentUriAsync(localUri);
       await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
         data: cUri,

@@ -26,7 +26,6 @@ const JoinTripScreen = () => {
 
     const handleNext = async () => {
         const response = await enterTrip(tripCode , password)
-        console.log("res : " , response)
         if (response) {
             router.push(`/plan/${response.toString()}`);
         } else if (response === "errorCode") {

@@ -1,4 +1,5 @@
 import {
+    Alert,
     Image,
     Linking,
     ScrollView,
@@ -17,96 +18,131 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-import {
-    mockActivityPlaceBoxes,
-    mockUserDetails,
-} from "@/mock/mockDataComplete";
 import { getPlaceDetails } from "@/service/APIserver/placeDetail";
+import {
+    addActivitiesNote,
+    getActivitiesNote,
+    updateActivitiesNote,
+} from "@/service/APIserver/Note";
+import { get_more_detail } from "@/service/APIserver/userService";
 
 const PlaceDetailPage = () => {
-    const { plan_id, place_detail_id  , place_id} = useLocalSearchParams<{
+    const { plan_id, place_detail_id, place_id } = useLocalSearchParams<{
         plan_id: string;
         place_detail_id: string;
         place_id: string;
     }>();
-    console.log(place_id)
-    const user_id = 1;
+
     const router = useRouter();
     const [placeDetail, setPlaceDetail] = useState<PlaceDetails | null>(null);
     const [notes, setNotes] = useState<Note[]>([]);
     const [userName, setUserName] = useState<string>("");
+    const [userId, setUserId] = useState<string>("");
     const [userProfile, setUserProfile] = useState<string>();
-    const userNotes = notes.find(
-        note => note.refer_user_id === String(user_id)
-    );
-    const commentNotes = notes.filter(
-        note => note.refer_user_id !== String(user_id)
-    );
+    const [userNotes, setUserNote] = useState<Note | undefined>();
+    const [commentNotes, setCommentNotes] = useState<Note[]>([]);
 
     const handleBackPress = () => {
         router.back();
     };
 
-    const handleAddNote = () => {
-        const newNote: Note = {
-            id: Math.max(...notes.map(n => n.id), 0) + 1,
-            trip_id: parseInt(plan_id!),
-            refer_user_id: String(user_id),
-            reference_type: "overview",
-            note_text: "",
-            user_name: userName ?? "You",
-            user_profile:
-                userProfile ??
-                "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop",
-            is_editable: true,
-            created_at: new Date().toISOString(), // current timestamp
-        };
-        setNotes(prev => [...prev, newNote]);
+    const handleAddNote = async () => {
+        try {
+            const NewNote = await addActivitiesNote(
+                parseInt(plan_id),
+                parseInt(place_detail_id),
+                "write your notes here!!"
+            );
+            if (!NewNote) {
+                Alert.alert("Failed to create new note.");
+                return;
+            }
+            setNotes(prev => [...prev, NewNote]);
+        } catch (error) {
+            Alert.alert("Failed to create new note.");
+        }
     };
 
-    const handleSaveEdit = (noteId: number, editText: string) => {
-        setNotes(prev =>
-            prev.map(note =>
-                note.id === noteId ? { ...note, note_text: editText } : note
-            )
-        );
+    const handleSaveEdit = async (noteId: number, editText: string) => {
+        try {
+            const res = await updateActivitiesNote(
+                parseInt(plan_id),
+                noteId,
+                editText
+            );
+            if (res) {
+                setNotes(prev =>
+                    prev.map(note =>
+                        note.id === noteId
+                            ? { ...note, note_text: editText }
+                            : note
+                    )
+                );
+            } else {
+                Alert.alert("Failed to update note.");
+            }
+        } catch (error) {
+            Alert.alert("Failed to update note.");
+        }
     };
 
+    // Fetch initial data
     useEffect(() => {
         if (place_detail_id && plan_id) {
             const parsedTripId = parseInt(plan_id);
             const parsedActivityId = parseInt(place_detail_id);
 
-            const user = mockUserDetails.find(
-                user => user.user_id === String(user_id)
-            );
-            setUserName(user?.name || "");
-            setUserProfile(userProfile);
-
-            const activity = mockActivityPlaceBoxes.find(
-                place =>
-                    place.id === parsedActivityId &&
-                    place.trip_id === parsedTripId
-            );
-            const fetchPlaceDetails = async () => {
-                const detail = await getPlaceDetails(place_detail_id, "place");
-                if (detail) {
-                    setPlaceDetail(detail);
+            const fetchUserDetails = async () => {
+                try {
+                    const user = await get_more_detail(parsedTripId);
+                    setUserName(user.username || "");
+                    setUserProfile(
+                        user?.user_image ||
+                            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop"
+                    );
+                    setUserId(user.user_id);
+                } catch (error) {
+                    Alert.alert("Failed to fetch user details.");
                 }
             };
+
+            const fetchPlaceDetails = async () => {
+                try {
+                    const detail = await getPlaceDetails(place_id, "place");
+                    if (detail) {
+                        setPlaceDetail(detail);
+                    }
+                    const relatedNotes = await getActivitiesNote(
+                        parsedTripId,
+                        parsedActivityId
+                    );
+                    setNotes(relatedNotes);
+                } catch (error) {
+                    Alert.alert("Failed to fetch place details.");
+                }
+            };
+
+            fetchUserDetails();
             fetchPlaceDetails();
-            if (!activity) return;
-            const relatedNotes = activity.notes ?? [];
-            setNotes(relatedNotes);
 
             console.log(`place_detail_id: ${place_detail_id}`);
             console.log(`plan_id: ${plan_id}`);
+            console.log(`place_id: ${place_id}`);
         }
-    }, [place_detail_id, plan_id]);
+    }, [place_detail_id, plan_id, place_id]);
 
+    // Filter notes when userId or notes change
     useEffect(() => {
-        console.log("Notes updated:", notes);
-    }, [notes]);
+        if (userId && notes.length >= 0) {
+            const myNote = notes.find(note => note.refer_user_id === userId);
+            const otherNotes = notes.filter(
+                note => note.refer_user_id !== userId
+            );
+
+            setUserNote(myNote);
+            setCommentNotes(otherNotes);
+        }
+    }, [userId, notes]);
 
     useEffect(() => {
         console.log("PlaceDetail updated:", placeDetail);
@@ -235,14 +271,17 @@ const PlaceDetailPage = () => {
                     </Text>
                 </View>
 
+                {/* Note Section */}
                 <View className="mx-4 mb-4 bg-white rounded-lg border border-gray_border p-6">
                     <Text className="text-xl font-bold text-black mb-3">
                         Note
                     </Text>
+
+                    {/* User's Note */}
                     {userNotes ? (
                         <NoteItem
                             note={userNotes}
-                            userId={String(user_id)}
+                            userId={userId}
                             onSave={handleSaveEdit}
                         />
                     ) : (
@@ -273,6 +312,8 @@ const PlaceDetailPage = () => {
                             </TouchableOpacity>
                         </View>
                     )}
+
+                    {/* Other Users' Comments */}
                     {commentNotes.length === 0 ? (
                         <View className="bg-white rounded-lg p-4 border border-gray_border flex items-center justify-center">
                             <Text className="text-sm font-normal text-dark_gray">
@@ -284,7 +325,7 @@ const PlaceDetailPage = () => {
                             <NoteItem
                                 key={note.id}
                                 note={note}
-                                userId={String(user_id)}
+                                userId={userId}
                                 onSave={handleSaveEdit}
                             />
                         ))

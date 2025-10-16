@@ -33,8 +33,6 @@ export const organizeActivitiesByDay = async (
                 activities,
             };
         });
-
-        console.log("result!! : ", dailyActivities);
         return dailyActivities;
     } catch (error) {
         console.error("Error organizing activities:", error);

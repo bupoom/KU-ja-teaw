@@ -173,14 +173,14 @@ const DailyTripsIndex = () => {
     const renderActivityPlace = (
         activity: ActivityPlaceBox,
         index: number,
-        onPress: (activity_id: number) => void,
+        onPress: (activity_id: ActivityPlaceBox) => void,
         onDelete: (activity_id: number) => void
     ) => {
         return (
             <TouchableOpacity
                 key={`${activity.id}-${index}`}
                 className="flex-row p-3 bg-white border border-gray_border rounded-lg mb-1"
-                onPress={() => onPress(activity.id)}
+                onPress={() => onPress(activity)}
                 activeOpacity={0.7}
             >
                 <Image
@@ -437,10 +437,12 @@ const DailyTripsIndex = () => {
 
     // <----------------------- Function Activity -------------------------------->
 
-    const handleActivityPlace = (activityId: number) => {
+    const handleActivityPlace = (activityId: ActivityPlaceBox) => {
         console.log(`Go to Activity Details`);
         console.log(`activity_id: ${activityId}`);
-        router.push(`/plan/${plan_id}/daily_trip/placeDetails/${activityId}`);
+        router.push(
+            `/plan/${plan_id}/daily_trip/placeDetails/${activityId.id}?place_id=${activityId.place_id}`
+        );
     };
 
     const handleActivityEvent = (activityId: number) => {

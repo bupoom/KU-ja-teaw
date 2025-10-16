@@ -57,7 +57,6 @@ const SearchGuideScreen: React.FC = () => {
             // จำลองการ loading
             setTimeout(() => {
                 Search_with_query(searchQuery);
-                console.log("query result : " , searchResults)
                 setHasSearched(true);
                 setLoading(false);
             }, 500);
@@ -94,7 +93,6 @@ const SearchGuideScreen: React.FC = () => {
     // Handle navigation to GuideDetails screen
     const handleGuidePress = (guide: GuideBox) => {
         router.push({pathname: `./guides/${guide.id}`,});
-        console.log("Navigate to guide details:", guide.id);
     };
 
     return (

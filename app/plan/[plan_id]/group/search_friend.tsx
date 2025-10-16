@@ -65,7 +65,6 @@ const SearchFriend = () => {
   const handleAdd = async (username: string) => {
     try {
       await invite_user(username, parseInt(plan_id!));
-      console.log(`✅ Success to add username: ${username} to trip`);
       Alert.alert("Success", `${username} has been invited to the trip`);
       setQuery("")
     } catch (err) {

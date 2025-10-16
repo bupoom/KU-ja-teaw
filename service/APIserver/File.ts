@@ -6,7 +6,6 @@ export const get_all_file = async (trip_id:number): Promise<FileGroup[]> => {
         const response = (await apiClient.get(`/api/trips/${trip_id}/documents`)) as {
             data: { files: any[]};
         };
-        console.log(response.data.files);
         const data = response.data.files;
         const file_list: FileGroup[] = [];
         for (let i = 0; i < data.length; i++){
@@ -22,7 +21,6 @@ export const get_all_file = async (trip_id:number): Promise<FileGroup[]> => {
                 trip_id: trip_id,
             });
         }
-        console.log("File list : ", file_list);
         return file_list;
     } catch (error) {
         console.error("Fetch file error:", error);
@@ -34,7 +32,6 @@ export const delete_file = async (trip_id:number, doc_id:number): Promise<void> 
     try {
         console.log("Deleting file in trip");
         const response = (await apiClient.delete(`/api/trips/${trip_id}/documents/${doc_id}`))
-        console.log("Delete success");
     } catch (error) {
         console.error("Fetch file error:", error);
         throw error;

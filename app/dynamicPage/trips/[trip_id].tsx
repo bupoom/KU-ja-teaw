@@ -1,9 +1,8 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
     Alert,
     Image,
-    Modal,
     SafeAreaView,
     ScrollView,
     StatusBar,
@@ -13,10 +12,6 @@ import {
     View,
     Animated,
 } from "react-native";
-
-import {
-    mockNotes,
-} from "@/mock/mockDataComplete";
 
 import CustomButton from "@/components/common/CustomButton";
 import Header from "@/components/common/Header";
@@ -36,7 +31,10 @@ import { get_trip_detail } from "@/service/APIserver/tripApi";
 import { get_flight_detail } from "@/service/APIserver/Flight";
 import { get_trip_member } from "@/service/APIserver/groupPage";
 import { get_more_detail } from "@/service/APIserver/userService";
-import { get_overview_note } from "@/service/APIserver/Note";
+import {
+    get_overview_note,
+    getAllActivitiesNote,
+} from "@/service/APIserver/Note";
 
 interface DailyActivity {
     date: string;
@@ -45,9 +43,8 @@ interface DailyActivity {
 
 export default function TripDetail() {
     const router = useRouter();
-    const user_id = 1;
-
     const { trip_id } = useLocalSearchParams<{ trip_id: string }>();
+
     const [loading, setLoading] = useState<boolean>(true);
     const [tripDetail, setTripDetail] = useState<TripDetails | null>(null);
     const [flights, setFlights] = useState<Flight[]>([]);
@@ -78,6 +75,10 @@ export default function TripDetail() {
     const [userRole, setUserRole] = useState<string>("viewer");
     const canShare = userRole === "owner";
 
+    const parsedTripId = Array.isArray(trip_id)
+        ? parseInt(trip_id[0], 10)
+        : parseInt(trip_id ?? "0", 10);
+
     const copyGuide = () => {
         router.push({
             pathname: "/dynamicPage/guides/set_plan_details",
@@ -104,24 +105,22 @@ export default function TripDetail() {
         }).start(() => setter(false));
     };
 
-    const parsedTripId = Array.isArray(trip_id)
-        ? parseInt(trip_id[0], 10) // ถ้าเป็น array เอา index แรก 10 บอกเลขฐาน
-        : parseInt(trip_id ?? "0", 10);
-
     const fetchActivityNotes = async (
         trip_id: number,
         reference_id: number,
         reference_type: "place" | "event"
     ): Promise<Note[]> => {
         try {
-            const activityNotes = mockNotes.filter(
-                note =>
-                    note.trip_id === trip_id &&
-                    note.reference_id === reference_id &&
-                    note.reference_type === reference_type
+            // Get all activity notes for the trip
+            const allNotes: Note[] = await getAllActivitiesNote(trip_id);
+
+            // Filter notes for this specific activity
+            const filteredNotes = allNotes.filter(
+                note => note.reference_id === reference_id
             );
 
-            return overviewNotes.sort((a, b) => {
+            // Sort notes: Owner first, then by created date (newest first)
+            return filteredNotes.sort((a, b) => {
                 const memberA = tripMembers.find(
                     m => m.id === Number(a.refer_user_id)
                 );
@@ -142,6 +141,7 @@ export default function TripDetail() {
             });
         } catch (error) {
             console.error("Error in fetchActivityNotes:", error);
+            Alert.alert("Failed to fetch activity notes.");
             return [];
         }
     };
@@ -169,9 +169,35 @@ export default function TripDetail() {
 
     const handleOverview = async () => {
         if (tripDetail) {
-            const notes = await get_overview_note(tripDetail.trip_id);
-            setOverviewNotes(notes);
-            openPopup(setShowOverview, slideOverview);
+            try {
+                const notes = await get_overview_note(tripDetail.trip_id);
+
+                // Sort notes: Owner first, then by created date
+                const sortedNotes = notes.sort((a, b) => {
+                    const memberA = tripMembers.find(
+                        m => m.id === Number(a.refer_user_id)
+                    );
+                    const memberB = tripMembers.find(
+                        m => m.id === Number(b.refer_user_id)
+                    );
+
+                    const isOwnerA = memberA?.role === "owner";
+                    const isOwnerB = memberB?.role === "owner";
+
+                    if (isOwnerA && !isOwnerB) return -1;
+                    if (!isOwnerA && isOwnerB) return 1;
+
+                    return (
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime()
+                    );
+                });
+
+                setOverviewNotes(sortedNotes);
+                openPopup(setShowOverview, slideOverview);
+            } catch (error) {
+                Alert.alert("Failed to fetch overview notes.");
+            }
         }
     };
 
@@ -194,8 +220,7 @@ export default function TripDetail() {
     };
 
     const handleShareConfirm = () => {
-        console.log("Share trip with description:", shareDescription);
-        setShowShare(false);
+        closePopup(setShowShare, slideShare);
         setShareDescription("");
         // Here you would make API call to share the trip
     };
@@ -205,8 +230,8 @@ export default function TripDetail() {
         try {
             setLoading(true);
             const tripData = await get_trip_detail(parseInt(trip_id));
-            console.log(tripData);
             setTripDetail(tripData);
+
             const userDetails = await get_more_detail(tripData.trip_id);
             setUserRole(userDetails.role);
 
@@ -240,7 +265,6 @@ export default function TripDetail() {
     };
 
     useEffect(() => {
-        console.log(trip_id);
         if (trip_id) {
             loadData();
         }
@@ -583,30 +607,38 @@ export default function TripDetail() {
                         </View>
 
                         <ScrollView showsVerticalScrollIndicator={false}>
-                            {overviewNotes.map(note => (
-                                <View
-                                    key={note.id}
-                                    className="flex-row p-3 mb-3 bg-white rounded-lg border border-gray_border"
-                                >
-                                    <Image
-                                        source={{ uri: note.user_profile }}
-                                        className="w-10 h-10 rounded-full mr-3"
-                                    />
-                                    <View className="flex-1">
-                                        <Text className="text-base font-semibold text-black mb-1">
-                                            {note.user_name}
-                                        </Text>
-                                        <Text className="text-base text-gray-700 mb-2">
-                                            {note.note_text}
-                                        </Text>
-                                        <Text className="text-sm text-gray-500">
-                                            {formatDateTimeNote(
-                                                note.created_at
-                                            )}
-                                        </Text>
+                            {overviewNotes.length > 0 ? (
+                                overviewNotes.map(note => (
+                                    <View
+                                        key={note.id}
+                                        className="flex-row p-3 mb-3 bg-white rounded-lg border border-gray_border"
+                                    >
+                                        <Image
+                                            source={{ uri: note.user_profile }}
+                                            className="w-10 h-10 rounded-full mr-3"
+                                        />
+                                        <View className="flex-1">
+                                            <Text className="text-base font-semibold text-black mb-1">
+                                                {note.user_name}
+                                            </Text>
+                                            <Text className="text-base text-gray-700 mb-2">
+                                                {note.note_text}
+                                            </Text>
+                                            <Text className="text-sm text-gray-500">
+                                                {formatDateTimeNote(
+                                                    note.created_at
+                                                )}
+                                            </Text>
+                                        </View>
                                     </View>
+                                ))
+                            ) : (
+                                <View className="items-center py-8">
+                                    <Text className="text-gray-500">
+                                        No overview notes yet
+                                    </Text>
                                 </View>
-                            ))}
+                            )}
                         </ScrollView>
                         <View className="mt-6 pt-4 border-t border-gray-200">
                             <TouchableOpacity
@@ -625,7 +657,6 @@ export default function TripDetail() {
             )}
 
             {/* Activity Modal */}
-
             {showActivity && (
                 <View className="absolute inset-0">
                     <TouchableOpacity
@@ -657,9 +688,7 @@ export default function TripDetail() {
                             <Text className="text-xl font-medium text-black ml-4">
                                 {truncateText(
                                     selectedActivity
-                                        ? isActivityPlace(selectedActivity)
-                                            ? `${formatDate(selectedActivity.date)}: ${truncateText(selectedActivity.title)}`
-                                            : `${formatDate(selectedActivity.date)}: ${truncateText(selectedActivity.title)}`
+                                        ? `${formatDate(selectedActivity.date)}: ${selectedActivity.title}`
                                         : "Activity Notes",
                                     30
                                 )}
@@ -719,7 +748,6 @@ export default function TripDetail() {
             )}
 
             {/* Share Modal */}
-
             {showShare && (
                 <View className="absolute inset-0">
                     <TouchableOpacity

@@ -68,9 +68,6 @@ const AllEndTripsScreen: React.FC = () => {
         );
     }
 
-    // Add debug info to see what's happening
-    // console.log('Rendering with endTrips length:', endTrips.length);
-
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" />

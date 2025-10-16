@@ -25,7 +25,6 @@ export const createBlockVote = async (
                     is_event: false,
                 }
             )) as { data: any };
-            console.log(response.data);
             pit = response.data.pit_id;
         } else if (type === "events") {
             const response = (await apiClient.post(
@@ -41,7 +40,6 @@ export const createBlockVote = async (
                     event_title: event_title,
                 }
             )) as { data: any };
-            console.log(response.data);
             pit = response.data.pit_id;
         }
         return pit;
@@ -67,7 +65,6 @@ export const getPlaceInVoteBlock = async (
             return null;
         }
         const backendData = response.data;
-        console.log(backendData.places_voting);
 
         let votes: PlaceVoting[] = [];
         if (!backendData.voting) {
@@ -198,7 +195,6 @@ export const votePlace = async (
             }
         );
 
-        console.log("Vote response:", response.data);
         return true;
     } catch (error: any) {
         console.error("Error voting for place:", error);

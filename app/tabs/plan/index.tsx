@@ -14,7 +14,6 @@ const PlanIndex = () => {
     const [selectedCard, setSelectedCard] = useState("");
 
     const handleCreateTrip = () => {
-        console.log("Navigate to set plan detail");
         setSelectedCard("create");
         setTimeout(() => {
             router.push("/tabs/plan/set_plan_detail");
@@ -22,7 +21,6 @@ const PlanIndex = () => {
     };
 
     const handleJoinTrip = () => {
-        console.log("Navigate to join plan");
         setSelectedCard("join");
         setTimeout(() => {
             router.push("/tabs/plan/join");
@@ -30,7 +28,6 @@ const PlanIndex = () => {
     };
 
     const handleBackPress = () => {
-        console.log("Navigate back to Home");
         router.back();
     };
 
