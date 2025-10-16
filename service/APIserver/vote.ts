@@ -67,39 +67,41 @@ export const getPlaceInVoteBlock = async (
             return null;
         }
         const backendData = response.data;
-        const options: PlaceBox[] = backendData.voting.map((place: any) => ({
-            id: String(place.place_id), // แปลง number เป็น string
-            title: place.title || "Unknown Place",
-            rating: place.rating,
-            review_count: place.review_count,
-            location: place.address || "",
-            place_image: place.place_picture_url,
-            place_id: place.place_id,
-        }));
+        console.log(backendData.places_voting);
 
-        // สร้าง Vote[] (ดึงจาก Backend ถ้ามี หรือสร้างจาก voting_count)
-        const votes: Vote[] = [];
-        backendData.voting.forEach((place: any) => {
-            // ถ้า Backend ส่ง votes มาแยกต่างหาก ให้ใช้ตรงนี้
-            // แต่ถ้าไม่มี เราจะสร้าง mock votes จาก is_voted
-            if (place.is_voted) {
-                votes.push({
-                    id: place.place_id,
-                    user_id: 1,
-                    activity_id: pit_id,
-                    vote_type: "place",
-                    place_id: place.place_id,
-                    username: "current_user",
-                    trip_id: trip_id,
-                });
-            }
-        });
-
-        // นับ total votes
-        const totalVotes = backendData.voting.reduce(
-            (sum: number, place: any) => sum + place.voting_count,
-            0
-        );
+        let votes: Vote[] = [];
+        let options: PlaceBox[] = [];
+        let totalVotes = 0;
+        if (!backendData.voting) {
+            options = backendData.places_voting.map((place: any) => ({
+                id: String(place.place_id), // แปลง number เป็น string
+                title: place.title || "Unknown Place",
+                rating: place.rating,
+                review_count: place.review_count,
+                location: place.address || "",
+                place_image: place.place_picture_url,
+                place_id: place.place_id,
+            }));
+            backendData.places_voting.forEach((place: any) => {
+                // ถ้า Backend ส่ง votes มาแยกต่างหาก ให้ใช้ตรงนี้
+                // แต่ถ้าไม่มี เราจะสร้าง mock votes จาก is_voted
+                if (place.is_voted) {
+                    votes.push({
+                        id: place.place_id,
+                        user_id: 1,
+                        activity_id: pit_id,
+                        vote_type: "place",
+                        place_id: place.place_id,
+                        username: "current_user",
+                        trip_id: trip_id,
+                    });
+                }
+            });
+            totalVotes = backendData.places_voting.reduce(
+                (sum: number, place: any) => sum + place.voting_count,
+                0
+            );
+        }
 
         // สร้าง ActivityVotePlace object
         const activityVotePlace: ActivityVotePlace = {
