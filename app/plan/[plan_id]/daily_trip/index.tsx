@@ -438,14 +438,9 @@ const DailyTripsIndex = () => {
     // <----------------------- Function Activity -------------------------------->
 
     const handleActivityPlace = (activityId: number) => {
-        // console.log(`Go to Activity Details`);
-        // console.log(`activity_id: ${activityId}`);
-        router.push({
-            pathname: `/plan/${plan_id}/daily_trip/placeDetails/${activityId}`,
-            params: {
-                place_id: "1",
-            },
-        });
+        console.log(`Go to Activity Details`);
+        console.log(`activity_id: ${activityId}`);
+        router.push(`/plan/${plan_id}/daily_trip/placeDetails/${activityId}`);
     };
 
     const handleActivityEvent = (activityId: number) => {

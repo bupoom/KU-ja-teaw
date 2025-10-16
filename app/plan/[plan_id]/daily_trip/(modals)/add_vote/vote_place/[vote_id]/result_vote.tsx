@@ -55,8 +55,8 @@ const ResultVotePlace = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const canClose = role === "owner";
-    const canEdit = role === "owner" || role === "editor";
+    const canClose = role === "Owner";
+    const canEdit = role === "Owner" || role === "editor";
 
     // ----------------- Handlers -----------------
     const handleBack = () => {
@@ -190,7 +190,7 @@ const ResultVotePlace = () => {
                     parseInt(plan_id),
                     parseInt(vote_id)
                 );
-
+                
                 console.log("Vote block result:", result); // debug
 
                 // 2. ตรวจสอบว่ามีข้อมูลหรือไม่
@@ -206,7 +206,7 @@ const ResultVotePlace = () => {
                     setRole(userData.role);
                 }
 
-                const member = await get_trip_detail(parseInt(plan_id))
+                const member = await get_trip_detail(parseInt(plan_id));
                 setNumMember(member?.group_members ?? 1);
 
                 // 5. ✅ นับจำนวน votes ของแต่ละ place

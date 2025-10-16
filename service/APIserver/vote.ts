@@ -106,7 +106,7 @@ export const getPlaceInVoteBlock = async (
         // สร้าง ActivityVotePlace object
         const activityVotePlace: ActivityVotePlace = {
             id: pit_id,
-            date: backendData.formattedDate,
+            date: backendData.date,
             time_begin: backendData.time_start,
             time_end: backendData.time_end,
             number_of_votes: totalVotes,
