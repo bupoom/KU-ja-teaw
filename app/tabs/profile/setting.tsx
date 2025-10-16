@@ -1,5 +1,6 @@
 // app/(tabs)/profile/setting.tsx
 import Header from "@/components/common/Header";
+import { addNotification } from "@/service/APIserver/notification";
 import { AuthService } from "@/service/authService";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -19,8 +20,9 @@ const SettingsScreen: React.FC = () => {
     const router = useRouter();
 
     // ค่าพิเศษของ dev tools
-    const [tripId, setTripId] = useState("");
-
+    const [tripId, setTripId] = useState("id");
+    const [text, setText] = useState("Text");
+    const [text_title, setText_title] = useState("textTitle");
     // Original saved values
     const [savedNotificationEnabled, setSavedNotificationEnabled] =
         useState<boolean>(true);
@@ -50,6 +52,10 @@ const SettingsScreen: React.FC = () => {
     const handleBackPress = () => {
         router.back();
     };
+
+    const handleAddNoti = async () => {
+        await addNotification(parseInt(tripId) , text_title , text)
+    }
 
     const handleNotificationToggle = (value: boolean) => {
         setNotificationEnabled(value);
@@ -273,6 +279,43 @@ const SettingsScreen: React.FC = () => {
                             router.push(`/plan/${tripId.trim()}`);
                         }
                     }}
+                    disabled={!tripId.trim()}
+                    className={`mt-5 rounded-lg py-3 ${
+                        tripId.trim() ? "bg-blue-500" : "bg-gray-300"
+                    }`}
+                >
+                    <Text
+                        className={`text-center font-semibold text-base ${
+                            tripId.trim() ? "text-white" : "text-gray-500"
+                        }`}
+                    >
+                        Go to Trip
+                    </Text>
+                </TouchableOpacity>
+                <TextInput
+                    value={tripId}
+                    onChangeText={setTripId}
+                    placeholder="Enter Trip ID"
+                    className="mt-5 border border-gray-300 rounded-lg px-4 py-3 text-base"
+                    placeholderTextColor="#9CA3AF"
+                />
+
+                <TextInput
+                    value={text_title}
+                    onChangeText={setText_title}
+                    placeholder="Enter Trip ID"
+                    className="mt-5 border border-gray-300 rounded-lg px-4 py-3 text-base"
+                    placeholderTextColor="#9CA3AF"
+                />
+                <TextInput
+                    value={text}
+                    onChangeText={setText}
+                    placeholder="Enter Trip ID"
+                    className="mt-5 border border-gray-300 rounded-lg px-4 py-3 text-base"
+                    placeholderTextColor="#9CA3AF"
+                />
+                <TouchableOpacity
+                    onPress={handleAddNoti}
                     disabled={!tripId.trim()}
                     className={`mt-5 rounded-lg py-3 ${
                         tripId.trim() ? "bg-blue-500" : "bg-gray-300"

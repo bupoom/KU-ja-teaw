@@ -1,12 +1,23 @@
+import { AuthService } from "../authService";
 import apiClient from "../client";
 import { create_note } from "./Note";
+import { addNotification } from "./notification";
 
 export const joinTrip = async (trip_id: number) => {
     try {
         const res = await apiClient.patch(
             `/api/trips/${trip_id}/invite/accept`
         );
-        await create_note(trip_id, `Welcome to our Trip. You can insert Note here!!`);
+        const UserData = await AuthService.getUserData();
+        await create_note(
+            trip_id,
+            `Welcome to our Trip. You can insert Note here!!`
+        );
+        await addNotification(
+            trip_id,
+            `Say Hi to ${UserData?.name}`,
+            `${UserData?.name} just joined Our trip!!`
+        );
         return res.data;
     } catch (error) {
         console.error("Response data:", error);
@@ -19,6 +30,12 @@ export const rejectTrip = async (trip_id: number) => {
     try {
         const res = await apiClient.delete(
             `/api/trips/${trip_id}/invite/reject`
+        );
+        const UserData = await AuthService.getUserData();
+        await addNotification(
+            trip_id,
+            `${UserData?.name} rejected`,
+            `${UserData?.name} just rejected to Our trip.`
         );
         return res.data;
     } catch (error) {
@@ -42,7 +59,17 @@ export const enterTrip = async (
             };
         };
         if (res.data.message === "join successfully") {
-            await create_note(res.data.trip_id, `Welcome to our Trip. You can insert Note here!!`);
+            await create_note(
+                res.data.trip_id,
+                `Welcome to our Trip. You can insert Note here!!`
+            );
+
+            const UserData = await AuthService.getUserData();
+            await addNotification(
+                res.data.trip_id,
+                `${UserData?.name} rejected`,
+                `${UserData?.name} just rejected to Our trip.`
+            );
             return res.data.trip_id.toString();
         } else {
             return "errorCode";

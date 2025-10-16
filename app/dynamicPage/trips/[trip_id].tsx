@@ -181,8 +181,8 @@ export default function TripDetail() {
                         m => m.id === Number(b.refer_user_id)
                     );
 
-                    const isOwnerA = memberA?.role === "owner";
-                    const isOwnerB = memberB?.role === "owner";
+                    const isOwnerA = memberA?.role === "Owner";
+                    const isOwnerB = memberB?.role === "Owner";
 
                     if (isOwnerA && !isOwnerB) return -1;
                     if (!isOwnerA && isOwnerB) return 1;
