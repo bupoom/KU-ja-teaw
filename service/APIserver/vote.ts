@@ -54,7 +54,7 @@ export const createBlockVote = async (
 export const getPlaceInVoteBlock = async (
     trip_id: number,
     pit_id: number
-): Promise<ActivityVotePlace | null> => {
+): Promise<VoteData | null> => {
     try {
         console.log("Getting place vote Block: ", pit_id);
         const response = (await apiClient.get(
@@ -69,51 +69,33 @@ export const getPlaceInVoteBlock = async (
         const backendData = response.data;
         console.log(backendData.places_voting);
 
-        let votes: Vote[] = [];
-        let options: PlaceBox[] = [];
-        let totalVotes = 0;
+        let votes: PlaceVoting[] = [];
         if (!backendData.voting) {
-            options = backendData.places_voting.map((place: any) => ({
-                id: String(place.place_id), // แปลง number เป็น string
-                title: place.title || "Unknown Place",
-                rating: place.rating,
-                review_count: place.review_count,
-                location: place.address || "",
-                place_image: place.place_picture_url,
-                place_id: place.place_id,
-            }));
             backendData.places_voting.forEach((place: any) => {
                 // ถ้า Backend ส่ง votes มาแยกต่างหาก ให้ใช้ตรงนี้
                 // แต่ถ้าไม่มี เราจะสร้าง mock votes จาก is_voted
-                if (place.is_voted) {
-                    votes.push({
-                        id: place.place_id,
-                        user_id: 1,
-                        activity_id: pit_id,
-                        vote_type: "place",
-                        place_id: place.place_id,
-                        username: "current_user",
-                        trip_id: trip_id,
-                    });
-                }
+                votes.push({
+                    pit_id: pit_id,
+                    place_id: place.place_id,
+                    address: place.address,
+                    place_picture_url: place.place_picture_url,
+                    rating: place.rating,
+                    title: place.name,
+                    review_count: place.rating_count,
+                    voting_count: place.voting_count,
+                    is_voted: place.is_vote,
+                    is_most_voted: place.is_most_voted
+                });
             });
-            totalVotes = backendData.places_voting.reduce(
-                (sum: number, place: any) => sum + place.voting_count,
-                0
-            );
         }
 
         // สร้าง ActivityVotePlace object
-        const activityVotePlace: ActivityVotePlace = {
-            id: pit_id,
+        const activityVotePlace: VoteData = {
+            vote_id: pit_id,
             date: backendData.date,
-            time_begin: backendData.time_start,
-            time_end: backendData.time_end,
-            number_of_votes: totalVotes,
-            options: options,
-            votes: votes,
-            trip_id: trip_id,
-            vote_type: "place",
+            time_start: backendData.time_start.slice(0,5),
+            time_end: backendData.time_end.slice(0,5),
+            places_voting: votes
         };
 
         return activityVotePlace;
