@@ -33,3 +33,26 @@ interface ActivityVotePlace {
     trip_id: number;
     vote_type: string; // อันนี้มีเอาไว้ เเยก UI ในหน้า daily trip ว่าต้องเเสดงเเบบไหน
 } // เเสดงหน้า vote place
+
+
+// ----------------- Types -----------------
+interface PlaceVoting {
+    pit_id: number;
+    place_id: number;
+    address: string;
+    place_picture_url: string;
+    rating?: number;
+    title: string;
+    review_count?: number;
+    voting_count: number;
+    is_voted: boolean;
+    is_most_voted: boolean;
+}
+
+interface VoteData {
+    vote_id: number;
+    date: string;
+    time_start: string;
+    time_end: string;
+    places_voting: PlaceVoting[];
+}

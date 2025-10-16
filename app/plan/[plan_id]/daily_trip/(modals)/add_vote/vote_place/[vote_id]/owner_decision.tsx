@@ -84,7 +84,7 @@ const OwnerDecision = () => {
                     Select Final Place
                 </Text>
                 {currentVote?.options
-                    .filter(opt => optionIds.includes(opt.place_id))
+                    .filter(opt => optionIds.includes(opt.place_id as number))
                     .map(opt => {
                         const isSelected = selected === opt.place_id;
 
@@ -92,7 +92,7 @@ const OwnerDecision = () => {
                             <TouchableOpacity
                                 key={opt.place_id}
                                 activeOpacity={0.7}
-                                onPress={() => setSelected(opt.place_id)}
+                                onPress={() => setSelected(opt.place_id as number)}
                                 className={`flex-row p-3 bg-white rounded-lg mb-3 border ${
                                     isSelected
                                         ? "border-green_2"

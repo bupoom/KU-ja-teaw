@@ -197,7 +197,6 @@ const SearchPlaceVote: React.FC = () => {
       <FlatList
         data={mode === "search" ? searchResults : bookmarkPlaces}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handlePlacePress(item)}>
             <PlaceBox
               id={item.id}
               title={item.title}
@@ -206,8 +205,8 @@ const SearchPlaceVote: React.FC = () => {
               location={item.location}
               place_image={item.place_image}
               place_id={item.place_id ?? 0}
+              onPressPlace={() => handlePlacePress(item)}
             />
-          </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id.toString()}
         className="m-2 pb-5"
