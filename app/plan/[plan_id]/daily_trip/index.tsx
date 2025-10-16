@@ -1,13 +1,13 @@
 import { router, useLocalSearchParams } from "expo-router";
 import {
-    SafeAreaView,
-    Text,
-    TouchableOpacity,
-    View,
-    Animated,
-    ScrollView,
-    Image,
-    Alert,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+  Animated,
+  ScrollView,
+  Image,
+  Alert,
 } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { RefreshControl } from "react-native";
@@ -27,687 +27,671 @@ import { formatDate } from "@/util/formatFucntion/formatDate";
 import { truncateText } from "@/util/truncateText";
 
 import {
-    deleteActivityInTrip,
-    getActivitiesInTrip,
+  deleteActivityInTrip,
+  getActivitiesInTrip,
 } from "@/service/APIserver/activity";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
 import { get_more_detail } from "@/service/APIserver/userService";
 
 type Activity =
-    | ActivityPlaceBox
-    | ActivityEventBox
-    | ActivityVotePlace
-    | ActivityVoteEvent;
+  | ActivityPlaceBox
+  | ActivityEventBox
+  | ActivityVotePlace
+  | ActivityVoteEvent;
 
 const DailyTripsIndex = () => {
-    const { plan_id, date } = useLocalSearchParams<{
-        plan_id: string;
-        date?: string;
-    }>();
-    const user_id = 1;
-    const [role, setRole] = useState<string>("viewer");
-    const [refreshing, setRefreshing] = useState(false);
-    const [TripDetail, setTripDetail] = useState<TripDetails>();
+  const { plan_id, date } = useLocalSearchParams<{
+    plan_id: string;
+    date?: string;
+  }>();
+  const user_id = 1;
+  const [role, setRole] = useState<string>("viewer");
+  const [refreshing, setRefreshing] = useState(false);
+  const [TripDetail, setTripDetail] = useState<TripDetails>();
 
-    const canEdit = role === "Owner" || role === "Editor";
+  const canEdit = role === "Owner" || role === "Editor";
 
-    const fetchTripsDetails = async () => {
-        try {
-            const response = await get_trip_detail(parseInt(plan_id));
-            const UserDetail = await get_more_detail(parseInt(plan_id));
-            setTripDetail(response);
-            setRole(UserDetail.role);
-        } catch (err) {
-            Alert.alert("Can't get Trip details from server.");
-        }
-    };
+  const fetchTripsDetails = async () => {
+    try {
+      const response = await get_trip_detail(parseInt(plan_id));
+      const UserDetail = await get_more_detail(parseInt(plan_id));
+      setTripDetail(response);
+      setRole(UserDetail.role);
+    } catch (err) {
+      Alert.alert("Can't get Trip details from server.");
+    }
+  };
 
-    useEffect(() => {
-        fetchTripsDetails();
-    }, [plan_id]);
+  useEffect(() => {
+    fetchTripsDetails();
+  }, [plan_id]);
 
-    useEffect(() => {
-        if (TripDetail) {
-            setDates(extractDates(TripDetail.start_date, TripDetail.end_date));
-            fetchActivity(TripDetail.start_date);
-        }
-    }, [TripDetail]);
+  useEffect(() => {
+    if (TripDetail) {
+      setDates(extractDates(TripDetail.start_date, TripDetail.end_date));
+      fetchActivity(TripDetail.start_date);
+    }
+  }, [TripDetail]);
 
-    // <---------------------------- Refresh -------------------------------->
-    const onRefresh = () => {
-        if (!selectDate) return; // กัน error ถ้ายังไม่เลือกวัน
-        setRefreshing(true);
+  // <---------------------------- Refresh -------------------------------->
+  const onRefresh = () => {
+    if (!selectDate) return; // กัน error ถ้ายังไม่เลือกวัน
+    setRefreshing(true);
 
-        // โหลดข้อมูลใหม่
-        fetchActivity(selectDate);
+    // โหลดข้อมูลใหม่
+    fetchActivity(selectDate);
 
-        // ปิดสถานะ refreshing หลัง 1 วิ (กัน UI ค้าง)
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 1000);
-    };
+    // ปิดสถานะ refreshing หลัง 1 วิ (กัน UI ค้าง)
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
 
-    // <---------------------------- Dates ---------------------------------->
+  // <---------------------------- Dates ---------------------------------->
 
-    // get date durations
-    const [dates, setDates] = useState<string[]>([]);
-    const [selectDate, setSelectDate] = useState<string>("");
+  // get date durations
+  const [dates, setDates] = useState<string[]>([]);
+  const [selectDate, setSelectDate] = useState<string>("");
 
-    const handleselectDate = (date: string) => {
-        console.log(`Date : ${date}`);
-        setSelectDate(date);
-        setDailyActivities([]);
-        fetchActivity(date);
-        console.log(`Activity in (${date}): ${dailyActivities}`);
-    };
+  const handleselectDate = (date: string) => {
+    console.log(`Date : ${date}`);
+    setSelectDate(date);
+    setDailyActivities([]);
+    fetchActivity(date);
+    console.log(`Activity in (${date}): ${dailyActivities}`);
+  };
 
-    // <------------------------------------- Fetch Data ------------------------------------->
+  // <------------------------------------- Fetch Data ------------------------------------->
 
-    const [dailyActivities, setDailyActivities] = useState<Activity[]>([]);
+  const [dailyActivities, setDailyActivities] = useState<Activity[]>([]);
 
-    const fetchActivity = async (date: string) => {
-        const tripId = parseInt(plan_id);
-        const response = await getActivitiesInTrip(tripId, date);
-        const filteredData = response.filter(
-            activity => activity.trip_id === tripId && activity.date === date
-        );
-
-        // ฟังก์ชัน parse เวลาแบบกันพลาด
-        const parseTime = (time?: string): number => {
-            if (!time) return Number.MAX_SAFE_INTEGER;
-            const parts = time.split(":").map(Number);
-            const [h, m, s] = [parts[0], parts[1] ?? 0, parts[2] ?? 0];
-            return h * 3600 + m * 60 + s;
-        };
-
-        // sort ตามเวลา
-        const sortedActivities = filteredData.sort(
-            (a, b) => parseTime(a.time_begin) - parseTime(b.time_begin)
-        );
-        setDailyActivities(sortedActivities);
-    };
-
-    useEffect(() => {
-        if (date) {
-            setSelectDate(date);
-            fetchActivity(date);
-        } else if (dates.length > 0) {
-            setSelectDate(dates[0]);
-            console.log("date: ", dates[0]);
-            fetchActivity(dates[0]);
-        }
-    }, [dates, date]);
-
-    const [showSelectAdd, setShowSelectAdd] = useState(false);
-    const [isAddOpen, setIsAddOpen] = useState(false); // เพิ่ม state สำหรับเช็คสถานะของปุ่ม add
-    const slideAnim = useRef(new Animated.Value(0)).current;
-
-    // <----------------------------- Check Activity Type ------------------------------->
-    const isActivityPlace = (
-        activity: Activity
-    ): activity is ActivityPlaceBox => {
-        return "location" in activity;
-    };
-
-    const isActivityEvent = (
-        activity: Activity
-    ): activity is ActivityEventBox => {
-        return "transportation" in activity;
-    };
-
-    const isActivityVotePlace = (
-        activity: Activity
-    ): activity is ActivityVotePlace => {
-        return "vote_type" in activity && activity.vote_type === "place";
-    };
-
-    const isActivityVoteEvent = (
-        activity: Activity
-    ): activity is ActivityVoteEvent => {
-        return "vote_type" in activity && activity.vote_type === "event";
-    };
-
-    // <-------------------------------------- Render Item -------------------------------------------->
-
-    // ปรับ signature
-    const renderActivityPlace = (
-        activity: ActivityPlaceBox,
-        index: number,
-        onPress: (activity_id: number) => void,
-        onDelete: (activity_id: number) => void
-    ) => {
-        return (
-            <TouchableOpacity
-                key={`${activity.id}-${index}`}
-                className="flex-row p-3 bg-white border border-gray_border rounded-lg mb-1"
-                onPress={() => onPress(activity.id)}
-                activeOpacity={0.7}
-            >
-                <Image
-                    source={{
-                        uri:
-                            activity.place_image ||
-                            "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop",
-                    }}
-                    className="w-20 h-20 rounded-lg"
-                    resizeMode="cover"
-                />
-                <View className="flex-1 ml-3">
-                    <Text className="text-base font-semibold text-black mb-1">
-                        {truncateText(activity.title, 50)}
-                    </Text>
-                    <View className="flex-row items-center mb-2">
-                        <Feather name="clock" size={14} color="#666" />
-                        <Text className="text-xs text-dark_gray ml-2 font-semibold">
-                            {activity.time_begin} - {activity.time_end}
-                        </Text>
-                    </View>
-                    <View className="flex-row items-center">
-                        <Feather name="map-pin" size={14} color="#666" />
-                        <Text
-                            className="text-xs text-dark_gray ml-2 font-semibold"
-                            numberOfLines={1}
-                        >
-                            {activity.location}
-                        </Text>
-                    </View>
-                </View>
-
-                <TouchableOpacity
-                    className="mr-4 items-center justify-center"
-                    onPress={() => onDelete(activity.id)}
-                >
-                    <MaterialIcons
-                        name="delete-outline"
-                        size={26}
-                        color="black"
-                    />
-                </TouchableOpacity>
-            </TouchableOpacity>
-        );
-    };
-
-    const renderActivityEvent = (
-        activity: ActivityEventBox,
-        index: number,
-        onPress: (activity_id: number) => void,
-        onDelete: (activity_id: number) => void
-    ) => {
-        return (
-            <TouchableOpacity
-                key={`${activity.id}-${index}`}
-                className="flex-row items-center p-3 bg-white border border-gray_border rounded-lg mb-1"
-                onPress={() => onPress(activity.id)}
-            >
-                <View className="w-12 h-12 bg-white items-center justify-center ml-4 ">
-                    <TransportationIcon
-                        transportation={activity.transportation}
-                    />
-                </View>
-                <View className="flex-1 ml-7">
-                    <Text className="text-base font-semibold text-black mb-1">
-                        {activity.title}
-                    </Text>
-                    <View className="flex-row items-center font-semibold">
-                        <Feather name="clock" size={14} color="#666" />
-                        <Text className="text-xs text-dark_gray ml-1 font-semibold">
-                            {activity.time_begin} - {activity.time_end}
-                        </Text>
-                        {activity.transportation && (
-                            <>
-                                <Text className="text-sm text-gray-400 mx-2 font-semibold">
-                                    •
-                                </Text>
-                                <Text className="text-xs text-dark_gray font-semibold">
-                                    {activity.transportation}
-                                </Text>
-                            </>
-                        )}
-                    </View>
-                </View>
-                <TouchableOpacity
-                    className="mr-4 items-center justify-center"
-                    onPress={() => onDelete(activity.id)}
-                >
-                    <MaterialIcons
-                        name="delete-outline"
-                        size={26}
-                        color="black"
-                    />
-                </TouchableOpacity>
-            </TouchableOpacity>
-        );
-    };
-
-    const renderActivityVotePlace = (
-        activity: ActivityVotePlace,
-        index: number,
-        onPress: (activity_id: number) => void,
-        onDelete: (activity_id: number) => void
-    ) => {
-        return (
-            <TouchableOpacity
-                key={`${activity.id}-${index}`}
-                className="flex-row p-3 bg-white border border-gray_border rounded-lg mb-1"
-                onPress={() => onPress(activity.id)}
-                activeOpacity={0.7}
-            >
-                <View className="w-20 h-20 rounded-lg items-center justify-center">
-                    <MaterialIcons
-                        name="how-to-vote"
-                        size={30}
-                        color="#000000"
-                    />
-                </View>
-                <View className="flex-1 ml-3">
-                    <Text className="text-base font-semibold text-black mb-1">
-                        Not Decide
-                    </Text>
-                    <View className="flex-row items-center mb-2">
-                        <Feather name="clock" size={14} color="#666" />
-                        <Text className="text-xs text-dark_gray ml-2 font-semibold">
-                            {activity.time_begin} - {activity.time_end}
-                        </Text>
-                    </View>
-                    <View className="flex-row items-center">
-                        <Feather name="map-pin" size={14} color="#666" />
-                        <Text
-                            className="text-xs text-dark_gray ml-2 font-semibold"
-                            numberOfLines={1}
-                        >
-                            Not Decide
-                        </Text>
-                    </View>
-                </View>
-
-                <TouchableOpacity
-                    className="mr-4 items-center justify-center"
-                    onPress={() => onDelete(activity.id)}
-                >
-                    <MaterialIcons
-                        name="delete-outline"
-                        size={26}
-                        color="black"
-                    />
-                </TouchableOpacity>
-            </TouchableOpacity>
-        );
-    };
-
-    const renderActivityVoteEvent = (
-        activity: ActivityVoteEvent,
-        index: number,
-        onPress: (activity_id: number) => void,
-        onDelete: (activity_id: number) => void
-    ) => {
-        return (
-            <TouchableOpacity
-                key={`${activity.id}-${index}`}
-                className="flex-row items-center p-3 bg-white border border-gray_border rounded-lg mb-1"
-                onPress={() => onPress(activity.id)}
-            >
-                <View className="w-12 h-12 bg-white items-center justify-center ml-4 ">
-                    <FontAwesome6
-                        name="person-circle-question"
-                        size={24}
-                        color="#000000"
-                    />
-                </View>
-                <View className="flex-1 ml-7">
-                    <Text className="text-base font-semibold text-black mb-1">
-                        {activity.title}
-                    </Text>
-                    <View className="flex-row items-center font-semibold">
-                        <Feather name="clock" size={14} color="#666" />
-                        <Text className="text-xs text-dark_gray ml-1 font-semibold">
-                            {activity.time_begin} - {activity.time_end}
-                        </Text>
-                        <Text className="text-sm text-gray-400 mx-2 font-semibold">
-                            •
-                        </Text>
-                        <Text className="text-xs text-dark_gray font-semibold">
-                            Not Decide
-                        </Text>
-                    </View>
-                </View>
-                <TouchableOpacity
-                    className="mr-4 items-center justify-center"
-                    onPress={() => onDelete(activity.id)}
-                >
-                    <MaterialIcons
-                        name="delete-outline"
-                        size={26}
-                        color="black"
-                    />
-                </TouchableOpacity>
-            </TouchableOpacity>
-        );
-    };
-
-    // <-------------------------------------- Handle Function ---------------------------------------->
-    const handleAddPress = () => {
-        setIsAddOpen(true);
-        setShowSelectAdd(true);
-        Animated.spring(slideAnim, {
-            toValue: 1,
-            useNativeDriver: true,
-        }).start();
-        console.log("Add Button clicked");
-    };
-
-    const closeAddPress = () => {
-        setIsAddOpen(false);
-        Animated.spring(slideAnim, {
-            toValue: 0,
-            useNativeDriver: true,
-        }).start();
-
-        setTimeout(() => setShowSelectAdd(false), 100);
-        console.log("Class Add Button clicked");
-    };
-
-    const handleAddPlace = () => {
-        console.log("Add Place clicked");
-        closeAddPress();
-        router.push(
-            `/plan/${plan_id}/daily_trip/(modals)/add_place/select_time`
-        );
-    };
-
-    const handleAddEvent = () => {
-        console.log("Add Event clicked");
-        closeAddPress();
-        router.push(
-            `/plan/${plan_id}/daily_trip/(modals)/add_event/select_time`
-        );
-    };
-
-    const handleAddVote = () => {
-        console.log("Add Vote clicked");
-        closeAddPress();
-        router.push(
-            `/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type_vote`
-        );
-    };
-
-    const handleMapPress = () => {
-        console.log("Map view clicked");
-        router.push(`/plan/${plan_id}/daily_trip/map`);
-    };
-
-    // <----------------------- Function Activity -------------------------------->
-
-    const handleActivityPlace = (activityId: number) => {
-        // console.log(`Go to Activity Details`);
-        // console.log(`activity_id: ${activityId}`);
-        router.push({
-            pathname: `/plan/${plan_id}/daily_trip/placeDetails/${activityId}`,
-            params: {
-                place_id: "1",
-            },
-        });
-    };
-
-    const handleActivityEvent = (activityId: number) => {
-        console.log(`Go to Activity Details`);
-        router.push(`/plan/${plan_id}/daily_trip/eventDetails/${activityId}`);
-    };
-
-    const handleActivityVotePlace = (vote_id: number) => {
-        console.log(`Go to Activity Details`);
-        router.push(
-            `/plan/${plan_id}/daily_trip/add_vote/vote_place/${vote_id}/result_vote`
-        );
-    };
-
-    const handleActivityVoteEvent = (vote_id: number) => {
-        console.log(`Go to Activity Details`);
-        router.push(
-            `/plan/${plan_id}/daily_trip/add_vote/vote_event/${vote_id}/result_vote`
-        );
-    };
-
-    const handleDeleteActivity = async (activityId: number) => {
-        if (!TripDetail) {
-            Alert.alert("There's any Trips here.");
-            return;
-        }
-        const res = await deleteActivityInTrip(TripDetail.trip_id, activityId);
-        setDailyActivities(prev =>
-            prev.filter(activity => activity.id !== activityId)
-        );
-    };
-
-    // <---------------------------- Animation ----------------------------->
-
-    // Animation for Add Button
-    const optionTranslateY = slideAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [150, 0],
-    }); // Slide up effect ของ 3 ปุ่ม Add
-
-    const buttonRotation = slideAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0deg", "45deg"],
-    }); // Rotate effect ของปุ่ม Add จาก + เป็น x
-
-    // <----------------------------------------------------------------------------------------------->
-
-    return (
-        <SafeAreaView className="flex-1 bg-white">
-            <PlanHeader planId={plan_id} />
-            <DateSelector
-                dates={dates}
-                onDateSelect={handleselectDate}
-                selectedDate={date}
-            />
-
-            <View className="flex-row justify-between items-center mx-4 my-2 p-4 rounded-lg border border-gray_border">
-                <WeatherIcon
-                    trip_id={parseInt(plan_id)}
-                    date={selectDate}
-                    size={30}
-                    showText={true}
-                />
-                {/* เอาชื่อสถานที่เเรกมาโชว์ เเละถ้ายังไม่มีก็บอกว่า เพิ่มสถานที่ถึงจะเห็น */}
-            </View>
-
-            <ScrollView
-                className="flex-1 p-4"
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                }
-                contentContainerStyle={
-                    dailyActivities.length === 0
-                        ? {
-                              flex: 1,
-                              justifyContent: "center",
-                              alignItems: "center",
-                          }
-                        : { paddingBottom: 100 }
-                }
-            >
-                {dailyActivities.length === 0 ? (
-                    <Text className="text-gray-500 text-base font-medium justify-center flex-1">
-                        No Activities Today
-                    </Text>
-                ) : (
-                    dailyActivities.map((activity, index) => (
-                        <View key={`${activity.id}-${index}`} className="mb-2">
-                            {isActivityPlace(activity) &&
-                                renderActivityPlace(
-                                    activity,
-                                    index,
-                                    handleActivityPlace,
-                                    handleDeleteActivity
-                                )}
-                            {isActivityEvent(activity) &&
-                                renderActivityEvent(
-                                    activity,
-                                    index,
-                                    handleActivityEvent,
-                                    handleDeleteActivity
-                                )}
-                            {isActivityVotePlace(activity) &&
-                                renderActivityVotePlace(
-                                    activity,
-                                    index,
-                                    handleActivityVotePlace,
-                                    handleDeleteActivity
-                                )}
-                            {isActivityVoteEvent(activity) &&
-                                renderActivityVoteEvent(
-                                    activity,
-                                    index,
-                                    handleActivityVoteEvent,
-                                    handleDeleteActivity
-                                )}
-                        </View>
-                    ))
-                )}
-            </ScrollView>
-
-            {/* <---------------------------Add and List Button -----------------------------> */}
-            {/* Add Button */}
-            {canEdit && (
-                <TouchableOpacity
-                    className="absolute bottom-12 right-10 w-16 h-16 rounded-full bg-green_2 justify-center items-center"
-                    onPress={handleAddPress}
-                    activeOpacity={0.8}
-                >
-                    <Animated.View
-                        style={{
-                            transform: [{ rotate: buttonRotation }],
-                        }}
-                    >
-                        <Ionicons name="add" size={28} color="white" />
-                    </Animated.View>
-                </TouchableOpacity>
-            )}
-
-            {/* List Button */}
-            <TouchableOpacity
-                className="absolute w-16 h-16 bottom-12 left-10 bg-white rounded-full border border-gray_border items-center justify-center"
-                onPress={handleMapPress}
-            >
-                <Feather name="map" size={24} color="black" />
-            </TouchableOpacity>
-
-            {/* Show Options Add*/}
-            {showSelectAdd && (
-                <View className="absolute inset-0 bg-black/0">
-                    <TouchableOpacity
-                        className="flex-1"
-                        onPress={closeAddPress}
-                        activeOpacity={1}
-                    >
-                        <View className="absolute bottom-28 right-4">
-                            <Animated.View
-                                style={{
-                                    transform: [
-                                        { translateY: optionTranslateY },
-                                    ],
-                                }}
-                            >
-                                {/* Add Place Option */}
-                                <Animated.View
-                                    style={{
-                                        transform: [
-                                            {
-                                                translateY:
-                                                    slideAnim.interpolate({
-                                                        inputRange: [0, 1],
-                                                        outputRange: [20, 0],
-                                                    }),
-                                            },
-                                        ],
-                                        opacity: slideAnim,
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
-                                        onPress={handleAddPlace}
-                                    >
-                                        <Text className="text-base mr-3 text-gray-800 font-medium">
-                                            Add Place
-                                        </Text>
-                                        <Ionicons
-                                            name="location"
-                                            size={24}
-                                            color="#284D44"
-                                        />
-                                    </TouchableOpacity>
-                                </Animated.View>
-
-                                {/* Add Event Option */}
-                                <Animated.View
-                                    style={{
-                                        transform: [
-                                            {
-                                                translateY:
-                                                    slideAnim.interpolate({
-                                                        inputRange: [0, 1],
-                                                        outputRange: [40, 0],
-                                                    }),
-                                            },
-                                        ],
-                                        opacity: slideAnim,
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
-                                        onPress={handleAddEvent}
-                                    >
-                                        <Text className="text-base mr-3 text-gray-800 font-medium">
-                                            Add Event
-                                        </Text>
-                                        <MaterialIcons
-                                            name="emoji-transportation"
-                                            size={24}
-                                            color="#284D44"
-                                        />
-                                    </TouchableOpacity>
-                                </Animated.View>
-
-                                {/* Add Vote Option */}
-                                <Animated.View
-                                    style={{
-                                        transform: [
-                                            {
-                                                translateY:
-                                                    slideAnim.interpolate({
-                                                        inputRange: [0, 1],
-                                                        outputRange: [60, 0],
-                                                    }),
-                                            },
-                                        ],
-                                        opacity: slideAnim,
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
-                                        onPress={handleAddVote}
-                                    >
-                                        <Text className="text-base mr-3 text-gray-800 font-medium">
-                                            Add Vote
-                                        </Text>
-                                        <MaterialIcons
-                                            name="how-to-vote"
-                                            size={24}
-                                            color="#284D44"
-                                        />
-                                    </TouchableOpacity>
-                                </Animated.View>
-                            </Animated.View>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            )}
-        </SafeAreaView>
+  const fetchActivity = async (date: string) => {
+    const tripId = parseInt(plan_id);
+    const response = await getActivitiesInTrip(tripId, date);
+    const filteredData = response.filter(
+      (activity) => activity.trip_id === tripId && activity.date === date
     );
+
+    // ฟังก์ชัน parse เวลาแบบกันพลาด
+    const parseTime = (time?: string): number => {
+      if (!time) return Number.MAX_SAFE_INTEGER;
+      const parts = time.split(":").map(Number);
+      const [h, m, s] = [parts[0], parts[1] ?? 0, parts[2] ?? 0];
+      return h * 3600 + m * 60 + s;
+    };
+
+    // sort ตามเวลา
+    const sortedActivities = filteredData.sort(
+      (a, b) => parseTime(a.time_begin) - parseTime(b.time_begin)
+    );
+    setDailyActivities(sortedActivities);
+  };
+
+  useEffect(() => {
+    if (date) {
+      setSelectDate(date);
+      fetchActivity(date);
+    } else if (dates.length > 0) {
+      setSelectDate(dates[0]);
+      console.log("date: ", dates[0]);
+      fetchActivity(dates[0]);
+    }
+  }, [dates, date]);
+
+  const [showSelectAdd, setShowSelectAdd] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false); // เพิ่ม state สำหรับเช็คสถานะของปุ่ม add
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  // <----------------------------- Check Activity Type ------------------------------->
+  const isActivityPlace = (
+    activity: Activity
+  ): activity is ActivityPlaceBox => {
+    return "location" in activity;
+  };
+
+  const isActivityEvent = (
+    activity: Activity
+  ): activity is ActivityEventBox => {
+    return "transportation" in activity;
+  };
+
+  const isActivityVotePlace = (
+    activity: Activity
+  ): activity is ActivityVotePlace => {
+    return "vote_type" in activity && activity.vote_type === "place";
+  };
+
+  const isActivityVoteEvent = (
+    activity: Activity
+  ): activity is ActivityVoteEvent => {
+    return "vote_type" in activity && activity.vote_type === "event";
+  };
+
+  // <-------------------------------------- Render Item -------------------------------------------->
+
+  // ปรับ signature
+  const renderActivityPlace = (
+    activity: ActivityPlaceBox,
+    index: number,
+    onPress: (activity_id: number, place_id: number) => void,
+    onDelete: (activity_id: number) => void
+  ) => {
+    return (
+      <TouchableOpacity
+        key={`${activity.id}-${index}`}
+        className="flex-row p-3 bg-white border border-gray_border rounded-lg mb-1"
+        onPress={() => onPress(activity.id, activity.place_id ?? 0)}
+        activeOpacity={0.7}
+      >
+        <Image
+          source={{
+            uri:
+              activity.place_image ||
+              "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop",
+          }}
+          className="w-20 h-20 rounded-lg"
+          resizeMode="cover"
+        />
+        <View className="flex-1 ml-3">
+          <Text className="text-base font-semibold text-black mb-1">
+            {truncateText(activity.title, 50)}
+          </Text>
+          <View className="flex-row items-center mb-2">
+            <Feather name="clock" size={14} color="#666" />
+            <Text className="text-xs text-dark_gray ml-2 font-semibold">
+              {activity.time_begin} - {activity.time_end}
+            </Text>
+          </View>
+          <View className="flex-row items-center">
+            <Feather name="map-pin" size={14} color="#666" />
+            <Text
+              className="text-xs text-dark_gray ml-2 font-semibold"
+              numberOfLines={1}
+            >
+              {activity.location}
+            </Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          className="mr-4 items-center justify-center"
+          onPress={() => onDelete(activity.id)}
+        >
+          <MaterialIcons name="delete-outline" size={26} color="black" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderActivityEvent = (
+    activity: ActivityEventBox,
+    index: number,
+    onPress: (activity_id: number) => void,
+    onDelete: (activity_id: number) => void
+  ) => {
+    return (
+      <TouchableOpacity
+        key={`${activity.id}-${index}`}
+        className="flex-row items-center p-3 bg-white border border-gray_border rounded-lg mb-1"
+        onPress={() => onPress(activity.id)}
+      >
+        <View className="w-12 h-12 bg-white items-center justify-center ml-4 ">
+          <TransportationIcon transportation={activity.transportation} />
+        </View>
+        <View className="flex-1 ml-7">
+          <Text className="text-base font-semibold text-black mb-1">
+            {activity.title}
+          </Text>
+          <View className="flex-row items-center font-semibold">
+            <Feather name="clock" size={14} color="#666" />
+            <Text className="text-xs text-dark_gray ml-1 font-semibold">
+              {activity.time_begin} - {activity.time_end}
+            </Text>
+            {activity.transportation && (
+              <>
+                <Text className="text-sm text-gray-400 mx-2 font-semibold">
+                  •
+                </Text>
+                <Text className="text-xs text-dark_gray font-semibold">
+                  {activity.transportation}
+                </Text>
+              </>
+            )}
+          </View>
+        </View>
+        <TouchableOpacity
+          className="mr-4 items-center justify-center"
+          onPress={() => onDelete(activity.id)}
+        >
+          <MaterialIcons name="delete-outline" size={26} color="black" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderActivityVotePlace = (
+    activity: ActivityVotePlace,
+    index: number,
+    onPress: (activity_id: number) => void,
+    onDelete: (activity_id: number) => void
+  ) => {
+    return (
+      <TouchableOpacity
+        key={`${activity.id}-${index}`}
+        className="flex-row p-3 bg-white border border-gray_border rounded-lg mb-1"
+        onPress={() => onPress(activity.id)}
+        activeOpacity={0.7}
+      >
+        <View className="w-20 h-20 rounded-lg items-center justify-center">
+          <MaterialIcons name="how-to-vote" size={30} color="#000000" />
+        </View>
+        <View className="flex-1 ml-3">
+          <Text className="text-base font-semibold text-black mb-1">
+            Not Decide
+          </Text>
+          <View className="flex-row items-center mb-2">
+            <Feather name="clock" size={14} color="#666" />
+            <Text className="text-xs text-dark_gray ml-2 font-semibold">
+              {activity.time_begin} - {activity.time_end}
+            </Text>
+          </View>
+          <View className="flex-row items-center">
+            <Feather name="map-pin" size={14} color="#666" />
+            <Text
+              className="text-xs text-dark_gray ml-2 font-semibold"
+              numberOfLines={1}
+            >
+              Not Decide
+            </Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          className="mr-4 items-center justify-center"
+          onPress={() => onDelete(activity.id)}
+        >
+          <MaterialIcons name="delete-outline" size={26} color="black" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderActivityVoteEvent = (
+    activity: ActivityVoteEvent,
+    index: number,
+    onPress: (activity_id: number) => void,
+    onDelete: (activity_id: number) => void
+  ) => {
+    return (
+      <TouchableOpacity
+        key={`${activity.id}-${index}`}
+        className="flex-row items-center p-3 bg-white border border-gray_border rounded-lg mb-1"
+        onPress={() => onPress(activity.id)}
+      >
+        <View className="w-12 h-12 bg-white items-center justify-center ml-4 ">
+          <FontAwesome6
+            name="person-circle-question"
+            size={24}
+            color="#000000"
+          />
+        </View>
+        <View className="flex-1 ml-7">
+          <Text className="text-base font-semibold text-black mb-1">
+            {activity.title}
+          </Text>
+          <View className="flex-row items-center font-semibold">
+            <Feather name="clock" size={14} color="#666" />
+            <Text className="text-xs text-dark_gray ml-1 font-semibold">
+              {activity.time_begin} - {activity.time_end}
+            </Text>
+            <Text className="text-sm text-gray-400 mx-2 font-semibold">•</Text>
+            <Text className="text-xs text-dark_gray font-semibold">
+              Not Decide
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          className="mr-4 items-center justify-center"
+          onPress={() => onDelete(activity.id)}
+        >
+          <MaterialIcons name="delete-outline" size={26} color="black" />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
+
+  // <-------------------------------------- Handle Function ---------------------------------------->
+  const handleAddPress = () => {
+    setIsAddOpen(true);
+    setShowSelectAdd(true);
+    Animated.spring(slideAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+    console.log("Add Button clicked");
+  };
+
+  const closeAddPress = () => {
+    setIsAddOpen(false);
+    Animated.spring(slideAnim, {
+      toValue: 0,
+      useNativeDriver: true,
+    }).start();
+
+    setTimeout(() => setShowSelectAdd(false), 100);
+    console.log("Class Add Button clicked");
+  };
+
+  const handleAddPlace = () => {
+    console.log("Add Place clicked");
+    closeAddPress();
+    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_place/select_time`);
+  };
+
+  const handleAddEvent = () => {
+    console.log("Add Event clicked");
+    closeAddPress();
+    router.push(`/plan/${plan_id}/daily_trip/(modals)/add_event/select_time`);
+  };
+
+  const handleAddVote = () => {
+    console.log("Add Vote clicked");
+    closeAddPress();
+    router.push(
+      `/plan/${plan_id}/daily_trip/(modals)/add_vote/select_type_vote`
+    );
+  };
+
+  const handleMapPress = () => {
+    console.log("Map view clicked");
+    router.push(`/plan/${plan_id}/daily_trip/map`);
+  };
+
+  // <----------------------- Function Activity -------------------------------->
+
+  const handleActivityPlace = (activityId: number, place_id: number) => {
+    // console.log(`Go to Activity Details`);
+    // console.log(`activity_id: ${activityId}`);
+    router.push({
+      pathname: `/plan/[plan_id]/daily_trip/placeDetails/[place_detail_id]`,
+      params: {
+        plan_id: place_id,
+        place_detail_id: place_id,
+        activity_id: activityId,
+      },
+    });
+  };
+
+  const handleActivityEvent = (activityId: number) => {
+    console.log(`Go to Activity Details`);
+    router.push(`/plan/${plan_id}/daily_trip/eventDetails/${activityId}`);
+  };
+
+  const handleActivityVotePlace = (vote_id: number) => {
+    console.log(`Go to Activity Details`);
+    router.push(
+      `/plan/${plan_id}/daily_trip/add_vote/vote_place/${vote_id}/result_vote`
+    );
+  };
+
+  const handleActivityVoteEvent = (vote_id: number) => {
+    console.log(`Go to Activity Details`);
+    router.push(
+      `/plan/${plan_id}/daily_trip/add_vote/vote_event/${vote_id}/result_vote`
+    );
+  };
+
+  const handleDeleteActivity = async (activityId: number) => {
+    if (!TripDetail) {
+      Alert.alert("There's any Trips here.");
+      return;
+    }
+    const res = await deleteActivityInTrip(TripDetail.trip_id, activityId);
+    setDailyActivities((prev) =>
+      prev.filter((activity) => activity.id !== activityId)
+    );
+  };
+
+  // <---------------------------- Animation ----------------------------->
+
+  // Animation for Add Button
+  const optionTranslateY = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [150, 0],
+  }); // Slide up effect ของ 3 ปุ่ม Add
+
+  const buttonRotation = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "45deg"],
+  }); // Rotate effect ของปุ่ม Add จาก + เป็น x
+
+  // <----------------------------------------------------------------------------------------------->
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <PlanHeader planId={plan_id} />
+      <DateSelector
+        dates={dates}
+        onDateSelect={handleselectDate}
+        selectedDate={date}
+      />
+
+      <View className="flex-row justify-between items-center mx-4 my-2 p-4 rounded-lg border border-gray_border">
+        <WeatherIcon
+          trip_id={parseInt(plan_id)}
+          date={selectDate}
+          size={30}
+          showText={true}
+        />
+
+        <View className="flex-1 ml-4">
+          {(() => {
+            const firstPlace = dailyActivities.find(isActivityPlace);
+
+            if (firstPlace) {
+              return (
+                <Text
+                  className="text-base font-semibold text-black"
+                  numberOfLines={1}
+                >
+                  {truncateText(firstPlace.title || firstPlace.location, 35)}
+                </Text>
+              );
+            }
+
+            return (
+              <Text className="text-gray-600 font-medium text-sm">
+                Add your first place to see weather
+              </Text>
+            );
+          })()}
+        </View>
+      </View>
+
+      <ScrollView
+        className="flex-1 p-4"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={
+          dailyActivities.length === 0
+            ? {
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }
+            : { paddingBottom: 100 }
+        }
+      >
+        {dailyActivities.length === 0 ? (
+          <Text className="text-gray-500 text-base font-medium justify-center flex-1">
+            No Activities Today
+          </Text>
+        ) : (
+          dailyActivities.map((activity, index) => (
+            <View key={`${activity.id}-${index}`} className="mb-2">
+              {isActivityPlace(activity) &&
+                renderActivityPlace(
+                  activity,
+                  index,
+                  handleActivityPlace,
+                  handleDeleteActivity
+                )}
+              {isActivityEvent(activity) &&
+                renderActivityEvent(
+                  activity,
+                  index,
+                  handleActivityEvent,
+                  handleDeleteActivity
+                )}
+              {isActivityVotePlace(activity) &&
+                renderActivityVotePlace(
+                  activity,
+                  index,
+                  handleActivityVotePlace,
+                  handleDeleteActivity
+                )}
+              {isActivityVoteEvent(activity) &&
+                renderActivityVoteEvent(
+                  activity,
+                  index,
+                  handleActivityVoteEvent,
+                  handleDeleteActivity
+                )}
+            </View>
+          ))
+        )}
+      </ScrollView>
+
+      {/* <---------------------------Add and List Button -----------------------------> */}
+      {/* Add Button */}
+      {canEdit && (
+        <TouchableOpacity
+          className="absolute bottom-12 right-10 w-16 h-16 rounded-full bg-green_2 justify-center items-center"
+          onPress={handleAddPress}
+          activeOpacity={0.8}
+        >
+          <Animated.View
+            style={{
+              transform: [{ rotate: buttonRotation }],
+            }}
+          >
+            <Ionicons name="add" size={28} color="white" />
+          </Animated.View>
+        </TouchableOpacity>
+      )}
+
+      {/* List Button */}
+      <TouchableOpacity
+        className="absolute w-16 h-16 bottom-12 left-10 bg-white rounded-full border border-gray_border items-center justify-center"
+        onPress={handleMapPress}
+      >
+        <Feather name="map" size={24} color="black" />
+      </TouchableOpacity>
+
+      {/* Show Options Add*/}
+      {showSelectAdd && (
+        <View className="absolute inset-0 bg-black/0">
+          <TouchableOpacity
+            className="flex-1"
+            onPress={closeAddPress}
+            activeOpacity={1}
+          >
+            <View className="absolute bottom-28 right-4">
+              <Animated.View
+                style={{
+                  transform: [{ translateY: optionTranslateY }],
+                }}
+              >
+                {/* Add Place Option */}
+                <Animated.View
+                  style={{
+                    transform: [
+                      {
+                        translateY: slideAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, 0],
+                        }),
+                      },
+                    ],
+                    opacity: slideAnim,
+                  }}
+                >
+                  <TouchableOpacity
+                    className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
+                    onPress={handleAddPlace}
+                  >
+                    <Text className="text-base mr-3 text-gray-800 font-medium">
+                      Add Place
+                    </Text>
+                    <Ionicons name="location" size={24} color="#284D44" />
+                  </TouchableOpacity>
+                </Animated.View>
+
+                {/* Add Event Option */}
+                <Animated.View
+                  style={{
+                    transform: [
+                      {
+                        translateY: slideAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [40, 0],
+                        }),
+                      },
+                    ],
+                    opacity: slideAnim,
+                  }}
+                >
+                  <TouchableOpacity
+                    className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
+                    onPress={handleAddEvent}
+                  >
+                    <Text className="text-base mr-3 text-gray-800 font-medium">
+                      Add Event
+                    </Text>
+                    <MaterialIcons
+                      name="emoji-transportation"
+                      size={24}
+                      color="#284D44"
+                    />
+                  </TouchableOpacity>
+                </Animated.View>
+
+                {/* Add Vote Option */}
+                <Animated.View
+                  style={{
+                    transform: [
+                      {
+                        translateY: slideAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [60, 0],
+                        }),
+                      },
+                    ],
+                    opacity: slideAnim,
+                  }}
+                >
+                  <TouchableOpacity
+                    className="flex-row items-center justify-end w-48 py-3 px-4 mb-3 bg-white rounded-lg shadow-lg border border-gray-200"
+                    onPress={handleAddVote}
+                  >
+                    <Text className="text-base mr-3 text-gray-800 font-medium">
+                      Add Vote
+                    </Text>
+                    <MaterialIcons
+                      name="how-to-vote"
+                      size={24}
+                      color="#284D44"
+                    />
+                  </TouchableOpacity>
+                </Animated.View>
+              </Animated.View>
+            </View>
+          </TouchableOpacity>
+        </View>
+      )}
+    </SafeAreaView>
+  );
 };
 
 export default DailyTripsIndex;
