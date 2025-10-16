@@ -1,13 +1,17 @@
 import { Weather } from "@/interface/weather";
 import apiClient from "../client";
 
-export const getWeatherByDate = async (trip_id:number ,Date:string):Promise<Weather[]> => {
+export const getWeatherByDate = async (
+    trip_id: number,
+    Date: string
+): Promise<Weather[]> => {
     try {
-        console.log("Fetching : Weather in trip : " , trip_id , "Date :" , Date); 
-        const response = await apiClient.get(`/api/weather/${trip_id}/${Date}`) as {data: any[];}
-        const DATA = response.data
+        console.log("Fetching : Weather in trip : ", trip_id, "Date :", Date);
+        // const response = await apiClient.get(`/api/weather/${trip_id}/${Date}`) as {data: any[];}
+        const response = { data: [{ pit_id: -1, weather_code: 1 }] };
+        const DATA = response.data;
 
-        const result : Weather[] = [];
+        const result: Weather[] = [];
 
         for (let i = 0; i < DATA.length; i++) {
             const _ = DATA[i];
@@ -23,4 +27,4 @@ export const getWeatherByDate = async (trip_id:number ,Date:string):Promise<Weat
         console.error("Response date:", error);
         throw error;
     }
-}
+};

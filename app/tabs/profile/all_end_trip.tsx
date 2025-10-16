@@ -1,7 +1,6 @@
 import Header from "@/components/common/Header";
 import TripBox from "@/components/TripBox";
-import { mockTripBoxes } from "@/mock/mockDataComplete";
-import { calculateTripStatus } from "@/util/calculationFunction/calculateTripStatus";
+import { fetchEndedTrips } from "@/service/APIserver/tripApi";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -22,37 +21,10 @@ const AllEndTripsScreen: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
-    const fetchEndTripsData = async (): Promise<TripBox[]> => {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        // console.log("All mock trips:", mockTripBoxes.length);
-
-        // Filter only completed trips based on dates
-        const allTrips = mockTripBoxes;
-        const completedTrips = allTrips.filter(trip => {
-            const status = calculateTripStatus(trip.start_date, trip.end_date);
-            // console.log(
-            //     `Trip ${trip.trip_name}: ${trip.start_date} - ${trip.end_date} = Status: ${status}`
-            // );
-            return status === "END";
-        });
-
-        // console.log("Filtered completed trips:", completedTrips.length);
-        // console.log("Completed trips data:", completedTrips);
-
-        return completedTrips;
-    };
-
     const loadData = async () => {
         try {
-            const tripsData = await fetchEndTripsData();
-            // console.log("Setting end trips data:", tripsData.length);
+            const tripsData = await fetchEndedTrips();
             setEndTrips(tripsData);
-            // setEndTrips([])
-
-            // Log the actual data that's being set
-            // console.log("Trip data being set:", tripsData);
         } catch (error) {
             Alert.alert("Error", "Failed to load end trips data");
             console.error("Error loading end trips:", error);
@@ -67,21 +39,9 @@ const AllEndTripsScreen: React.FC = () => {
         setRefreshing(false);
     };
 
-    const handleBackPress = () => {
-        router.back();
-    };
-
     const handleTrip = (trip_id: number) => {
         router.push(`/dynamicPage/trips/${trip_id}`);
     };
-
-    // Log when endTrips state actually changes
-    // useEffect(() => {
-    //   console.log('EndTrips state updated:', endTrips.length);
-    //   if (endTrips.length > 0) {
-    //     console.log('Current endTrips:', endTrips);
-    //   }
-    // }, [endTrips]);
 
     useEffect(() => {
         loadData();
@@ -93,7 +53,12 @@ const AllEndTripsScreen: React.FC = () => {
                 <StatusBar barStyle="dark-content" />
 
                 {/* Header */}
-                <Header title="All End Trips" onBackPress={handleBackPress} />
+                <Header
+                    title="All End Trips"
+                    onBackPress={() => {
+                        router.back();
+                    }}
+                />
 
                 <View className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color="green_2" />
@@ -111,7 +76,12 @@ const AllEndTripsScreen: React.FC = () => {
             <StatusBar barStyle="dark-content" />
 
             {/* Header */}
-            <Header title="All End Trips" onBackPress={handleBackPress} />
+            <Header
+                title="All End Trips"
+                onBackPress={() => {
+                    router.back();
+                }}
+            />
 
             {/* Debug info - remove this in production */}
             {/* <View className="bg-yellow-100 p-2 mx-4 my-2 rounded">

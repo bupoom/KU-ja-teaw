@@ -1,6 +1,5 @@
 import apiClient from "../client";
 import { Image } from "react-native";
-import { getUserDetailById } from "./userService";
 
 export const endpoints = {
     trip: {
@@ -107,6 +106,43 @@ export const fetchAllTrips = async (): Promise<TripBox[]> => {
     }
 };
 
+export const fetchEndedTrips = async (): Promise<TripBox[]> => {
+    try {
+        const response = (await apiClient.get(endpoints.trip.TripsByUser)) as {
+            data: {
+                trips: any;
+            };
+        };
+        const Data = response.data.trips;
+        const trips: TripBox[] = [];
+        const currentDate = new Date();
+
+        for (let i = 0; i < Data.length; i++) {
+            const tripData = Data[i];
+            const endDate = new Date(tripData.end_date);
+            if (currentDate > endDate) {
+                trips.push({
+                    trip_id: tripData.trip_id,
+                    trip_name: tripData.title,
+                    trip_image: tripData.poster_image_link,
+                    start_date: tripData.start_date,
+                    end_date: tripData.end_date,
+                    member_count: tripData.joined_people,
+                    status_planning: tripData.planning_status
+                        ? "completed"
+                        : "planning",
+                    owner_name: "",
+                    owner_image: "",
+                });
+            }
+        }
+        return trips;
+    } catch (error) {
+        console.error("Response error:", error);
+        throw error;
+    }
+};
+
 export const updateTripDetail = async (NewValue: PatchTrip) => {
     try {
         console.log("try to patch trip data");
@@ -118,7 +154,7 @@ export const updateTripDetail = async (NewValue: PatchTrip) => {
         Object.entries(NewValue).forEach(([key, value]) => {
             if (value !== undefined && value !== null && key !== "trip_id") {
                 if (value instanceof Date) {
-                    formData.append(key, value.toISOString()); 
+                    formData.append(key, value.toISOString());
                 } else if (key === "trip_picture_path") {
                     formData.append("file", {
                         uri: String(value),
@@ -208,5 +244,50 @@ export const deleteTrip = async (trip_id: number): Promise<boolean> => {
     } catch (error) {
         console.error("Delete trip error:", error);
         throw error;
+    }
+};
+
+export const copyTrips = async (data: {
+    guide_id: string;
+    name: string;
+    start: string;
+    posterUri: string;
+    tripCode: string;
+    duration: number;
+    password: string;
+}): Promise<any> => {
+    try {
+        const response = (await apiClient.post(
+            `/api/trips/${data.guide_id}/copyTrip`,
+            {
+                trip_code: data.tripCode,
+            }
+        )) as { data: { message: string; trip_id: number } };
+
+        if (response.data.message !== "Trip Copied") {
+            return "failed";
+        }
+
+        const startDate = new Date(data.start);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + data.duration - 1);
+        const NewData: PatchTrip = {
+            trip_id: response.data.trip_id,
+            title: data.name,
+            description: "",
+            start_date: startDate.toISOString(),
+            end_date: endDate.toISOString(),
+            visibility_status: false,
+            trip_pass: data.password,
+            trip_picture_path: data.posterUri,
+            planning_status: false,
+        };
+
+        await updateTripDetail(NewData);
+
+        return { message: "Success", trip_id: response.data.trip_id };
+    } catch (error) {
+        console.error("Copy trip error:", error);
+        return "failed";
     }
 };

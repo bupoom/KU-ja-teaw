@@ -1,5 +1,16 @@
 import apiClient from "../client";
 
+export const get_activity_note = async (trip_id: number): Promise<void>=> {// Promise<Note[]> => {
+    try {
+        console.log("fetching overview notes");
+        
+        // return note_list
+    } catch (error) {
+        console.error("Response data:", error);
+        throw error;
+    }
+};
+
 export const get_overview_note = async (trip_id: number): Promise<Note[]> => {
     try {
         console.log("fetching overview notes");

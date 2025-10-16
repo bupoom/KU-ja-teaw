@@ -15,10 +15,7 @@ import {
 } from "react-native";
 
 import {
-    mockFlights,
     mockNotes,
-    mockTripDetails,
-    mockTripMembers,
 } from "@/mock/mockDataComplete";
 
 import CustomButton from "@/components/common/CustomButton";
@@ -35,6 +32,11 @@ import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 import { formatDateTimeNote } from "@/util/formatFucntion/formatDateTimeNote";
 import { organizeActivitiesByDay } from "@/util/organizedActivityByDay";
 import { truncateText } from "@/util/truncateText";
+import { get_trip_detail } from "@/service/APIserver/tripApi";
+import { get_flight_detail } from "@/service/APIserver/Flight";
+import { get_trip_member } from "@/service/APIserver/groupPage";
+import { get_more_detail } from "@/service/APIserver/userService";
+import { get_overview_note } from "@/service/APIserver/Note";
 
 interface DailyActivity {
     date: string;
@@ -76,12 +78,13 @@ export default function TripDetail() {
     const [userRole, setUserRole] = useState<string>("viewer");
     const canShare = userRole === "owner";
 
-    const handleBackPress = () => {
-        router.back();
-    };
-
     const copyGuide = () => {
-        console.log("Copy Guide");
+        router.push({
+            pathname: "/dynamicPage/guides/set_plan_details",
+            params: {
+                guide_id: trip_id,
+            },
+        });
     };
 
     const openPopup = (setter: any, anim: Animated.Value) => {
@@ -105,91 +108,6 @@ export default function TripDetail() {
         ? parseInt(trip_id[0], 10) // ถ้าเป็น array เอา index แรก 10 บอกเลขฐาน
         : parseInt(trip_id ?? "0", 10);
 
-    // fetech data functions
-
-    const fetchTripsDetails = async (): Promise<TripDetails | null> => {
-        try {
-            const allTrip = mockTripDetails;
-            const tripDetail = allTrip.find(trip => {
-                return trip.trip_id === parseInt(trip_id as string);
-            });
-            return tripDetail || null;
-        } catch (error) {
-            console.error("Error in fetchTripsDetails:", error);
-            return null;
-        }
-    };
-
-    const fetchRole = async (): Promise<string> => {
-        const user = mockTripMembers.find(
-            user => user.trip_id === parseInt(trip_id) && user.id === user_id
-        );
-        if (user) {
-            return user.role;
-        }
-        return "viewer";
-    };
-
-    const fetchFlights = async (trip_id: number): Promise<Flight[]> => {
-        try {
-            const relatedFlights = mockFlights.filter(
-                flight => flight.trip_id === trip_id
-            );
-            return relatedFlights;
-        } catch (error) {
-            console.error("Error in fetchFlights:", error);
-            return [];
-        }
-    };
-
-    const fetchTripMembers = async (trip_id: number): Promise<TripMember[]> => {
-        try {
-            const relatedMembers = mockTripMembers.filter(
-                member => member.trip_id === trip_id
-            );
-            return relatedMembers;
-        } catch (error) {
-            console.error("Error in fetchTripMembers:", error);
-            return [];
-        }
-    };
-
-    const fetchOverviewNotes = async (trip_id: number): Promise<Note[]> => {
-        try {
-            const overviewNotes = mockNotes.filter(
-                note =>
-                    note.trip_id === trip_id &&
-                    note.reference_type === "overview"
-            );
-
-            // Sort by owner first, then by created_at
-            return overviewNotes.sort((a, b) => {
-                // Find if user is owner
-                const memberA = tripMembers.find(
-                    m => m.id === Number(a.refer_user_id)
-                );
-                const memberB = tripMembers.find(
-                    m => m.id === Number(b.refer_user_id)
-                );
-
-                const isOwnerA = memberA?.role === "Owner";
-                const isOwnerB = memberB?.role === "Owner";
-
-                if (isOwnerA && !isOwnerB) return -1;
-                if (!isOwnerA && isOwnerB) return 1;
-
-                // If both are owners or both are not owners, sort by date
-                return (
-                    new Date(b.created_at).getTime() -
-                    new Date(a.created_at).getTime()
-                );
-            });
-        } catch (error) {
-            console.error("Error in fetchOverviewNotes:", error);
-            return [];
-        }
-    };
-
     const fetchActivityNotes = async (
         trip_id: number,
         reference_id: number,
@@ -203,7 +121,6 @@ export default function TripDetail() {
                     note.reference_type === reference_type
             );
 
-            // Sort by owner first, then by created_at
             return overviewNotes.sort((a, b) => {
                 const memberA = tripMembers.find(
                     m => m.id === Number(a.refer_user_id)
@@ -229,7 +146,6 @@ export default function TripDetail() {
         }
     };
 
-    // Toggle sections
     const toggleFlights = () => {
         setShowFlights(!showFlights);
     };
@@ -253,7 +169,7 @@ export default function TripDetail() {
 
     const handleOverview = async () => {
         if (tripDetail) {
-            const notes = await fetchOverviewNotes(tripDetail.trip_id);
+            const notes = await get_overview_note(tripDetail.trip_id);
             setOverviewNotes(notes);
             openPopup(setShowOverview, slideOverview);
         }
@@ -288,22 +204,22 @@ export default function TripDetail() {
     const loadData = async () => {
         try {
             setLoading(true);
-            const tripData = await fetchTripsDetails();
+            const tripData = await get_trip_detail(parseInt(trip_id));
             console.log(tripData);
             setTripDetail(tripData);
-            const role = await fetchRole();
-            setUserRole(role);
+            const userDetails = await get_more_detail(tripData.trip_id);
+            setUserRole(userDetails.role);
 
             if (tripData && tripData.trip_id) {
                 const [flightsData, activitiesData, membersData] =
                     await Promise.all([
-                        fetchFlights(tripData.trip_id),
+                        get_flight_detail(tripData.trip_id),
                         organizeActivitiesByDay(
                             tripData.trip_id,
                             tripData.start_date,
                             tripData.end_date
                         ),
-                        fetchTripMembers(tripData.trip_id),
+                        get_trip_member(tripData.trip_id),
                     ]);
                 setFlights(flightsData);
                 setDailyActivities(activitiesData);
@@ -334,7 +250,12 @@ export default function TripDetail() {
         return (
             <SafeAreaView className="flex-1 bg-white">
                 <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-                <Header title="" onBackPress={handleBackPress} />
+                <Header
+                    title=""
+                    onBackPress={() => {
+                        router.back();
+                    }}
+                />
                 <View className="flex-1 justify-center items-center">
                     <Text>Loading...</Text>
                 </View>
@@ -346,7 +267,12 @@ export default function TripDetail() {
         return (
             <SafeAreaView className="flex-1 bg-white">
                 <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-                <Header title="" onBackPress={handleBackPress} />
+                <Header
+                    title=""
+                    onBackPress={() => {
+                        router.back();
+                    }}
+                />
                 <View className="flex-1 justify-center items-center">
                     <Text>Trip not found</Text>
                 </View>
@@ -357,7 +283,12 @@ export default function TripDetail() {
     return (
         <SafeAreaView className="flex-1 bg-white">
             <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-            <Header title="" onBackPress={handleBackPress} />
+            <Header
+                title=""
+                onBackPress={() => {
+                    router.back();
+                }}
+            />
 
             <ScrollView
                 className="flex-1"

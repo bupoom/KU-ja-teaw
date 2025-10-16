@@ -97,7 +97,7 @@ const ProfileScreen: React.FC = () => {
 
     // Custom navigation function for END trips
     const handleEndTripPress = (trip_id: number) => {
-        router.push(`/plan/${trip_id.toString()}`);
+        router.push(`/dynamicPage/trips/${trip_id.toString()}`);
     };
 
     const handleSeeAllEndTrips = () => {

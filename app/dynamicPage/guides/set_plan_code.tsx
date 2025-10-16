@@ -1,11 +1,10 @@
 import Header from "@/components/common/Header";
 import NextButton from "@/components/common/NextButton";
+import { copyTrips } from "@/service/APIserver/tripApi";
 import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { createNewTrips } from "@/service/APIserver/tripApi";
-
 
 const MAX_PWD = 20;
 
@@ -15,12 +14,14 @@ export default function SetTripCodeCopy() {
     const [secure, setSecure] = useState(true);
 
     type Params = {
+        guide_id: string;
         name: string;
         start: string;
         posterUri: string;
         tripCode: string;
+        duration: string;
     };
-    const { name, start, posterUri, tripCode } =
+    const { guide_id, name, start, posterUri, tripCode, duration } =
         useLocalSearchParams<Params>();
     const onNext = async () => {
         if (!password.trim()) {
@@ -32,20 +33,21 @@ export default function SetTripCodeCopy() {
         }
         setSubmitting(true);
         const data = {
-            trips_name: name,
-            start_date: start,
-            end_date: "",
-            trip_code:  tripCode,
-            trip_password:password,
-            uri: posterUri
-        }
-        const response = await createNewTrips(data)
-        if (response.trip_id) {
+            guide_id: guide_id,
+            name: name,
+            start: start,
+            posterUri: posterUri,
+            tripCode: tripCode,
+            duration: parseInt(duration),
+            password: password,
+        };
+        const response = await copyTrips(data);
+
+        if (response === "Success") {
             Alert.alert("Success!");
             router.replace(`/plan/${response.trip_id}`);
         } else {
             Alert.alert("Failed to Create new trips.");
-
         }
     };
 

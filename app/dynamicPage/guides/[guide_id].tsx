@@ -27,7 +27,6 @@ import { truncateText } from "@/util/truncateText";
 
 import { getGuideDetails } from "@/service/APIserver/guideDetail";
 import { BookmarkByGuideId } from "@/service/APIserver/bookmarkService";
-import { getAllActivitiesInTrip } from "@/service/APIserver/activity";
 
 interface DailyActivity {
     date: string;
@@ -71,6 +70,15 @@ export default function GuideDetail() {
             pathname: "/dynamicPage/guides/set_plan_details",
             params: {
                 guide_id: guide_id,
+                duration: String(
+                    guideDetail
+                        ? Math.ceil(
+                              (new Date(guideDetail.end_date).getTime() -
+                                  new Date(guideDetail.start_date).getTime()) /
+                                  (1000 * 60 * 60 * 24)
+                          ) + 1
+                        : 0
+                ),
             },
         });
     };
@@ -436,7 +444,8 @@ export default function GuideDetail() {
                                         by {guideDetail.owner_name}
                                     </Text>
                                 </View>
-w                            </View>
+                                w{" "}
+                            </View>
 
                             <Text className="text-base text-gray-700 leading-6">
                                 {guideDetail.description ||
