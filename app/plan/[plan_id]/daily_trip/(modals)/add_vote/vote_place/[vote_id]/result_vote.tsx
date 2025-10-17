@@ -68,23 +68,28 @@ const ResultVotePlace = () => {
   };
 
   const firstVote = async (pit_id: number) => {
+    console.log("First Vote")
     const res = await patchNewUserVote(parseInt(plan_id), pit_id, -1)
     console.log('Result Change:', res)
   }
 
   const cancelVote = async (pit_id:number) => {
+    console.log("Cancel Vote")
     const res = await patchNewUserVote(parseInt(plan_id), pit_id, pit_id)
     console.log('Result Change:', res)
   }
 
   const changeVote = async (vote_pit_id: number, from_pit_id: number) => {
+    console.log("Change Vote")
     const res = await patchNewUserVote(parseInt(plan_id), vote_pit_id, from_pit_id)
     console.log('Result Change:', res)
   }
 
   const handleToggleVote = (pit_id: number) => {
     console.log("Select This PLace pit_id : ", pit_id);
+    console.log(voteData?.places_voting)
     const previouslyVoted = voteData?.places_voting.find((p) => p.is_voted);
+    console.log("previous : ", previouslyVoted)
     if (!previouslyVoted){
         firstVote(pit_id)
       } else {
@@ -165,6 +170,7 @@ const ResultVotePlace = () => {
         time_end: result.time_end,
         places_voting: result.places_voting,
       });
+
     } catch (err) {
       console.error("Error fetching vote data:", err);
       setError("Failed to load vote data");

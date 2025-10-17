@@ -72,7 +72,7 @@ export const getPlaceInVoteBlock = async (
                 // ถ้า Backend ส่ง votes มาแยกต่างหาก ให้ใช้ตรงนี้
                 // แต่ถ้าไม่มี เราจะสร้าง mock votes จาก is_voted
                 votes.push({
-                    pit_id: pit_id,
+                    pit_id: place.pit_id,
                     place_id: place.place_id,
                     address: place.address,
                     place_picture_url: place.place_picture_url,
@@ -80,7 +80,7 @@ export const getPlaceInVoteBlock = async (
                     title: place.name,
                     review_count: place.rating_count,
                     voting_count: place.voting_count,
-                    is_voted: place.is_vote,
+                    is_voted: place.is_voted,
                     is_most_voted: place.is_most_voted,
                 });
             });
@@ -88,7 +88,7 @@ export const getPlaceInVoteBlock = async (
 
         // สร้าง ActivityVotePlace object
         const activityVotePlace: VoteData = {
-            vote_id: pit_id,
+            vote_id: backendData.block_id,
             date: backendData.date,
             time_start: backendData.time_start.slice(0, 5),
             time_end: backendData.time_end.slice(0, 5),
