@@ -15,8 +15,12 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Header from "@/components/common/Header";
 import CustomButton from "@/components/common/CustomButton";
 import { get_more_detail } from "@/service/APIserver/userService";
-import { getPlaceInVoteBlock } from "@/service/APIserver/vote";
+import { 
+  getPlaceInVoteBlock,
+  patchNewUserVote
+} from "@/service/APIserver/vote";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
+import { deleteActivityInTrip } from "@/service/APIserver/activity";
 
 const ResultVotePlace = () => {
   const router = useRouter();
@@ -24,17 +28,16 @@ const ResultVotePlace = () => {
     plan_id: string;
     vote_id: string;
   }>();
-  const user_id = 1; // mock current user
 
   const [voteData, setVoteData] = useState<VoteData | null>(null);
-  const [role, setRole] = useState<string>("viewer");
+  const [role, setRole] = useState<string>("Viewer");
   const [numMember, setNumMember] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const canClose = role === "Owner";
-  const canEdit = role === "Owner" || role === "editor";
+  const canEdit = role === "Owner" || role === "Editor";
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -64,57 +67,51 @@ const ResultVotePlace = () => {
     });
   };
 
-  const handleToggleVote = (placeId: number) => {
-    setVoteData((prev) => {
-      if (!prev) return prev;
+  const firstVote = async (pit_id: number) => {
+    const res = await patchNewUserVote(parseInt(plan_id), pit_id, -1)
+    console.log('Result Change:', res)
+  }
 
-      const previouslyVoted = prev.places_voting.find((p) => p.is_voted);
-      const updatedPlaces = prev.places_voting.map((p) => {
-        if (p.place_id === placeId) {
-          if (p.is_voted) {
-            return { ...p, is_voted: false, voting_count: p.voting_count - 1 };
-          }
-          return { ...p, is_voted: true, voting_count: p.voting_count + 1 };
+  const cancelVote = async (pit_id:number) => {
+    const res = await patchNewUserVote(parseInt(plan_id), pit_id, pit_id)
+    console.log('Result Change:', res)
+  }
+
+  const changeVote = async (vote_pit_id: number, from_pit_id: number) => {
+    const res = await patchNewUserVote(parseInt(plan_id), vote_pit_id, from_pit_id)
+    console.log('Result Change:', res)
+  }
+
+  const handleToggleVote = (pit_id: number) => {
+    console.log("Select This PLace pit_id : ", pit_id);
+    const previouslyVoted = voteData?.places_voting.find((p) => p.is_voted);
+    if (!previouslyVoted){
+        firstVote(pit_id)
+      } else {
+        if (previouslyVoted.pit_id === pit_id){
+          cancelVote(pit_id)
+        }else {
+          changeVote(pit_id, previouslyVoted.pit_id)
         }
-        if (previouslyVoted?.place_id === p.place_id) {
-          return { ...p, is_voted: false, voting_count: p.voting_count - 1 };
-        }
-        return p;
-      });
-
-      const maxVotes = Math.max(...updatedPlaces.map((p) => p.voting_count), 0);
-      const finalPlaces = updatedPlaces.map((p) => ({
-        ...p,
-        is_most_voted: p.voting_count === maxVotes && maxVotes > 0,
-      }));
-
-      return { ...prev, places_voting: finalPlaces };
-    });
+      }
+    fetchVoteData()
   };
 
-  const handleDelete = (placeId: number) => {
+  const handleDelete = async (pit_id: number) => {
     Alert.alert("Delete Place", "Do you want to remove this place?", [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
         style: "destructive",
-        onPress: () => {
-          setVoteData((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  places_voting: prev.places_voting.filter(
-                    (p) => p.place_id !== placeId
-                  ),
-                }
-              : prev
-          );
+        onPress: async () => {
+          const res = await deleteActivityInTrip(parseInt(plan_id), pit_id);
+          fetchVoteData();
         },
       },
     ]);
   };
 
-  const handleCloseVote = () => {
+  const handleCloseVote = async (pit_id: number) => {
     if (!voteData) return;
     const maxVotes = Math.max(
       ...voteData.places_voting.map((p) => p.voting_count)
@@ -262,15 +259,17 @@ const ResultVotePlace = () => {
           </View>
 
           {/* Search Bar */}
-          <TouchableOpacity
-            onPress={handleSearch}
-            className="flex-row items-center bg-white rounded-full px-4 py-4 border border-gray_border mb-4"
-          >
-            <Feather name="search" size={20} color="#666" />
-            <Text className="text-gray-400 ml-3 flex-1">
-              Search to Add Place Voting...
-            </Text>
-          </TouchableOpacity>
+          {canEdit && (
+            <TouchableOpacity
+              onPress={handleSearch}
+              className="flex-row items-center bg-white rounded-full px-4 py-4 border border-gray_border mb-4"
+            >
+              <Feather name="search" size={20} color="#666" />
+              <Text className="text-gray-400 ml-3 flex-1">
+                Search to Add Place Voting...
+              </Text>
+            </TouchableOpacity>
+          )}
 
           {/* Voting Results */}
           <Text className="text-right text-sm text-gray-500 mb-4">
@@ -296,7 +295,7 @@ const ResultVotePlace = () => {
               <TouchableOpacity
                 key={opt.place_id}
                 activeOpacity={0.7}
-                onPress={() => handleToggleVote(opt.place_id)}
+                onPress={() => handleToggleVote(opt.pit_id)}
                 className={`flex-row p-3 bg-white rounded-lg mb-3 border ${
                   opt.is_voted ? "border-green_2" : "border-gray_border"
                 }`}
@@ -325,7 +324,9 @@ const ResultVotePlace = () => {
                   <View className="flex-row items-center mt-1">
                     <Ionicons name="star" size={15} color="#FFD700" />
                     <Text className="text-xs text-dark_gray ml-2 font-sf-semibold">
-                      {opt.rating} ({opt.review_count} Reviews)
+                      {opt.rating !== -1 ? opt.rating : "--"} (
+                      {opt.review_count !== -1 ? opt.review_count : "--"}{" "}
+                      Reviews)
                     </Text>
                   </View>
                 </View>
@@ -344,7 +345,7 @@ const ResultVotePlace = () => {
                   {canEdit && (
                     <TouchableOpacity
                       className="mt-4"
-                      onPress={() => handleDelete(opt.place_id)}
+                      onPress={() => handleDelete(opt.pit_id)}
                     >
                       <MaterialIcons
                         name="delete-outline"
@@ -360,7 +361,7 @@ const ResultVotePlace = () => {
         </View>
 
         {canClose && voteData && voteData.places_voting.length > 0 && (
-          <CustomButton title="Close Vote" onPress={handleCloseVote} />
+          <CustomButton title="Close Vote" onPress={() => handleCloseVote(voteData.vote_id)} />
         )}
       </View>
     </ScrollView>
