@@ -53,6 +53,7 @@ const WeatherIcon: React.FC<WeatherIconProps> = ({
       try {
         setLoading(true);
         const data = await getWeatherByDate(trip_id, date);
+        console.log(data[0])
         if (data && data.length > 0) setWeather(data[0]);
         else setWeather(null);
         setError(false);

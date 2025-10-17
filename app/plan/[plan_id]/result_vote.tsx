@@ -5,10 +5,9 @@ import {
   ScrollView,
   Image,
   Alert,
-  RefreshControl,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -18,20 +17,41 @@ import { get_more_detail } from "@/service/APIserver/userService";
 import { getPlaceInVoteBlock } from "@/service/APIserver/vote";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
 
+// ----------------- Types -----------------
+// interface PlaceVoting {
+//     pit_id: number;
+//     place_id: number;
+//     address: string;
+//     place_picture_url: string;
+//     rating?: number;
+//     title: string;
+//     review_count?: number;
+//     voting_count: number;
+//     is_voted: boolean;
+//     is_most_voted: boolean;
+// }
+
+// interface VoteData {
+//     vote_id: number;
+//     date: string;
+//     time_start: string;
+//     time_end: string;
+//     places_voting: PlaceVoting[];
+// }
+
+// ----------------- Component -----------------
 const ResultVotePlace = () => {
   const router = useRouter();
   const { plan_id, vote_id } = useLocalSearchParams<{
     plan_id: string;
     vote_id: string;
   }>();
-  const user_id = 1; // mock current user
 
   const [voteData, setVoteData] = useState<VoteData | null>(null);
   const [role, setRole] = useState<string>("viewer");
   const [numMember, setNumMember] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const canClose = role === "Owner";
   const canEdit = role === "Owner" || role === "editor";
@@ -44,6 +64,7 @@ const ResultVotePlace = () => {
     return `${day}/${month}/${year}`;
   };
 
+  // ----------------- Handlers -----------------
   const handleBack = () => {
     router.replace({
       pathname: `/plan/[plan_id]/daily_trip`,
@@ -61,28 +82,50 @@ const ResultVotePlace = () => {
         start: voteData?.time_start,
         end: voteData?.time_end,
       },
-    });
+    }
+  )
   };
 
+  // ✅ Toggle Vote (เลือกได้แค่ 1 อัน)
   const handleToggleVote = (placeId: number) => {
     setVoteData((prev) => {
       if (!prev) return prev;
 
       const previouslyVoted = prev.places_voting.find((p) => p.is_voted);
+
       const updatedPlaces = prev.places_voting.map((p) => {
         if (p.place_id === placeId) {
+          // กดซ้ำ = ยกเลิก
           if (p.is_voted) {
-            return { ...p, is_voted: false, voting_count: p.voting_count - 1 };
+            return {
+              ...p,
+              is_voted: false,
+              voting_count: p.voting_count - 1,
+            };
           }
-          return { ...p, is_voted: true, voting_count: p.voting_count + 1 };
+          // เลือกใหม่
+          return {
+            ...p,
+            is_voted: true,
+            voting_count: p.voting_count + 1,
+          };
         }
+
+        // อันที่เคยโหวตไว้ → ลบโหวต
         if (previouslyVoted?.place_id === p.place_id) {
-          return { ...p, is_voted: false, voting_count: p.voting_count - 1 };
+          return {
+            ...p,
+            is_voted: false,
+            voting_count: p.voting_count - 1,
+          };
         }
+
         return p;
       });
 
+      // หา max votes ใหม่
       const maxVotes = Math.max(...updatedPlaces.map((p) => p.voting_count), 0);
+
       const finalPlaces = updatedPlaces.map((p) => ({
         ...p,
         is_most_voted: p.voting_count === maxVotes && maxVotes > 0,
@@ -92,6 +135,7 @@ const ResultVotePlace = () => {
     });
   };
 
+  // ✅ Delete Place
   const handleDelete = (placeId: number) => {
     Alert.alert("Delete Place", "Do you want to remove this place?", [
       { text: "Cancel", style: "cancel" },
@@ -114,8 +158,10 @@ const ResultVotePlace = () => {
     ]);
   };
 
+  // ✅ Close Vote
   const handleCloseVote = () => {
     if (!voteData) return;
+
     const maxVotes = Math.max(
       ...voteData.places_voting.map((p) => p.voting_count)
     );
@@ -143,53 +189,59 @@ const ResultVotePlace = () => {
     }
   };
 
-  const fetchVoteData = useCallback(async () => {
-    try {
-      setError(null);
-      const result = await getPlaceInVoteBlock(
-        parseInt(plan_id),
-        parseInt(vote_id)
-      );
-      if (!result) {
-        setVoteData(null);
-        return;
+  // ----------------- Fetch Data -----------------
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // 1. ✅ เรียก API ดึงข้อมูล vote block
+        const result = await getPlaceInVoteBlock(
+          parseInt(plan_id),
+          parseInt(vote_id)
+        );
+
+        console.log("Vote block result:", result); // debug
+
+        // 2. ตรวจสอบว่ามีข้อมูลหรือไม่
+        if (!result) {
+          console.log("No vote data found");
+          setVoteData(null);
+          setLoading(false);
+          return;
+        }
+
+        const userData = await get_more_detail(parseInt(plan_id));
+        if (userData?.role) {
+          setRole(userData.role);
+        }
+
+        const member = await get_trip_detail(parseInt(plan_id));
+        setNumMember(member?.group_members ?? 1);
+
+        setVoteData({
+          vote_id: result.vote_id,
+          date: result.date,
+          time_start: result.time_start,
+          time_end: result.time_end,
+          places_voting: result.places_voting,
+        });
+      } catch (err) {
+        console.error("Error fetching vote data:", err);
+        setError("Failed to load vote data");
+        Alert.alert("Error", "Failed to load vote data. Please try again.");
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const userData = await get_more_detail(parseInt(plan_id));
-      if (userData?.role) setRole(userData.role);
-
-      const member = await get_trip_detail(parseInt(plan_id));
-      setNumMember(member?.group_members ?? 1);
-
-      setVoteData({
-        vote_id: result.vote_id,
-        date: result.date,
-        time_start: result.time_start,
-        time_end: result.time_end,
-        places_voting: result.places_voting,
-      });
-    } catch (err) {
-      console.error("Error fetching vote data:", err);
-      setError("Failed to load vote data");
-      Alert.alert("Error", "Failed to load vote data. Please try again.");
+    if (plan_id && vote_id) {
+      fetchData();
     }
   }, [plan_id, vote_id]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await fetchVoteData();
-      setLoading(false);
-    };
-    if (plan_id && vote_id) loadData();
-  }, [plan_id, vote_id, fetchVoteData]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchVoteData();
-    setRefreshing(false);
-  };
-
+  // ----------------- Render -----------------
   if (loading) {
     return (
       <View className="flex-1 bg-white items-center justify-center">
@@ -206,10 +258,9 @@ const ResultVotePlace = () => {
           <Text className="text-red-500 text-center mb-4">{error}</Text>
           <CustomButton
             title="Try Again"
-            onPress={async () => {
+            onPress={() => {
               setLoading(true);
-              await fetchVoteData();
-              setLoading(false);
+              setError(null);
             }}
           />
         </View>
@@ -218,17 +269,7 @@ const ResultVotePlace = () => {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-white"
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={["#075952"]}
-          tintColor="#075952"
-        />
-      }
-    >
+    <ScrollView className="flex-1 bg-white">
       <Header title="Vote Place" onBackPress={handleBack} />
 
       <View className="mt-4">
@@ -247,7 +288,7 @@ const ResultVotePlace = () => {
               <View className="flex-col items-center justify-center">
                 <Feather name="clock" size={30} color="#6B7280" />
                 <Text className="text-black text-base font-bold mt-2">
-                  {formatDate(voteData?.date || "")}
+                  {formatDate(voteData?.date ? voteData.date : "No date")}
                 </Text>
               </View>
               <View className="items-center">
@@ -262,15 +303,17 @@ const ResultVotePlace = () => {
           </View>
 
           {/* Search Bar */}
-          <TouchableOpacity
-            onPress={handleSearch}
-            className="flex-row items-center bg-white rounded-full px-4 py-4 border border-gray_border mb-4"
-          >
-            <Feather name="search" size={20} color="#666" />
-            <Text className="text-gray-400 ml-3 flex-1">
-              Search to Add Place Voting...
-            </Text>
-          </TouchableOpacity>
+          <View className="bg-white mt-2 mb-2">
+            <TouchableOpacity
+              onPress={handleSearch}
+              className="flex-row items-center bg-white rounded-full px-4 py-4 border border-gray_border"
+            >
+              <Feather name="search" size={20} color="#666" />
+              <Text className="text-gray-400 ml-3 flex-1">
+                Search to Add Place Voting...
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Voting Results */}
           <Text className="text-right text-sm text-gray-500 mb-4">
@@ -282,7 +325,7 @@ const ResultVotePlace = () => {
             /{String(numMember)}
           </Text>
 
-          {/* Place List */}
+          {/* Place Options */}
           {!voteData || voteData.places_voting.length === 0 ? (
             <View className="items-center justify-center py-10">
               <Feather name="map-pin" size={48} color="#D1D5DB" />

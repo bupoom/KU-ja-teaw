@@ -102,7 +102,7 @@ const PlaceBox: React.FC<PlaceBoxProps> = ({
                                 />
                             </View>
                             <Text className="text-sm text-dark_gray ml-2 font-semibold">
-                                {rating} ({review_count?.toLocaleString() || 0}{" "}
+                                {rating !== -1 ? rating : "--"} ({review_count !== -1 ? review_count : "--"}{" "}
                                 Review)
                             </Text>
                         </View>

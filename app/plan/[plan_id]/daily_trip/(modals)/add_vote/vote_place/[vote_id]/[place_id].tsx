@@ -1,6 +1,5 @@
 import CustomButton from "@/components/common/CustomButton";
 import Header from "@/components/common/Header";
-import { mockPlaceDetails } from "@/mock/mockDataComplete";
 import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -13,24 +12,74 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert
 } from "react-native";
+import { getPlaceDetails } from "@/service/APIserver/placeDetail";
+import { votePlace } from "@/service/APIserver/vote";
 
 const PlaceDetailVote = () => {
-  const { plan_id, vote_id, place_id } = useLocalSearchParams<{
+  const {
+    plan_id,
+    vote_id,
+    place_id,
+    type,
+  } = useLocalSearchParams<{
     plan_id: string;
     vote_id: string;
     place_id: string;
+    type: string;
   }>();
   const [placeDetail, setPlaceDetail] = useState<PlaceDetails>();
   const router = useRouter();
 
-  useEffect(() => {
+  const fetchPlaceData = async () => {
     if (place_id) {
-      const place = mockPlaceDetails.find(
-        (place) => place.id === parseInt(place_id)
+      const place: PlaceDetails = await getPlaceDetails(
+        place_id.toString(),
+        type.toString()
       );
       setPlaceDetail(place);
     }
+  };
+
+  const handleAddPlace = async () => {
+    if (!plan_id || !vote_id || !place_id) {
+      Alert.alert("Error", "Missing required parameters");
+      return;
+    }
+
+    try {
+      const success = await votePlace(
+        parseInt(plan_id),
+        parseInt(vote_id),
+        parseInt(place_id)
+      );
+
+      if (success) {
+        Alert.alert("Success", "Your vote has been submitted!", [
+          {
+            text: "OK",
+            onPress: () =>
+              router.replace({
+                pathname: `/plan/[plan_id]/daily_trip/(modals)/add_vote/vote_place/[vote_id]/result_vote`,
+                params: { plan_id, vote_id },
+              }),
+          },
+        ]);
+      } else {
+        Alert.alert(
+          "Vote Failed",
+          "Unable to submit your vote, please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Error voting:", error);
+      Alert.alert("Error", "Something went wrong while voting.");
+    }
+  };
+
+  useEffect(() => {
+    fetchPlaceData();
   }, [place_id]);
 
   if (!placeDetail) {
@@ -92,8 +141,11 @@ const PlaceDetailVote = () => {
           <View className="flex-row items-center mb-3">
             <Ionicons name="star" size={16} color="#FFD700" />
             <Text className="text-sm text-gray-600 ml-2">
-              {placeDetail.rating} (
-              {(placeDetail.review_count ?? 0).toLocaleString()} Reviews)
+              {placeDetail.rating !== -1 ? placeDetail.rating : "--"} (
+              {placeDetail.review_count !== -1
+                ? placeDetail.review_count
+                : "-- "}
+              Reviews)
             </Text>
           </View>
 
@@ -142,15 +194,7 @@ const PlaceDetailVote = () => {
         </View>
 
         {/* Add Button - Fixed at bottom */}
-        <CustomButton
-          title="Add Place to Voting"
-          onPress={() => {
-            router.replace(
-              `/plan/${plan_id}/daily_trip/(modals)/add_vote/vote_place/${vote_id}/result_vote`
-            );
-            console.log("Add place to Voting");
-          }}
-        />
+        <CustomButton title="Add Place to Voting" onPress={handleAddPlace} />
       </ScrollView>
     </View>
   );

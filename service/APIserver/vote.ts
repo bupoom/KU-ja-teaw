@@ -186,7 +186,7 @@ export const votePlace = async (
             return false;
         }
         const response = await apiClient.post(
-            `/api/trips/${trip_id}/activities/${pit_id}/voted/places`,
+            `/api/trips/${trip_id}/activities/${pit_id}/voted/${place_id}`,
             {
                 user_id: userdata.user_id,
                 pit_id: pit_id,
@@ -194,6 +194,8 @@ export const votePlace = async (
                 place_id: place_id,
             }
         );
+
+        console.log(response)
 
         return true;
     } catch (error: any) {
