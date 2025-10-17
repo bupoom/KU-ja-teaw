@@ -7,8 +7,8 @@ export const getWeatherByDate = async (
 ): Promise<Weather[]> => {
     try {
         console.log("Fetching : Weather in trip : ", trip_id, "Date :", Date);
-        const response = await apiClient.get(`/api/weather/${trip_id}/${Date}`) as {data: any[];}
-        // const response = { data: [{ pit_id: -1, weather_code: 1 }] };
+        // const response = await apiClient.get(`/api/weather/${trip_id}/${Date}`) as {data: any[];}
+        const response = { data: [{ pit_id: -1, weather_code: 1 }] };
         const DATA = response.data;
 
         const result: Weather[] = [];

@@ -81,7 +81,7 @@ export const getPlaceInVoteBlock = async (
                     review_count: place.rating_count,
                     voting_count: place.voting_count,
                     is_voted: place.is_vote,
-                    is_most_voted: place.is_most_voted
+                    is_most_voted: place.is_most_voted,
                 });
             });
         }
@@ -90,9 +90,9 @@ export const getPlaceInVoteBlock = async (
         const activityVotePlace: VoteData = {
             vote_id: pit_id,
             date: backendData.date,
-            time_start: backendData.time_start.slice(0,5),
-            time_end: backendData.time_end.slice(0,5),
-            places_voting: votes
+            time_start: backendData.time_start.slice(0, 5),
+            time_end: backendData.time_end.slice(0, 5),
+            places_voting: votes,
         };
 
         return activityVotePlace;
@@ -195,7 +195,7 @@ export const addPlaceInVote = async (
             }
         );
 
-        console.log(response)
+        console.log(response);
 
         return true;
     } catch (error: any) {
@@ -206,5 +206,84 @@ export const addPlaceInVote = async (
         }
 
         return false;
+    }
+};
+
+export const patchNewUserVote = async (
+    TripId: number,
+    VotePitId: number,
+    FromPitId: number,
+    eventName?: string
+): Promise<boolean> => {
+    try {
+        console.log("Voting candidate pit_id:", VotePitId);
+        console.log("From pit_id:", FromPitId);
+
+        if (VotePitId === FromPitId) {
+            const res = (await apiClient.delete(
+                `/api/trips/${TripId}/activities/${FromPitId}/voted`,
+                { event_name: eventName || "" }
+            )) as { data: { success: boolean } };
+            return res.data?.success || false;
+        }
+        
+        if (FromPitId !== -1) {
+            try {
+                const deleteRes = (await apiClient.delete(
+                    `/api/trips/${TripId}/activities/${FromPitId}/voted`,
+                    { event_name: eventName || "" }
+                )) as { data: { success: boolean } };
+
+                if (!deleteRes.data?.success) {
+                    console.error("Failed to remove previous vote");
+                    return false;
+                }
+            } catch (error) {
+                console.error("Error removing previous vote:", error);
+                return false;
+            }
+        }
+
+        if (!eventName) {
+            const res = (await apiClient.post(
+                `/api/trips/${TripId}/activities/${VotePitId}/voted/places`,
+                { event_name: "" }
+            )) as { data: boolean };
+            return res.data || false;
+        } else {
+            // Vote for event
+            const res = (await apiClient.post(
+                `/api/trips/${TripId}/activities/${VotePitId}/voted/events`,
+                { event_name: eventName }
+            )) as { data: boolean };
+            return res.data || false;
+        }
+    } catch (error) {
+        console.error("Error in patchNewUserVote:", error);
+        return false;
+    }
+};
+
+export const endVote = async (
+    trip_id: number,
+    pit_id: number,
+    place_id: number,
+    date: string,
+    start_time: string,
+    end_time: string
+): Promise<void> => {
+    try {
+        console.log("End Vote : ", pit_id);
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/${vote_id}/votes`,
+            {
+                date: date,
+                start_time: start_time,
+                end_time: end_time,
+            }
+        )) as { data: any };
+    } catch (error) {
+        console.error("Response date:", error);
+        throw error;
     }
 };
