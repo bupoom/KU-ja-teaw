@@ -140,7 +140,7 @@ export const checkIsUserVoted = async (
     try {
         console.log("Deleting vote activities : ", trip_id);
         const response = (await apiClient.get(
-            `/api/trips/${trip_id}/activities/${vote_id}/voted`
+            `/api/trips/${trip_id}/activities/${vote_id}/votes`
         )) as { data: any };
         return response.data.votedd;
     } catch (error) {
@@ -159,7 +159,7 @@ export const patchNewVoteTime = async (
     try {
         console.log("Deleting vote activities : ", trip_id);
         const response = (await apiClient.get(
-            `/api/trips/${trip_id}/activities/${vote_id}/voted`,
+            `/api/trips/${trip_id}/activities/${vote_id}/votes`,
             {
                 date: date,
                 start_time: start_time,
@@ -172,7 +172,7 @@ export const patchNewVoteTime = async (
     }
 };
 
-export const votePlace = async (
+export const addPlaceInVote = async (
     trip_id: number,
     pit_id: number,
     place_id: number
@@ -186,7 +186,7 @@ export const votePlace = async (
             return false;
         }
         const response = await apiClient.post(
-            `/api/trips/${trip_id}/activities/${pit_id}/voted/${place_id}`,
+            `/api/trips/${trip_id}/activities/${pit_id}/votes/${place_id}`,
             {
                 user_id: userdata.user_id,
                 pit_id: pit_id,

@@ -67,8 +67,8 @@ export const enterTrip = async (
             const UserData = await AuthService.getUserData();
             await addNotification(
                 res.data.trip_id,
-                `${UserData?.name} rejected`,
-                `${UserData?.name} just rejected to Our trip.`
+                `Say Hi to ${UserData?.name}`,
+                `${UserData?.name} just joined Our trip!!`
             );
             return res.data.trip_id.toString();
         } else {
