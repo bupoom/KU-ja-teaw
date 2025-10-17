@@ -119,7 +119,7 @@ const SearchPlaceVote: React.FC = () => {
       pathname:
         "/plan/[plan_id]/daily_trip/(modals)/add_vote/vote_place/[vote_id]/[place_id]" as any,
       params: {
-        place_id: placeId.toString(),
+        place_id_google: placeId.toString(),
         type: "place",
         plan_id: plan_id,
         vote_id: vote_id,
