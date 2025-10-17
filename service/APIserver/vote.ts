@@ -138,7 +138,7 @@ export const checkIsUserVoted = async (
     vote_id: number
 ): Promise<boolean> => {
     try {
-        console.log("Deleting vote activities : ", trip_id);
+        console.log("Check vote activities : ", trip_id);
         const response = (await apiClient.get(
             `/api/trips/${trip_id}/activities/${vote_id}/votes`
         )) as { data: any };
@@ -226,7 +226,7 @@ export const patchNewUserVote = async (
             )) as { data: { success: boolean } };
             return res.data?.success || false;
         }
-        
+
         if (FromPitId !== -1) {
             try {
                 const deleteRes = (await apiClient.delete(
@@ -266,22 +266,15 @@ export const patchNewUserVote = async (
 
 export const endVote = async (
     trip_id: number,
-    pit_id: number,
-    place_id: number,
-    date: string,
-    start_time: string,
-    end_time: string
-): Promise<void> => {
+    candidatePitId: number
+): Promise<boolean> => {
     try {
-        console.log("End Vote : ", pit_id);
-        const response = (await apiClient.get(
-            `/api/trips/${trip_id}/activities/${vote_id}/votes`,
-            {
-                date: date,
-                start_time: start_time,
-                end_time: end_time,
-            }
+        console.log("End Vote : ", candidatePitId);
+        const response = (await apiClient.post(
+            `/api/trips/${trip_id}/activities/${candidatePitId}/votes/places/endOwner`
         )) as { data: any };
+        if (!response.data.pit_id) return false;
+        return true;
     } catch (error) {
         console.error("Response date:", error);
         throw error;

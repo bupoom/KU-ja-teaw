@@ -227,10 +227,22 @@ export const addEventToTrip = async (
 
 export const deleteActivityInTrip = async (
     trip_id: number,
-    pit_id: number
+    pit_id: number,
+    ActType?: string
 ): Promise<string> => {
     try {
         console.log("Deleting Trip activity: ", pit_id);
+        if (ActType === "vote") {
+            try {
+                const response = await apiClient.delete(
+                    `/api/trips/${trip_id}/activities/${pit_id}/votes`
+                );
+            } catch (error) {
+                console.error("Response data:", error);
+                return "failed";
+            }
+            
+        }
         const response = await apiClient.delete(
             `/api/trips/${trip_id}/activities/${pit_id}`
         );
@@ -283,10 +295,10 @@ export const getActivitiesDetails = async (
             `/api/trips/${trip_id}/activities/${pit_id}/detail`
         )) as { data: any };
 
-        console.log(response)
+        console.log(response);
         const activities = response.data[0];
 
-        const result: ActivityEventBox =  {
+        const result: ActivityEventBox = {
             id: activities.pit_id,
             title: activities.event_title,
             date: activities.date,
