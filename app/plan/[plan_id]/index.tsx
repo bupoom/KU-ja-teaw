@@ -539,7 +539,7 @@ const PlanIndex = () => {
               {canEdit && (
                 <TouchableOpacity
                   onPress={handleAddFlight}
-                  className="bg-green_2 rounded-lg py-3 mt-3 mx-2"
+                  className="bg-green_2 rounded-lg py-3 mt-3"
                 >
                   <Text className="text-white text-center font-medium">
                     Add Flight
@@ -625,7 +625,7 @@ const PlanIndex = () => {
                   onPress={() => {
                     setIsFileModalVisible(true);
                   }}
-                  className="bg-green_2 rounded-lg py-3 mt-3 mx-2"
+                  className="bg-green_2 rounded-lg py-3 mt-3"
                 >
                   <Text className="text-white text-center font-medium">
                     Upload File

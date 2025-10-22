@@ -23,8 +23,7 @@ export default function CustomButton({
 
   // ถ้ามีส่ง classname มา → ใช้อันนั้นแทน default
   const buttonClassName =
-    classname ||
-    `mx-5 py-4 rounded-lg items-center justify-center ${
+    `${classname || 'mx-5'} py-4 rounded-lg items-center justify-center ${
       isDisabled ? "bg-gray-300" : isShared ? "bg-blue_button" : "bg-green_2"
     }`;
 

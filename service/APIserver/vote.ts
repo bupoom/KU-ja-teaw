@@ -76,7 +76,7 @@ export const getPlaceInVoteBlock = async (
                     place_id: place.place_id,
                     address: place.address,
                     place_picture_url: place.place_picture_url,
-                    rating: place.rating,
+                    rating: parseInt(place.rating),
                     title: place.name,
                     review_count: place.rating_count,
                     voting_count: place.voting_count,
@@ -266,7 +266,7 @@ export const patchNewUserVote = async (
 
 export const endVote = async (
     trip_id: number,
-    candidatePitId: number
+    candidatePitId: number,
 ): Promise<boolean> => {
     try {
         console.log("End Vote : ", candidatePitId);

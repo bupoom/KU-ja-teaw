@@ -6,6 +6,7 @@ import {
   Image,
   Alert,
   RefreshControl,
+  SafeAreaView,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
@@ -15,9 +16,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Header from "@/components/common/Header";
 import CustomButton from "@/components/common/CustomButton";
 import { get_more_detail } from "@/service/APIserver/userService";
-import { 
+import {
   getPlaceInVoteBlock,
-  patchNewUserVote
+  patchNewUserVote,
+  endVote,
 } from "@/service/APIserver/vote";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
 import { deleteActivityInTrip } from "@/service/APIserver/activity";
@@ -68,38 +70,55 @@ const ResultVotePlace = () => {
   };
 
   const firstVote = async (pit_id: number) => {
-    console.log("First Vote")
-    const res = await patchNewUserVote(parseInt(plan_id), pit_id, -1)
-    console.log('Result Change:', res)
-  }
+    console.log("First Vote");
+    const res = await patchNewUserVote(parseInt(plan_id), pit_id, -1);
+    console.log("Result Change:", res);
+  };
 
-  const cancelVote = async (pit_id:number) => {
-    console.log("Cancel Vote")
-    const res = await patchNewUserVote(parseInt(plan_id), pit_id, pit_id)
-    console.log('Result Change:', res)
-  }
+  const cancelVote = async (pit_id: number) => {
+    console.log("Cancel Vote");
+    const res = await patchNewUserVote(parseInt(plan_id), pit_id, pit_id);
+    console.log("Result Change:", res);
+  };
 
   const changeVote = async (vote_pit_id: number, from_pit_id: number) => {
-    console.log("Change Vote")
-    const res = await patchNewUserVote(parseInt(plan_id), vote_pit_id, from_pit_id)
-    console.log('Result Change:', res)
-  }
+    console.log("Change Vote");
+    const res = await patchNewUserVote(
+      parseInt(plan_id),
+      vote_pit_id,
+      from_pit_id
+    );
+    console.log("Result Change:", res);
+  };
 
-  const handleToggleVote = (pit_id: number) => {
-    console.log("Select This PLace pit_id : ", pit_id);
-    console.log(voteData?.places_voting)
-    const previouslyVoted = voteData?.places_voting.find((p) => p.is_voted);
-    console.log("previous : ", previouslyVoted)
-    if (!previouslyVoted){
-        firstVote(pit_id)
+  const handleToggleVote = async (pit_id: number) => {
+    try {
+      console.log("Select This Place pit_id:", pit_id);
+      const previouslyVoted = voteData?.places_voting.find(
+        (p) => p.is_voted === true
+      );
+
+      if (!previouslyVoted) {
+        // First vote
+        console.log("🟢 First Vote");
+        await firstVote(pit_id);
       } else {
-        if (previouslyVoted.pit_id === pit_id){
-          cancelVote(pit_id)
-        }else {
-          changeVote(pit_id, previouslyVoted.pit_id)
+        if (previouslyVoted.pit_id === pit_id) {
+          // Cancel vote
+          console.log("🟡 Cancel Vote");
+          await cancelVote(pit_id);
+        } else {
+          // Change vote
+          console.log("🔵 Change Vote");
+          await changeVote(pit_id, previouslyVoted.pit_id);
         }
       }
-    fetchVoteData()
+
+      await fetchVoteData();
+    } catch (error) {
+      console.error("Error while toggling vote:", error);
+      Alert.alert("Error", "Failed to update vote. Please try again.");
+    }
   };
 
   const handleDelete = async (pit_id: number) => {
@@ -116,20 +135,31 @@ const ResultVotePlace = () => {
     ]);
   };
 
-  const handleCloseVote = async (pit_id: number) => {
+  const handleCloseVote = async () => {
     if (!voteData) return;
-    const maxVotes = Math.max(
-      ...voteData.places_voting.map((p) => p.voting_count)
-    );
     const mostVoted = voteData.places_voting.filter(
-      (p) => p.voting_count === maxVotes
+      (p) => p.is_most_voted === true
     );
 
+    console.log("Most Voted Places:", mostVoted.length);
+
     if (mostVoted.length === 1) {
-      router.replace({
-        pathname: `/plan/[plan_id]/daily_trip`,
-        params: { plan_id, date: voteData.date },
-      });
+      const res = await endVote(
+        parseInt(plan_id),
+        mostVoted[0].pit_id as number
+      );
+      if (res) {
+        router.replace({
+          pathname: `/plan/[plan_id]/daily_trip`,
+          params: { plan_id, date: voteData.date },
+        });
+      } else {
+        Alert.alert(
+          "Error",
+          "Failed to confirm owner decision. Please try again."
+        );
+        return;
+      }
     } else {
       router.push({
         pathname: `/plan/[plan_id]/daily_trip/(modals)/add_vote/vote_place/[vote_id]/owner_decision`,
@@ -139,7 +169,7 @@ const ResultVotePlace = () => {
           date: voteData.date,
           time_begin: voteData.time_start,
           time_end: voteData.time_end,
-          options: JSON.stringify(mostVoted.map((p) => p.place_id)),
+          options: JSON.stringify(mostVoted.map((p) => p.pit_id)),
         },
       });
     }
@@ -170,13 +200,16 @@ const ResultVotePlace = () => {
         time_end: result.time_end,
         places_voting: result.places_voting,
       });
-
     } catch (err) {
       console.error("Error fetching vote data:", err);
       setError("Failed to load vote data");
       Alert.alert("Error", "Failed to load vote data. Please try again.");
     }
   }, [plan_id, vote_id]);
+
+  useEffect(() => {
+    console.log("Refresh Vote Data:", voteData?.places_voting);
+  }, [voteData]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -221,17 +254,7 @@ const ResultVotePlace = () => {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-white"
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={["#075952"]}
-          tintColor="#075952"
-        />
-      }
-    >
+    <SafeAreaView className="flex-1 bg-white">
       <Header title="Vote Place" onBackPress={handleBack} />
 
       <View className="mt-4">
@@ -286,91 +309,101 @@ const ResultVotePlace = () => {
             ) ?? 0}
             /{String(numMember)}
           </Text>
-
-          {/* Place List */}
-          {!voteData || voteData.places_voting.length === 0 ? (
-            <View className="items-center justify-center py-10">
-              <Feather name="map-pin" size={48} color="#D1D5DB" />
-              <Text className="text-gray-500 mt-4">No places to vote yet</Text>
-              <Text className="text-gray-400 text-sm mt-2">
-                Tap search above to add places
-              </Text>
-            </View>
-          ) : (
-            voteData.places_voting.map((opt) => (
-              <TouchableOpacity
-                key={opt.place_id}
-                activeOpacity={0.7}
-                onPress={() => handleToggleVote(opt.pit_id)}
-                className={`flex-row p-3 bg-white rounded-lg mb-3 border ${
-                  opt.is_voted ? "border-green_2" : "border-gray_border"
-                }`}
-              >
-                <Image
-                  source={{ uri: opt.place_picture_url }}
-                  className="w-20 h-20 rounded-lg"
-                  resizeMode="cover"
-                />
-                <View className="flex-1 ml-3 justify-center">
+        </View>
+      </View>
+      <ScrollView
+        className="px-6"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#075952"]}
+            tintColor="#075952"
+          />
+        }
+      >
+        {/* Place List */}
+        {!voteData || voteData.places_voting.length === 0 ? (
+          <View className="items-center justify-center py-10">
+            <Feather name="map-pin" size={48} color="#D1D5DB" />
+            <Text className="text-gray-500 mt-4">No places to vote yet</Text>
+            <Text className="text-gray-400 text-sm mt-2">
+              Tap search above to add places
+            </Text>
+          </View>
+        ) : (
+          voteData.places_voting.map((opt) => (
+            <TouchableOpacity
+              key={opt.place_id}
+              activeOpacity={0.7}
+              onPress={() => handleToggleVote(opt.pit_id)}
+              className={`flex-row p-3 bg-white rounded-lg mb-3 border ${
+                opt.is_voted ? "border-green_2" : "border-gray_border"
+              }`}
+            >
+              <Image
+                source={{ uri: opt.place_picture_url }}
+                className="w-20 h-20 rounded-lg"
+                resizeMode="cover"
+              />
+              <View className="flex-1 ml-3 justify-center">
+                <Text
+                  className="text-base font-semibold text-black mb-1"
+                  numberOfLines={1}
+                >
+                  {opt.title}
+                </Text>
+                <View className="flex-row items-center">
+                  <Feather name="map-pin" size={14} color="#666" />
                   <Text
-                    className="text-base font-semibold text-black mb-1"
+                    className="text-xs text-dark_gray ml-2 font-semibold"
                     numberOfLines={1}
                   >
-                    {opt.title}
+                    {opt.address}
                   </Text>
-                  <View className="flex-row items-center">
-                    <Feather name="map-pin" size={14} color="#666" />
-                    <Text
-                      className="text-xs text-dark_gray ml-2 font-semibold"
-                      numberOfLines={1}
-                    >
-                      {opt.address}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center mt-1">
-                    <Ionicons name="star" size={15} color="#FFD700" />
-                    <Text className="text-xs text-dark_gray ml-2 font-sf-semibold">
-                      {opt.rating !== -1 ? opt.rating : "--"} (
-                      {opt.review_count !== -1 ? opt.review_count : "--"}{" "}
-                      Reviews)
-                    </Text>
-                  </View>
                 </View>
+                <View className="flex-row items-center mt-1">
+                  <Ionicons name="star" size={15} color="#FFD700" />
+                  <Text className="text-xs text-dark_gray ml-2 font-sf-semibold">
+                    {opt.rating !== -1 ? opt.rating : "--"} (
+                    {opt.review_count !== -1 ? opt.review_count : "--"} Reviews)
+                  </Text>
+                </View>
+              </View>
 
-                <View className="items-end justify-between">
-                  <Text
-                    className={`px-2 py-1 text-xs rounded-full font-medium ${
-                      opt.is_most_voted
-                        ? "bg-green_2 text-white"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
+              <View className="items-end justify-between">
+                <Text
+                  className={`px-2 py-1 text-xs rounded-full font-medium ${
+                    opt.is_most_voted
+                      ? "bg-green_2 text-white"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {opt.voting_count} Votes
+                </Text>
+
+                {canEdit && (
+                  <TouchableOpacity
+                    className="mt-4"
+                    onPress={() => handleDelete(opt.pit_id)}
                   >
-                    {opt.voting_count} Votes
-                  </Text>
-
-                  {canEdit && (
-                    <TouchableOpacity
-                      className="mt-4"
-                      onPress={() => handleDelete(opt.pit_id)}
-                    >
-                      <MaterialIcons
-                        name="delete-outline"
-                        size={24}
-                        color="black"
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </TouchableOpacity>
-            ))
-          )}
-        </View>
+                    <MaterialIcons
+                      name="delete-outline"
+                      size={24}
+                      color="black"
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </TouchableOpacity>
+          ))
+        )}
 
         {canClose && voteData && voteData.places_voting.length > 0 && (
-          <CustomButton title="Close Vote" onPress={() => handleCloseVote(voteData.vote_id)} />
+          <CustomButton classname="mx-0" title="Close Vote" onPress={() => handleCloseVote()} />
         )}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
