@@ -8,6 +8,7 @@ import {
     Platform,
     Modal,
     ScrollView,
+    Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
@@ -20,6 +21,7 @@ import CustomButton from "@/components/common/CustomButton";
 import { formatDate } from "@/util/formatFucntion/formatDate";
 import { extractDates } from "@/util/extractDates";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
+import { createBlockVote } from "@/service/APIserver/vote";
 
 // helper functions
 const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
@@ -68,17 +70,24 @@ const SelectTimeVoteEvent = () => {
             which === "start" ? setStart(base) : setEnd(base);
         };
 
-    const goNext = () => {
+    const goNext = async () => {
         if (!isRangeValid) return;
-        router.push({
-            pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_event/[vote_id]/result_vote`,
-            params: {
-                plan_id: plan_id as string,
-                selectDate: selectedDate,
-                start: hhmm(start),
-                end: hhmm(end),
-            },
-        });
+        const pit_id = await createBlockVote(parseInt(plan_id),selectedDate as string,hhmm(start),hhmm(end),"","events");
+        if (pit_id) {
+            Alert.alert("there's pit_id : ", String(pit_id));
+            router.push({
+                pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_event/[vote_id]/result_vote`,
+                params: {
+                    plan_id: plan_id as string,
+                    selectDate: selectedDate,
+                    vote_id: pit_id,
+                    start: hhmm(start),
+                    end: hhmm(end),
+                },
+            });
+        } else {
+            Alert.alert("there's no pit_id");
+        }
     };
 
     const fetchTripsDetails = async () => {

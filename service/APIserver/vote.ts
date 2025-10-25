@@ -36,7 +36,7 @@ export const createBlockVote = async (
                     time_start: start,
                     time_end: end,
                     is_vote: true,
-                    is_event: false,
+                    is_event: true,
                     event_title: event_title,
                 }
             )) as { data: any };

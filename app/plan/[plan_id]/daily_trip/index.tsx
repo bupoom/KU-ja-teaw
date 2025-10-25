@@ -403,7 +403,6 @@ const DailyTripsIndex = () => {
   };
 
   const handleMapPress = () => {
-    console.log("Map view clicked");
     router.push(`/plan/${plan_id}/daily_trip/map`);
   };
 

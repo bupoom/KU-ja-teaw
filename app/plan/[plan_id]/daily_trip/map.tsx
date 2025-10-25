@@ -21,13 +21,8 @@ import { extractDates } from "@/util/extractDates";
 import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 import { truncateText } from "@/util/truncateText";
 
-// import { mockActivityPlaceBoxes } from "@/mock/mockDataComplete";
-import { mockPlaceDetails } from "@/mock/mockDataComplete";
-import { mockTripDetails } from "@/mock/mockDataComplete";
-
-import { getActivitiesForMap, getAllActivitiesInTrip } from "@/service/APIserver/activity";
+import { getActivitiesForMap } from "@/service/APIserver/activity";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
-import TripDetail from "@/app/dynamicPage/trips/[trip_id]";
 
 const SF_ZOOM = 13;
 
@@ -109,8 +104,12 @@ const MAP = () => {
     };
 
     const fetchMapByDate = async (date: string) => {
-        const newMarkerPlaces = await getActivitiesForMap(parseInt(plan_id),date);
+        const newMarkerPlaces = await getActivitiesForMap(
+            parseInt(plan_id),
+            date
+        );
         setMarkerPlaces(newMarkerPlaces);
+        console.log(markerPlaces);
         setPLaceInDate(newMarkerPlaces.length);
         setCurrentPlaceIndex(0);
     };

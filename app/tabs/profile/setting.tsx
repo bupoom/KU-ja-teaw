@@ -154,8 +154,7 @@ const SettingsScreen: React.FC = () => {
 
             <View className="flex-1 px-4 py-6">
                 {/* Notification Section */}
-                <View className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
-                    {/* Notification Toggle */}
+                {/* <View className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
                     <View className="flex-row items-center justify-between mb-4">
                         <Text className="text-black font-medium text-xl">
                             Notification
@@ -169,8 +168,6 @@ const SettingsScreen: React.FC = () => {
                             }
                         />
                     </View>
-
-                    {/* Notification Before Settings */}
                     <View className="flex-row items-center">
                         <View className="flex-row items-center mr-4">
                             <Feather
@@ -192,7 +189,6 @@ const SettingsScreen: React.FC = () => {
                         </View>
 
                         <View className="flex-row items-center">
-                            {/* Days Input */}
                             <TextInput
                                 value={notificationDays}
                                 onChangeText={handleDaysChange}
@@ -209,8 +205,6 @@ const SettingsScreen: React.FC = () => {
                                         : "border-gray-200 bg-gray-50 text-gray-400"
                                 }`}
                             />
-
-                            {/* Day Label */}
                             <Text
                                 className={`ml-2 text-base ${
                                     notificationEnabled
@@ -223,7 +217,6 @@ const SettingsScreen: React.FC = () => {
                         </View>
                     </View>
 
-                    {/* Save Button - แสดงเฉพาะตอนแก้ไขวัน */}
                     {hasChanges && (
                         <TouchableOpacity
                             onPress={validateAndSubmit}
@@ -234,7 +227,7 @@ const SettingsScreen: React.FC = () => {
                             </Text>
                         </TouchableOpacity>
                     )}
-                </View>
+                </View> */}
 
                 {/* Logout Section */}
                 <TouchableOpacity
@@ -265,7 +258,7 @@ const SettingsScreen: React.FC = () => {
                         </Text>
                     </View>
                 </TouchableOpacity>
-                <TextInput
+                {/* <TextInput
                     value={tripId}
                     onChangeText={setTripId}
                     placeholder="Enter Trip ID"
@@ -328,7 +321,7 @@ const SettingsScreen: React.FC = () => {
                     >
                         Go to Trip
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         </SafeAreaView>
     );
