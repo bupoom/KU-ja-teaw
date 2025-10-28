@@ -1,28 +1,52 @@
-import React, { JSX, useEffect, useState } from "react";
-import {
-    View,
-    Text,
-    Image,
-    StyleSheet,
-    SafeAreaView,
-    Alert,
-    ActivityIndicator,
-} from "react-native";
-import { useRouter } from "expo-router";
+import { AuthService } from "@/service/authService";
 import {
     GoogleSignin,
     GoogleSigninButton,
-    isErrorWithCode,
-    isSuccessResponse,
-    statusCodes,
+    isSuccessResponse
 } from "@react-native-google-signin/google-signin";
-import { AuthService } from "@/service/authService";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 
-export default function AuthScreen(): JSX.Element {
+// ✅ Temporary Type (ถ้ามีอยู่แล้วลบได้)
+type UserDetails = {
+    user_id: string;
+    name: string;
+    phone: string;
+    profile_picture_link?: string;
+    email: string;
+};
+
+export default function AuthScreen() {
     const router = useRouter();
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [serverStatus, setServerStatus] = useState("⌛ Checking server...");
 
     useEffect(() => {
+        const checkServer = async () => {
+            try {
+                const res = await fetch("http://10.3.135.116:3000/api/h");
+                if (res.ok) {
+                    setServerStatus("✅ Server Connected");
+                } else {
+                    setServerStatus("⚠️ Server reachable but returned error");
+                }
+            } catch (e) {
+                console.log("❌ Server error: ", e);
+                setServerStatus("❌ Cannot reach server");
+            }
+        };
+
+        checkServer();
+
         GoogleSignin.configure({
             webClientId:
                 "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
@@ -31,103 +55,47 @@ export default function AuthScreen(): JSX.Element {
         });
     }, []);
 
-    const handleSignIn = async (): Promise<void> => {
+    const handleSignIn = async () => {
+        if (serverStatus.startsWith("❌")) {
+            return Alert.alert("Error", "Server not reachable yet.");
+        }
+
         try {
             setIsSubmitting(true);
-            console.log("verifing auth by google...")
             await GoogleSignin.hasPlayServices();
             const response = await GoogleSignin.signIn();
+
             if (isSuccessResponse(response)) {
-                const { data } = response;
-
-                if (!data.idToken) {
-                    Alert.alert("Error", "Failed to get authentication token.");
-                    return;
-                }
-
-                const { idToken } = data;
-
-                // -- API KUJATEAW --
+                const { idToken } = response.data;
+                if (!idToken) return Alert.alert("Error", "Missing ID Token");
+                Alert.alert("Idtoken :" , idToken)
                 const result = await AuthService.login(idToken);
-                if (!result.success) {
-                    Alert.alert("Error", "Failed to find or create user.");
+                if (!result.success)
+                    return Alert.alert("Error", "Account not found");
+
+                if (!result.newUser) {
+                    Alert.alert("Welcome Back");
+                    router.push("/tabs/(home)");
                     return;
                 }
-                if (!result.newUser) {
-                    Alert.alert("Welcome Back.");
-                    router.push("/tabs/(home)");
-                } else {
-                    if (!result.user?.user_id) {
-                        Alert.alert("Error", "Invalid user data received.");
-                        return;
-                    }
-                    const userData: UserDetails = {
-                        user_id: result.user.user_id,
-                        name: result.user.name,
-                        phone: result.user.phone,
-                        profile_picture_link: result.user.profile_picture_link,
-                        email: result.user.email,
-                    };
 
-                    Alert.alert(
-                        "Sign In Successful",
-                        `Welcome ${result.user.name}!`,
-                        [
-                            {
-                                text: "OK",
-                                onPress: () => {
-                                    router.push({
-                                        pathname: "/auth/set_profile" as any,
-                                        params: {
-                                            userName: userData.name,
-                                            userEmail: userData.email,
-                                            userPhoto:
-                                                userData.profile_picture_link ||
-                                                "",
-                                        },
-                                    });
-                                },
-                            },
-                        ]
-                    );
-                }
+                if (!result.user?.user_id)
+                    return Alert.alert("Error", "Invalid user data");
+
+                router.push({
+                    pathname: "/auth/set_profile" as any,
+                    params: {
+                        userName: result.user.name,
+                        userEmail: result.user.email,
+                        userPhoto: result.user.profile_picture_link || "",
+                    },
+                });
             } else {
-                Alert.alert("Cancelled", "Google sign-in was cancelled.");
+                Alert.alert("Cancelled", "Google sign-in cancelled.");
             }
         } catch (error) {
             console.error("Google Sign-In Error:", error);
-
-            if (isErrorWithCode(error)) {
-                switch (error.code) {
-                    case statusCodes.SIGN_IN_CANCELLED:
-                        Alert.alert(
-                            "Cancelled",
-                            "Google sign-in was cancelled."
-                        );
-                        break;
-                    case statusCodes.IN_PROGRESS:
-                        Alert.alert(
-                            "In Progress",
-                            "Google sign-in is already in progress."
-                        );
-                        break;
-                    case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-                        Alert.alert(
-                            "Error",
-                            "Play services are not available."
-                        );
-                        break;
-                    default:
-                        Alert.alert("Error", `Sign-in failed: ${error.code}`);
-                        break;
-                }
-            } else {
-                // Error ที่ไม่เกี่ยวข้องกับ Google Sign-In
-                Alert.alert(
-                    "Error",
-                    "An unexpected error occurred. Please try again."
-                );
-            }
+            Alert.alert("Error", "Login failed");
         } finally {
             setIsSubmitting(false);
         }
@@ -149,6 +117,10 @@ export default function AuthScreen(): JSX.Element {
                     />
                 </View>
 
+                <Text style={styles.serverText}>
+                    {serverStatus}
+                </Text>
+
                 <View style={styles.buttonContainer}>
                     <GoogleSigninButton
                         size={GoogleSigninButton.Size.Wide}
@@ -160,7 +132,7 @@ export default function AuthScreen(): JSX.Element {
 
                     {isSubmitting && (
                         <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="small" color="#4285f4" />
+                            <ActivityIndicator size="small" />
                             <Text style={styles.loadingText}>
                                 Signing in...
                             </Text>
@@ -186,15 +158,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: "bold",
-        color: "#2c3e50",
-        textAlign: "center",
         marginTop: 50,
     },
     subtitle: {
         fontSize: 16,
-        color: "#7f8c8d",
         textAlign: "center",
-        marginTop: 10,
         paddingHorizontal: 20,
     },
     imageContainer: {
@@ -203,11 +171,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%",
         maxHeight: 300,
-        marginVertical: 20,
     },
     authImage: {
         width: "80%",
         height: "100%",
+    },
+    serverText: {
+        marginTop: 5,
+        color: "#34495e",
+        fontSize: 14,
     },
     buttonContainer: {
         width: "100%",
@@ -225,18 +197,5 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         marginLeft: 10,
-        fontSize: 14,
-        color: "#4285f4",
-    },
-    skipButton: {
-        marginTop: 20,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-    },
-    disabledButton: {
-        opacity: 0.5,
-    },
-    disabledText: {
-        color: "#bdc3c7",
     },
 });

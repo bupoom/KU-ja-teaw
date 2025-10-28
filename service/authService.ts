@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store";
-import { BASE_URL, TIME_BEFORE_TOKEN_EXPIRE , NO_SERVER_WHILE_DEV } from "./config";
+import { BASE_URL, NO_SERVER_WHILE_DEV, TIME_BEFORE_TOKEN_EXPIRE } from "./config";
 
 // interface Token
 export interface TokenData {
@@ -195,7 +195,7 @@ export const AuthService = {
                 };
                 newUser = true;
             } else {
-                console.log("🔄 Starting API login at SERVER");
+                console.log("🔄 Starting API login at SERVER", googleIdToken);
 
                 const URL = `${BASE_URL}/api/users/login`;
                 console.log("url : ", URL);
