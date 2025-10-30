@@ -134,29 +134,30 @@ const ResultVoteEvent = () => {
     }
   }, [plan_id, vote_id]);
 
-  const firstVote = async (pit_id: number) => {
+  const firstVote = async (pit_id: number, event_name: string) => {
     console.log("First Vote");
-    const res = await patchNewUserVote(parseInt(plan_id), pit_id, -1);
+    const res = await patchNewUserVote(parseInt(plan_id), pit_id, -1, event_name);
     console.log("Result Change:", res);
   };
 
-  const cancelVote = async (pit_id: number) => {
+  const cancelVote = async (pit_id: number, event_name: string) => {
     console.log("Cancel Vote");
-    const res = await patchNewUserVote(parseInt(plan_id), pit_id, pit_id);
+    const res = await patchNewUserVote(parseInt(plan_id), pit_id, pit_id, event_name);
     console.log("Result Change:", res);
   };
 
-  const changeVote = async (vote_pit_id: number, from_pit_id: number) => {
+  const changeVote = async (vote_pit_id: number, from_pit_id: number, event_name: string) => {
     console.log("Change Vote");
     const res = await patchNewUserVote(
       parseInt(plan_id),
       vote_pit_id,
-      from_pit_id
+      from_pit_id,
+      event_name
     );
     console.log("Result Change:", res);
   };
 
-  const handleToggleVote = async (pit_id: number) => {
+  const handleToggleVote = async (pit_id: number, event_name: string) => {
     try {
       console.log("Select This Place pit_id:", pit_id);
       const previouslyVoted = voteData?.events_voting.find(
@@ -166,16 +167,16 @@ const ResultVoteEvent = () => {
       if (!previouslyVoted) {
         // First vote
         console.log("🟢 First Vote");
-        await firstVote(pit_id);
+        await firstVote(pit_id, event_name);
       } else {
         if (previouslyVoted.pit_id === pit_id) {
           // Cancel vote
           console.log("🟡 Cancel Vote");
-          await cancelVote(pit_id);
+          await cancelVote(pit_id, event_name);
         } else {
           // Change vote
           console.log("🔵 Change Vote");
-          await changeVote(pit_id, previouslyVoted.pit_id);
+          await changeVote(pit_id, previouslyVoted.pit_id, event_name);
         }
       }
 
@@ -191,10 +192,13 @@ const ResultVoteEvent = () => {
   }, [voteData]);
 
   useEffect(() => {
-    if (vote_id && plan_id) {
-      fetchVoteData();
-    }
-  }, [plan_id, vote_id]);
+    const loadData = async () => {
+      setLoading(true);
+      await fetchVoteData();
+      setLoading(false);
+    };
+    if (plan_id && vote_id) loadData();
+  }, [plan_id, vote_id, fetchVoteData]);
 
   if (loading) {
     return (
@@ -330,12 +334,16 @@ const ResultVoteEvent = () => {
             const isMostVoted = voteData?.events_voting.some(
               (v) => v.name === option.type && v.is_most_voted
             );
-            const transportOption = voteData?.events_voting.find((v) => v.name === option.type)
+            const transportOption = voteData?.events_voting.find(
+              (v) => v.name === option.type
+            );
 
             return (
               <TouchableOpacity
                 key={option.id}
-                onPress={() => handleToggleVote(transportOption?.pit_id as number)}
+                onPress={() =>
+                  handleToggleVote(transportOption?.pit_id as number, option.type)
+                }
                 activeOpacity={0.8}
                 className="w-[30%] mb-4 rounded-lg"
               >
@@ -373,11 +381,10 @@ const ResultVoteEvent = () => {
             );
           })}
         </View>
-
-        {canClose && (
-          <CustomButton title="Close Vote" onPress={handleCloseVote} />
-        )}
       </View>
+      {canClose && (
+        <CustomButton title="Close Vote" onPress={handleCloseVote} />
+      )}
     </ScrollView>
   );
 };

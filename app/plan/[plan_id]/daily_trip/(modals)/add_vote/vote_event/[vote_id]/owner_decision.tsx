@@ -142,9 +142,7 @@ const OwnerDecision = () => {
               return (
                 <TouchableOpacity
                   key={option.pit_id}
-                  onPress={() =>
-                    setSelectVote(option)
-                  }
+                  onPress={() => setSelectVote(option)}
                   activeOpacity={0.8}
                   className="w-[30%] mb-4 rounded-lg"
                 >
@@ -173,13 +171,12 @@ const OwnerDecision = () => {
               );
             })}
         </View>
-
-        <CustomButton
-          title="Confirm Decision"
-          onPress={handleConfirm}
-          disabled={!selectVote}
-        />
       </View>
+      <CustomButton
+        title="Confirm Decision"
+        onPress={handleConfirm}
+        disabled={!selectVote}
+      />
     </ScrollView>
   );
 };

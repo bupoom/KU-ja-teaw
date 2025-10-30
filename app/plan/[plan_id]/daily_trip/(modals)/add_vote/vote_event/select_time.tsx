@@ -72,9 +72,9 @@ const SelectTimeVoteEvent = () => {
 
     const goNext = async () => {
         if (!isRangeValid) return;
-        const pit_id = await createBlockVote(parseInt(plan_id),selectedDate as string,hhmm(start),hhmm(end),"","events");
+        const pit_id = await createBlockVote(parseInt(plan_id),selectedDate as string,hhmm(start),hhmm(end),"Please Fill Title","events");
         if (pit_id) {
-            Alert.alert("there's pit_id : ", String(pit_id));
+            // Alert.alert("there's pit_id : ", String(pit_id));
             router.push({
                 pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_event/[vote_id]/result_vote`,
                 params: {
