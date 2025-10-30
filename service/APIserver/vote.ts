@@ -13,15 +13,6 @@ export const createBlockVote = async (
         console.log("Creating vote activities : ", trip_id);
         let pit: number = 0;
         if (type === "places") {
-            console.log({
-                    trip_id: trip_id,
-                    place_id: 0,
-                    date: selectDate,
-                    time_start: start,
-                    time_end: end,
-                    is_vote: true,
-                    is_event: false,
-                })
             const response = (await apiClient.post(
                 `/api/trips/${trip_id}/activities/votes/${type}`,
                 {
@@ -36,16 +27,7 @@ export const createBlockVote = async (
             )) as { data: any };
             pit = response.data.pit_id;
         } else if (type === "events") {
-            console.log({
-                    trip_id: trip_id,
-                    place_id: 1,
-                    date: selectDate,
-                    time_start: start,
-                    time_end: end,
-                    is_vote: true,
-                    is_event: true,
-                    event_title: event_title,
-                })
+            
             const response = (await apiClient.post(
                 `/api/trips/${trip_id}/activities/votes/${type}`,
                 {
@@ -88,8 +70,6 @@ export const getPlaceInVoteBlock = async (
         let votes: PlaceVoting[] = [];
         if (!backendData.voting) {
             backendData.places_voting.forEach((place: any) => {
-                // ถ้า Backend ส่ง votes มาแยกต่างหาก ให้ใช้ตรงนี้
-                // แต่ถ้าไม่มี เราจะสร้าง mock votes จาก is_voted
                 votes.push({
                     pit_id: place.pit_id,
                     place_id: place.place_id,

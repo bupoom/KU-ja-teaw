@@ -75,7 +75,7 @@ const SelectTimeVotePlace = () => {
 
     const goNext = async () => {
         if (!isFormValid) return;
-        const pit_id = await createBlockVote(parseInt(plan_id) ,selectedDate as string , hhmm(start),hhmm(end) ,"" , "places" )
+        const pit_id = await createBlockVote(parseInt(plan_id) ,selectedDate as string , hhmm(start),hhmm(end) ,"No title yet." , "places" )
         router.push({
             pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_place/[vote_id]/result_vote`,
             params: {
