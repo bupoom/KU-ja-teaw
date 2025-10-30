@@ -26,7 +26,11 @@
         "googleMaps": {
           "apiKey": "AIzaSyANNvepp-VHOe4XABNjjV8BJTMNunn28bE"
         }
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -62,7 +66,11 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
-    }
+      "router": {},
+      "eas": {
+        "projectId": "523c0620-a485-4bf1-b232-d10cdb9ddbda"
+      }
+    },
+    "owner": "blupoom"
   }
 }

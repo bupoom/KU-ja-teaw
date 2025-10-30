@@ -13,6 +13,15 @@ export const createBlockVote = async (
         console.log("Creating vote activities : ", trip_id);
         let pit: number = 0;
         if (type === "places") {
+            console.log({
+                    trip_id: trip_id,
+                    place_id: 0,
+                    date: selectDate,
+                    time_start: start,
+                    time_end: end,
+                    is_vote: true,
+                    is_event: false,
+                })
             const response = (await apiClient.post(
                 `/api/trips/${trip_id}/activities/votes/${type}`,
                 {
