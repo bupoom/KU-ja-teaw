@@ -246,7 +246,7 @@ const SettingsScreen: React.FC = () => {
                         Dev tools
                     </Text>
                 </View>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={() => {
                         AuthService.refreshAccessToken();
                     }}
@@ -258,7 +258,7 @@ const SettingsScreen: React.FC = () => {
                         </Text>
                     </View>
                 </TouchableOpacity>
-                {/* <TextInput
+                <TextInput
                     value={tripId}
                     onChangeText={setTripId}
                     placeholder="Enter Trip ID"
