@@ -31,22 +31,6 @@ export default function AuthScreen() {
     const [serverStatus, setServerStatus] = useState("⌛ Checking server...");
 
     useEffect(() => {
-        const checkServer = async () => {
-            try {
-                const res = await fetch("http://10.3.135.116:3000/api/h");
-                if (res.ok) {
-                    setServerStatus("✅ Server Connected");
-                } else {
-                    setServerStatus("⚠️ Server reachable but returned error");
-                }
-            } catch (e) {
-                console.log("❌ Server error: ", e);
-                setServerStatus("❌ Cannot reach server");
-            }
-        };
-
-        checkServer();
-
         GoogleSignin.configure({
             webClientId:
                 "135126503585-6jtgcr57tt7boqk36c4u0c0be24ocolf.apps.googleusercontent.com",
@@ -68,7 +52,6 @@ export default function AuthScreen() {
             if (isSuccessResponse(response)) {
                 const { idToken } = response.data;
                 if (!idToken) return Alert.alert("Error", "Missing ID Token");
-                Alert.alert("Idtoken :" , idToken)
                 const result = await AuthService.login(idToken);
                 if (!result.success)
                     return Alert.alert("Error", "Account not found");
