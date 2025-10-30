@@ -20,9 +20,9 @@ import {
   getPlaceInVoteBlock,
   patchNewUserVote,
   endPlaceVote,
+  deleteActivityInVote,
 } from "@/service/APIserver/vote";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
-import { deleteActivityInTrip } from "@/service/APIserver/activity";
 
 const ResultVotePlace = () => {
   const router = useRouter();
@@ -128,7 +128,7 @@ const ResultVotePlace = () => {
         text: "Delete",
         style: "destructive",
         onPress: async () => {
-          const res = await deleteActivityInTrip(parseInt(plan_id), pit_id);
+          const res = await deleteActivityInVote(parseInt(plan_id), pit_id);
           fetchVoteData();
         },
       },

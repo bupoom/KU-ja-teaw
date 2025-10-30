@@ -20,9 +20,14 @@ import DateSelector from "@/components/plan/DateSelector";
 import { extractDates } from "@/util/extractDates";
 import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 import { truncateText } from "@/util/truncateText";
-
 import { getActivitiesForMap } from "@/service/APIserver/activity";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
+
+interface MarkerPlacePros {
+    title: string;
+    coordinates: { latitude: number; longitude: number };
+    draggable: boolean;
+}
 
 const SF_ZOOM = 13;
 
@@ -43,6 +48,17 @@ const MAP = () => {
     );
 
     const router = useRouter();
+
+    const createMarkers = (places: any[]) => {
+        return places.map((place, index) => ({
+            title: place.title,
+            coordinates: {
+                latitude: place.latitude,
+                longitude: place.longitude,
+            },
+            draggable: false,
+        }));
+    };
 
     // กำหนดจุดเริ่มต้นของสถานที่แสดงบนแผนที่
     const cameraPosition = {
@@ -103,13 +119,14 @@ const MAP = () => {
         );
     };
 
-    const fetchMapByDate = async (date: string) => {
+    const fetchDataByDate = async (date: string) => {
+        // เลือก activity ของ trip ปัจจุบัน
         const newMarkerPlaces = await getActivitiesForMap(
             parseInt(plan_id),
             date
         );
+
         setMarkerPlaces(newMarkerPlaces);
-        console.log(markerPlaces);
         setPLaceInDate(newMarkerPlaces.length);
         setCurrentPlaceIndex(0);
     };
@@ -122,7 +139,7 @@ const MAP = () => {
         );
         setDates(allDates);
         if (allDates.length > 0) {
-            fetchMapByDate(allDates[0]);
+            fetchDataByDate(allDates[0]);
         }
         setTripImage(tripsDetail.trip_image);
         setTripName(tripsDetail.trip_name);
@@ -265,7 +282,7 @@ const MAP = () => {
                 <DateSelector
                     dates={dates}
                     selectedDate={dates[0]}
-                    onDateSelect={date => fetchMapByDate(date)}
+                    onDateSelect={date => fetchDataByDate(date)}
                 />
 
                 {/* Place Navigation */}
