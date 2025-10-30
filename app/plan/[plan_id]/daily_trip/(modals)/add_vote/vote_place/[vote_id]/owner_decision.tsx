@@ -13,7 +13,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 
 import Header from "@/components/common/Header";
 import CustomButton from "@/components/common/CustomButton";
-import { getPlaceInVoteBlock, endVote } from "@/service/APIserver/vote";
+import { getPlaceInVoteBlock, endPlaceVote } from "@/service/APIserver/vote";
 
 const OwnerDecision = () => {
   const router = useRouter();
@@ -30,7 +30,7 @@ const OwnerDecision = () => {
   const optionIds = JSON.parse(options || "[]") as number[];
   // console.log("Option IDs:", optionIds);
 
-  const [voteData, setVoteData] = useState<VoteData | null>(null);
+  const [voteData, setVoteData] = useState<VotePlaceData | null>(null);
 
   // state เก็บการเลือกของ owner
   const [selectVote, setSelectVote] = useState<PlaceVoting>();
@@ -49,7 +49,7 @@ const OwnerDecision = () => {
 
   const handleConfirm = async () => {
     if (!selectVote) return;
-    const res = await endVote(parseInt(plan_id), selectVote?.pit_id as number);
+    const res = await endPlaceVote(parseInt(plan_id), selectVote?.pit_id as number);
     if (res) {
       router.replace({
         pathname: `/plan/[plan_id]/daily_trip`,

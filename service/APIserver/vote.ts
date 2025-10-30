@@ -53,7 +53,7 @@ export const createBlockVote = async (
 export const getPlaceInVoteBlock = async (
     trip_id: number,
     pit_id: number
-): Promise<VoteData | null> => {
+): Promise<VotePlaceData | null> => {
     try {
         console.log("Getting place vote Block: ", pit_id);
         const response = (await apiClient.get(
@@ -86,12 +86,71 @@ export const getPlaceInVoteBlock = async (
         }
 
         // สร้าง ActivityVotePlace object
-        const activityVotePlace: VoteData = {
+        const activityVotePlace: VotePlaceData = {
             vote_id: backendData.block_id,
             date: backendData.date,
             time_start: backendData.time_start.slice(0, 5),
             time_end: backendData.time_end.slice(0, 5),
             places_voting: votes,
+        };
+
+        return activityVotePlace;
+    } catch (error: any) {
+        console.error("Error fetching place vote block:", error);
+
+        if (error.response && error.response.status === 500) {
+            const errorMessage = error.response.data?.message;
+            if (
+                typeof errorMessage === "string" &&
+                errorMessage.includes("No candidates found for block")
+            ) {
+                console.log(`Specific error caught: ${errorMessage}`);
+                return null;
+            }
+        }
+
+        throw error;
+    }
+};
+
+export const getEventInVoteBlock = async (
+    trip_id: number,
+    pit_id: number
+): Promise<VoteEventData | null> => {
+    try {
+        console.log("Getting place vote Block: ", pit_id);
+        const response = (await apiClient.get(
+            `/api/trips/${trip_id}/activities/${pit_id}/votes`
+        )) as { data: any };
+
+        // ตรวจสอบว่าไม่มีข้อมูล
+        if (!response.data || response.data.message) {
+            console.log("No candidates found");
+            return null;
+        }
+        const backendData = response.data;
+
+        let votes: EventVoting[] = [];
+        if (!backendData.voting) {
+            backendData.event_voting.forEach((event: any) => {
+                votes.push({
+                    pit_id: event.pit_id,
+                    name: event.name,
+                    voting_count: event.voting_count,
+                    is_voted: event.is_voted,
+                    is_most_voted: event.is_most_voted,
+                });
+            });
+        }
+
+        // สร้าง ActivityVotePlace object
+        const activityVotePlace: VoteEventData = {
+            vote_id: backendData.block_id,
+            date: backendData.date,
+            time_start: backendData.time_start.slice(0, 5),
+            time_end: backendData.time_end.slice(0, 5),
+            event_title: backendData.event_title,
+            events_voting: votes,
         };
 
         return activityVotePlace;
@@ -263,7 +322,7 @@ export const patchNewUserVote = async (
     }
 };
 
-export const endVote = async (
+export const endPlaceVote = async (
     trip_id: number,
     candidatePitId: number,
 ): Promise<boolean> => {
@@ -279,3 +338,21 @@ export const endVote = async (
         throw error;
     }
 };
+
+export const endEventVote = async (
+    trip_id: number,
+    candidatePitId: number,
+): Promise<boolean> => {
+    try {
+        console.log("End Vote : ", candidatePitId);
+        const response = (await apiClient.post(
+            `/api/trips/${trip_id}/activities/${candidatePitId}/votes/events/endOwner`
+        )) as { data: any };
+        if (!response.data.pit_id) return false;
+        return true;
+    } catch (error) {
+        console.error("Response date:", error);
+        throw error;
+    }
+};
+

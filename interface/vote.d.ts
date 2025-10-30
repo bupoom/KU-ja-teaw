@@ -15,9 +15,6 @@ interface ActivityVoteEvent {
     date: string;
     time_begin: string;
     time_end: string;
-    number_of_votes: number;
-    options: TransportationOption[]; // มีอยู่ 6 เเบบ
-    votes: Vote[];
     trip_id: number;
     vote_type: string;
 } // เเสดงหน้า vote event
@@ -27,9 +24,6 @@ interface ActivityVotePlace {
     date: string;
     time_begin: string;
     time_end: string;
-    number_of_votes: number;
-    options: PlaceBox[];
-    votes: Vote[];
     trip_id: number;
     vote_type: string; // อันนี้มีเอาไว้ เเยก UI ในหน้า daily trip ว่าต้องเเสดงเเบบไหน
 } // เเสดงหน้า vote place
@@ -49,10 +43,27 @@ interface PlaceVoting {
     is_most_voted: boolean;
 }
 
-interface VoteData {
+interface VotePlaceData {
     vote_id: number;
     date: string;
     time_start: string;
     time_end: string;
     places_voting: PlaceVoting[];
+}
+
+interface EventVoting {
+    pit_id: number;
+    name: string;
+    voting_count: number;
+    is_voted: boolean;
+    is_most_voted: boolean;
+}
+
+interface VoteEventData {
+    vote_id: number;
+    date: string;
+    time_start: string;
+    time_end: string;
+    event_title: string;
+    events_voting: EventVoting[];
 }

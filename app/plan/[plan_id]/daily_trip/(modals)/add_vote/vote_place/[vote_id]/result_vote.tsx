@@ -19,7 +19,7 @@ import { get_more_detail } from "@/service/APIserver/userService";
 import {
   getPlaceInVoteBlock,
   patchNewUserVote,
-  endVote,
+  endPlaceVote,
 } from "@/service/APIserver/vote";
 import { get_trip_detail } from "@/service/APIserver/tripApi";
 import { deleteActivityInTrip } from "@/service/APIserver/activity";
@@ -31,7 +31,7 @@ const ResultVotePlace = () => {
     vote_id: string;
   }>();
 
-  const [voteData, setVoteData] = useState<VoteData | null>(null);
+  const [voteData, setVoteData] = useState<VotePlaceData | null>(null);
   const [role, setRole] = useState<string>("Viewer");
   const [numMember, setNumMember] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
@@ -144,7 +144,7 @@ const ResultVotePlace = () => {
     console.log("Most Voted Places:", mostVoted.length);
 
     if (mostVoted.length === 1) {
-      const res = await endVote(
+      const res = await endPlaceVote(
         parseInt(plan_id),
         mostVoted[0].pit_id as number
       );
