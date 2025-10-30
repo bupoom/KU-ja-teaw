@@ -86,7 +86,7 @@ const SelectTimeVoteEvent = () => {
                 },
             });
         } else {
-            Alert.alert("there's no pit_id");
+            Alert.alert("there's already activities on This time.");
         }
     };
 

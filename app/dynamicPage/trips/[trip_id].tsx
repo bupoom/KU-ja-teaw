@@ -27,7 +27,7 @@ import { formatDateRange } from "@/util/formatFucntion/formatDate&TimeRange";
 import { formatDateTimeNote } from "@/util/formatFucntion/formatDateTimeNote";
 import { organizeActivitiesByDay } from "@/util/organizedActivityByDay";
 import { truncateText } from "@/util/truncateText";
-import { get_trip_detail } from "@/service/APIserver/tripApi";
+import { get_trip_detail, updateTripDetail } from "@/service/APIserver/tripApi";
 import { get_flight_detail } from "@/service/APIserver/Flight";
 import { get_trip_member } from "@/service/APIserver/groupPage";
 import { get_more_detail } from "@/service/APIserver/userService";
@@ -73,7 +73,7 @@ export default function TripDetail() {
     >(null);
     const [shareDescription, setShareDescription] = useState<string>("");
     const [userRole, setUserRole] = useState<string>("viewer");
-    const canShare = userRole === "owner";
+    const canShare = userRole === "Owner";
 
     const parsedTripId = Array.isArray(trip_id)
         ? parseInt(trip_id[0], 10)
@@ -219,10 +219,13 @@ export default function TripDetail() {
         openPopup(setShowShare, slideShare);
     };
 
-    const handleShareConfirm = () => {
+    const handleShareConfirm = async () => {
         closePopup(setShowShare, slideShare);
-        setShareDescription("");
-        // Here you would make API call to share the trip
+        await updateTripDetail({
+            trip_id: parseInt(trip_id),
+            visibility_status: true, 
+            description: shareDescription 
+        });
     };
 
     // Data loading

@@ -49,6 +49,7 @@ export default function HomeScreen(): JSX.Element {
         try {
             const data = await getUserAllUrip();
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
             const activeTripData = data.filter(trip => {
                 const startDate = new Date(trip.start_date);

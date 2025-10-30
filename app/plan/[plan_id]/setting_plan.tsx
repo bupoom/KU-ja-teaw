@@ -43,6 +43,7 @@ const PlanSetting = () => {
     const [password, setPassword] = useState<string>("");
 
     const [newOwner, setNewOwner] = useState<number>(0);
+    const [newOwnerUsername, setnewOwnerUsername] = useState<string>(0);
     const [otherMembers, setOtherMembers] = useState<TripMember[]>([]);
     const [showLeaveModal, setShowLeaveModal] = useState(false);
 
@@ -188,13 +189,13 @@ const PlanSetting = () => {
             return;
         }
         console.log(`Update poster for plan: ${plan_id} : ${posterUri}`);
-        handleChangeTripDetails("trip_picture_path",posterUri)
+        handleChangeTripDetails("trip_picture_path", posterUri);
         Alert.alert("Success", "Trip poster updated successfully!");
     };
 
     const handleConfirmPassword = () => {
         console.log(`Update password for plan: ${plan_id} : ${password}`);
-        handleChangeTripDetails("trip_pass",password)
+        handleChangeTripDetails("trip_pass", password);
         Alert.alert("Success", "Password updated successfully!");
     };
 
@@ -214,7 +215,7 @@ const PlanSetting = () => {
                         onPress: () => {
                             console.log(`Leaving trip: ${plan_id}`);
                             try {
-                                leaveTrips(parseInt(plan_id), 0);
+                                leaveTrips(parseInt(plan_id), newOwnerUsername,0 );
                                 router.replace("/tabs/(home)");
                             } catch (err) {
                                 Alert.alert(
@@ -234,7 +235,7 @@ const PlanSetting = () => {
             `Transferring ownership to user ${newOwner} and leaving trip: ${plan_id}`
         );
         try {
-            leaveTrips(parseInt(plan_id), newOwner);
+            leaveTrips(parseInt(plan_id) , newOwnerUsername , newOwner);
         } catch (err) {
             Alert.alert("fetch to leave trip. please try again later");
         }
@@ -609,7 +610,10 @@ const PlanSetting = () => {
                         {otherMembers.map(member => (
                             <TouchableOpacity
                                 key={member.id}
-                                onPress={() => setNewOwner(member.id)}
+                                onPress={() => {
+                                    setNewOwner(member.id);
+                                    setnewOwnerUsername(member.name);
+                                }}
                                 className={`flex-row items-center p-3 rounded-lg mb-2 border ${
                                     newOwner === member.id
                                         ? "border-green_2 bg-green-50"

@@ -1,4 +1,5 @@
 import apiClient from "../client";
+import { addNotification } from "./notification";
 
 type ActivityPlace = (
     | ActivityPlaceBox
@@ -40,9 +41,6 @@ export const getActivitiesInTrip = async (
                         date: serverData.date,
                         time_begin: serverData.time_start,
                         time_end: serverData.time_end,
-                        number_of_votes: 0, // backend ไม่ได้ให้มาคับพรี่
-                        options: [], // backend ไม่ได้ให้มาคับพรี่
-                        votes: [], // backend ไม่ได้ให้มาคับพรี่
                         trip_id: trip_id,
                         vote_type: serverData.event,
                     };
@@ -53,9 +51,6 @@ export const getActivitiesInTrip = async (
                         date: serverData.date,
                         time_begin: serverData.time_start,
                         time_end: serverData.time_end,
-                        number_of_votes: 0, // backend ไม่ได้ให้มาคับพรี่
-                        options: [], // backend ไม่ได้ให้มาคับพรี่
-                        votes: [], // backend ไม่ได้ให้มาคับพรี่
                         trip_id: trip_id,
                         vote_type: "place",
                     };
@@ -143,6 +138,7 @@ export const getAllActivitiesInTrip = async (
                 ActivityList.push(item);
             }
         }
+
         return ActivityList;
     } catch (error) {
         console.error("Response data:", error);
@@ -185,6 +181,7 @@ export const addPlaceToTrip = async (
         if (response.data === "Time overlap detected") {
             return "time_overlap";
         }
+        
         return "success";
     } catch (error) {
         console.error("Response data:", error);
@@ -232,17 +229,16 @@ export const deleteActivityInTrip = async (
 ): Promise<string> => {
     try {
         console.log("Deleting Trip activity: ", pit_id);
-        if (ActType === "vote") {
-            try {
-                const response = await apiClient.delete(
-                    `/api/trips/${trip_id}/activities/${pit_id}/votes`
-                );
-            } catch (error) {
-                console.error("Response data:", error);
-                return "failed";
-            }
-            
+        try {
+            const response = await apiClient.delete(
+                `/api/trips/${trip_id}/activities/${pit_id}/votes`
+            );
+        } catch (error) {
+            console.error("Response data:", error);
+            return "failed";
         }
+    
+
         const response = await apiClient.delete(
             `/api/trips/${trip_id}/activities/${pit_id}`
         );

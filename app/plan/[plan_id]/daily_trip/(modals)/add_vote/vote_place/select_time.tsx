@@ -8,6 +8,7 @@ import {
     Platform,
     Modal,
     ScrollView,
+    Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
@@ -76,16 +77,20 @@ const SelectTimeVotePlace = () => {
     const goNext = async () => {
         if (!isFormValid) return;
         const pit_id = await createBlockVote(parseInt(plan_id) ,selectedDate as string , hhmm(start),hhmm(end) ,"No title yet." , "places" )
-        router.push({
-            pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_place/[vote_id]/result_vote`,
-            params: {
-                plan_id: plan_id as string,
-                vote_id: pit_id,
-                date: selectedDate,
-                start: hhmm(start),
-                end: hhmm(end),
-            },
-        });
+        if (pit_id) {
+            router.push({
+                pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_place/[vote_id]/result_vote`,
+                params: {
+                    plan_id: plan_id as string,
+                    vote_id: pit_id,
+                    date: selectedDate,
+                    start: hhmm(start),
+                    end: hhmm(end),
+                },
+            });
+        } else {
+            Alert.alert("there's already activities on This time.");
+        }
     };
 
     const handleBack = () => {

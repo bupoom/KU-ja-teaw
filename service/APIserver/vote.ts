@@ -1,5 +1,6 @@
 import { AuthService } from "../authService";
 import apiClient from "../client";
+import { addNotification } from "./notification";
 
 export const createBlockVote = async (
     trip_id: number,
@@ -43,6 +44,7 @@ export const createBlockVote = async (
             )) as { data: any };
             pit = response.data.pit_id;
         }
+        await addNotification(trip_id , "Vote added" , `New vote added on date ${selectDate}`);
         return pit;
     } catch (error) {
         console.error("Response date:", error);

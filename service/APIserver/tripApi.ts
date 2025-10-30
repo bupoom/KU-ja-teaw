@@ -1,5 +1,8 @@
+import { UserData } from "./../../node_modules/eas-cli/node_modules/@expo/config/build/getUserState.d";
 import apiClient from "../client";
 import { Image } from "react-native";
+import { addNotification } from "./notification";
+import { AuthService } from "../authService";
 
 export const endpoints = {
     trip: {
@@ -219,9 +222,20 @@ export const get_trip_detail = async (
 
 export const leaveTrips = async (
     trip_id: number,
+    user_name: string,
     collab_id: number
 ): Promise<boolean> => {
     try {
+        const UserData = await AuthService.getUserData();
+        if (collab_id === 0) {
+            await addNotification(
+                trip_id,
+                `${UserData?.name} leave trips.`,
+                `${UserData} just leave trips.`
+            );
+        } else {
+            await addNotification(trip_id, `${UserData?.name} just leave Trips` , `kuu pai laa hai Owner pai tee ${user_name}`);
+        }
         const response = await apiClient.delete(`/api/trips/${trip_id}/leave`, {
             data: {
                 collab_id: collab_id,
