@@ -36,15 +36,12 @@ export const getActivitiesInTrip = async (
                 if (serverData.is_event) {
                     const item: ActivityVoteEvent = {
                         id: serverData.pit_id,
-                        title: serverData.event_name,
+                        title: serverData.event_title,
                         date: serverData.date,
                         time_begin: serverData.time_start,
                         time_end: serverData.time_end,
-                        number_of_votes: 0, // backend ไม่ได้ให้มาคับพรี่
-                        options: [], // backend ไม่ได้ให้มาคับพรี่
-                        votes: [], // backend ไม่ได้ให้มาคับพรี่
                         trip_id: trip_id,
-                        vote_type: serverData.event,
+                        vote_type: "event",
                     };
                     ActivityList.push(item);
                 } else {
@@ -53,9 +50,6 @@ export const getActivitiesInTrip = async (
                         date: serverData.date,
                         time_begin: serverData.time_start,
                         time_end: serverData.time_end,
-                        number_of_votes: 0, // backend ไม่ได้ให้มาคับพรี่
-                        options: [], // backend ไม่ได้ให้มาคับพรี่
-                        votes: [], // backend ไม่ได้ให้มาคับพรี่
                         trip_id: trip_id,
                         vote_type: "place",
                     };

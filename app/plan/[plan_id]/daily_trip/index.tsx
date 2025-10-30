@@ -44,7 +44,7 @@ const DailyTripsIndex = () => {
     plan_id: string;
     date?: string;
   }>();
-  const user_id = 1;
+
   const [role, setRole] = useState<string>("viewer");
   const [refreshing, setRefreshing] = useState(false);
   const [TripDetail, setTripDetail] = useState<TripDetails>();

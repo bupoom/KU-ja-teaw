@@ -1,16 +1,16 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState, useRef } from "react";
 import {
-    Alert,
-    Image,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    Animated,
+  Alert,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Animated,
 } from "react-native";
 
 import CustomButton from "@/components/common/CustomButton";
@@ -32,791 +32,741 @@ import { get_flight_detail } from "@/service/APIserver/Flight";
 import { get_trip_member } from "@/service/APIserver/groupPage";
 import { get_more_detail } from "@/service/APIserver/userService";
 import {
-    get_overview_note,
-    getAllActivitiesNote,
+  get_overview_note,
+  getAllActivitiesNote,
 } from "@/service/APIserver/Note";
 
 interface DailyActivity {
-    date: string;
-    activities: (ActivityPlaceBox | ActivityEventBox)[];
+  date: string;
+  activities: (ActivityPlaceBox | ActivityEventBox)[];
 }
 
 export default function TripDetail() {
-    const router = useRouter();
-    const { trip_id } = useLocalSearchParams<{ trip_id: string }>();
+  const router = useRouter();
+  const { trip_id } = useLocalSearchParams<{ trip_id: string }>();
 
-    const [loading, setLoading] = useState<boolean>(true);
-    const [tripDetail, setTripDetail] = useState<TripDetails | null>(null);
-    const [flights, setFlights] = useState<Flight[]>([]);
-    const [showFlights, setShowFlights] = useState<boolean>(true);
-    const [dailyActivities, setDailyActivities] = useState<DailyActivity[]>([]);
-    const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>(
-        {}
-    );
-    const [tripMembers, setTripMembers] = useState<TripMember[]>([]);
-    const [showMembers, setShowMembers] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [tripDetail, setTripDetail] = useState<TripDetails | null>(null);
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [showFlights, setShowFlights] = useState<boolean>(true);
+  const [dailyActivities, setDailyActivities] = useState<DailyActivity[]>([]);
+  const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
+  const [tripMembers, setTripMembers] = useState<TripMember[]>([]);
+  const [showMembers, setShowMembers] = useState<boolean>(true);
 
-    // Animation states
-    const [showOverview, setShowOverview] = useState(false);
-    const [showActivity, setShowActivity] = useState(false);
-    const [showShare, setShowShare] = useState(false);
+  // Animation states
+  const [showOverview, setShowOverview] = useState(false);
+  const [showActivity, setShowActivity] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
-    const slideOverview = useRef(new Animated.Value(0)).current;
-    const slideActivity = useRef(new Animated.Value(0)).current;
-    const slideShare = useRef(new Animated.Value(0)).current;
+  const slideOverview = useRef(new Animated.Value(0)).current;
+  const slideActivity = useRef(new Animated.Value(0)).current;
+  const slideShare = useRef(new Animated.Value(0)).current;
 
-    // Notes and activity data
-    const [overviewNotes, setOverviewNotes] = useState<Note[]>([]);
-    const [activityNotes, setActivityNotes] = useState<Note[]>([]);
-    const [selectedActivity, setSelectedActivity] = useState<
-        ActivityPlaceBox | ActivityEventBox | null
-    >(null);
-    const [shareDescription, setShareDescription] = useState<string>("");
-    const [userRole, setUserRole] = useState<string>("viewer");
-    const canShare = userRole === "owner";
+  // Notes and activity data
+  const [overviewNotes, setOverviewNotes] = useState<Note[]>([]);
+  const [activityNotes, setActivityNotes] = useState<Note[]>([]);
+  const [selectedActivity, setSelectedActivity] = useState<
+    ActivityPlaceBox | ActivityEventBox | null
+  >(null);
+  const [shareDescription, setShareDescription] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>("Viewer");
+  const canShare = userRole === "Owner";
 
-    const parsedTripId = Array.isArray(trip_id)
-        ? parseInt(trip_id[0], 10)
-        : parseInt(trip_id ?? "0", 10);
+  const parsedTripId = Array.isArray(trip_id)
+    ? parseInt(trip_id[0], 10)
+    : parseInt(trip_id ?? "0", 10);
 
-    const copyGuide = () => {
-        router.push({
-            pathname: "/dynamicPage/guides/set_plan_details",
-            params: {
-                guide_id: trip_id,
-            },
+  const copyGuide = () => {
+    router.push({
+      pathname: "/dynamicPage/guides/set_plan_details",
+      params: {
+        guide_id: trip_id,
+      },
+    });
+  };
+
+  const openPopup = (setter: any, anim: Animated.Value) => {
+    setter(true);
+    Animated.timing(anim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closePopup = (setter: any, anim: Animated.Value) => {
+    Animated.timing(anim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setter(false));
+  };
+
+  const fetchActivityNotes = async (
+    trip_id: number,
+    reference_id: number,
+    reference_type: "place" | "event"
+  ): Promise<Note[]> => {
+    try {
+      // Get all activity notes for the trip
+      const allNotes: Note[] = await getAllActivitiesNote(trip_id);
+
+      // Filter notes for this specific activity
+      const filteredNotes = allNotes.filter(
+        (note) => note.reference_id === reference_id
+      );
+
+      // Sort notes: Owner first, then by created date (newest first)
+      return filteredNotes.sort((a, b) => {
+        const memberA = tripMembers.find(
+          (m) => m.id === Number(a.refer_user_id)
+        );
+        const memberB = tripMembers.find(
+          (m) => m.id === Number(b.refer_user_id)
+        );
+
+        const isOwnerA = memberA?.role === "Owner";
+        const isOwnerB = memberB?.role === "Owner";
+
+        if (isOwnerA && !isOwnerB) return -1;
+        if (!isOwnerA && isOwnerB) return 1;
+
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      });
+    } catch (error) {
+      console.error("Error in fetchActivityNotes:", error);
+      Alert.alert("Failed to fetch activity notes.");
+      return [];
+    }
+  };
+
+  const toggleFlights = () => {
+    setShowFlights(!showFlights);
+  };
+
+  const toggleMembers = () => {
+    setShowMembers(!showMembers);
+  };
+
+  const toggleDay = (date: string) => {
+    setExpandedDays((prev) => ({
+      ...prev,
+      [date]: !prev[date],
+    }));
+  };
+
+  const isActivityPlace = (
+    activity: ActivityPlaceBox | ActivityEventBox
+  ): activity is ActivityPlaceBox => {
+    return "location" in activity;
+  };
+
+  const handleOverview = async () => {
+    if (tripDetail) {
+      try {
+        const notes = await get_overview_note(tripDetail.trip_id);
+
+        // Sort notes: Owner first, then by created date
+        const sortedNotes = notes.sort((a, b) => {
+          const memberA = tripMembers.find(
+            (m) => m.id === Number(a.refer_user_id)
+          );
+          const memberB = tripMembers.find(
+            (m) => m.id === Number(b.refer_user_id)
+          );
+
+          const isOwnerA = memberA?.role === "Owner";
+          const isOwnerB = memberB?.role === "Owner";
+
+          if (isOwnerA && !isOwnerB) return -1;
+          if (!isOwnerA && isOwnerB) return 1;
+
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
         });
-    };
 
-    const openPopup = (setter: any, anim: Animated.Value) => {
-        setter(true);
-        Animated.timing(anim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
-    };
-
-    const closePopup = (setter: any, anim: Animated.Value) => {
-        Animated.timing(anim, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-        }).start(() => setter(false));
-    };
-
-    const fetchActivityNotes = async (
-        trip_id: number,
-        reference_id: number,
-        reference_type: "place" | "event"
-    ): Promise<Note[]> => {
-        try {
-            // Get all activity notes for the trip
-            const allNotes: Note[] = await getAllActivitiesNote(trip_id);
-
-            // Filter notes for this specific activity
-            const filteredNotes = allNotes.filter(
-                note => note.reference_id === reference_id
-            );
-
-            // Sort notes: Owner first, then by created date (newest first)
-            return filteredNotes.sort((a, b) => {
-                const memberA = tripMembers.find(
-                    m => m.id === Number(a.refer_user_id)
-                );
-                const memberB = tripMembers.find(
-                    m => m.id === Number(b.refer_user_id)
-                );
-
-                const isOwnerA = memberA?.role === "Owner";
-                const isOwnerB = memberB?.role === "Owner";
-
-                if (isOwnerA && !isOwnerB) return -1;
-                if (!isOwnerA && isOwnerB) return 1;
-
-                return (
-                    new Date(b.created_at).getTime() -
-                    new Date(a.created_at).getTime()
-                );
-            });
-        } catch (error) {
-            console.error("Error in fetchActivityNotes:", error);
-            Alert.alert("Failed to fetch activity notes.");
-            return [];
-        }
-    };
-
-    const toggleFlights = () => {
-        setShowFlights(!showFlights);
-    };
-
-    const toggleMembers = () => {
-        setShowMembers(!showMembers);
-    };
-
-    const toggleDay = (date: string) => {
-        setExpandedDays(prev => ({
-            ...prev,
-            [date]: !prev[date],
-        }));
-    };
-
-    const isActivityPlace = (
-        activity: ActivityPlaceBox | ActivityEventBox
-    ): activity is ActivityPlaceBox => {
-        return "location" in activity;
-    };
-
-    const handleOverview = async () => {
-        if (tripDetail) {
-            try {
-                const notes = await get_overview_note(tripDetail.trip_id);
-
-                // Sort notes: Owner first, then by created date
-                const sortedNotes = notes.sort((a, b) => {
-                    const memberA = tripMembers.find(
-                        m => m.id === Number(a.refer_user_id)
-                    );
-                    const memberB = tripMembers.find(
-                        m => m.id === Number(b.refer_user_id)
-                    );
-
-                    const isOwnerA = memberA?.role === "Owner";
-                    const isOwnerB = memberB?.role === "Owner";
-
-                    if (isOwnerA && !isOwnerB) return -1;
-                    if (!isOwnerA && isOwnerB) return 1;
-
-                    return (
-                        new Date(b.created_at).getTime() -
-                        new Date(a.created_at).getTime()
-                    );
-                });
-
-                setOverviewNotes(sortedNotes);
-                openPopup(setShowOverview, slideOverview);
-            } catch (error) {
-                Alert.alert("Failed to fetch overview notes.");
-            }
-        }
-    };
-
-    const handleActivity = async (
-        activity: ActivityPlaceBox | ActivityEventBox
-    ) => {
-        setSelectedActivity(activity);
-        const referenceType = isActivityPlace(activity) ? "place" : "event";
-        const notes = await fetchActivityNotes(
-            activity.trip_id,
-            activity.id,
-            referenceType
-        );
-        setActivityNotes(notes);
-        openPopup(setShowActivity, slideActivity);
-    };
-
-    const handleShare = () => {
-        openPopup(setShowShare, slideShare);
-    };
-
-    const handleShareConfirm = () => {
-        closePopup(setShowShare, slideShare);
-        setShareDescription("");
-        // Here you would make API call to share the trip
-    };
-
-    // Data loading
-    const loadData = async () => {
-        try {
-            setLoading(true);
-            const tripData = await get_trip_detail(parseInt(trip_id));
-            setTripDetail(tripData);
-
-            const userDetails = await get_more_detail(tripData.trip_id);
-            setUserRole(userDetails.role);
-
-            if (tripData && tripData.trip_id) {
-                const [flightsData, activitiesData, membersData] =
-                    await Promise.all([
-                        get_flight_detail(tripData.trip_id),
-                        organizeActivitiesByDay(
-                            tripData.trip_id,
-                            tripData.start_date,
-                            tripData.end_date
-                        ),
-                        get_trip_member(tripData.trip_id),
-                    ]);
-                setFlights(flightsData);
-                setDailyActivities(activitiesData);
-                setTripMembers(membersData);
-
-                const initialExpandedState: Record<string, boolean> = {};
-                activitiesData.forEach((day, index) => {
-                    initialExpandedState[day.date] = index === 0;
-                });
-                setExpandedDays(initialExpandedState);
-            }
-        } catch (error) {
-            Alert.alert("Error", "Failed to load trip details");
-            console.error("Error loading trip details:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (trip_id) {
-            loadData();
-        }
-    }, [trip_id]);
-
-    if (loading) {
-        return (
-            <SafeAreaView className="flex-1 bg-white">
-                <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-                <Header
-                    title=""
-                    onBackPress={() => {
-                        router.back();
-                    }}
-                />
-                <View className="flex-1 justify-center items-center">
-                    <Text>Loading...</Text>
-                </View>
-            </SafeAreaView>
-        );
+        setOverviewNotes(sortedNotes);
+        openPopup(setShowOverview, slideOverview);
+      } catch (error) {
+        Alert.alert("Failed to fetch overview notes.");
+      }
     }
+  };
 
-    if (!tripDetail) {
-        return (
-            <SafeAreaView className="flex-1 bg-white">
-                <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-                <Header
-                    title=""
-                    onBackPress={() => {
-                        router.back();
-                    }}
-                />
-                <View className="flex-1 justify-center items-center">
-                    <Text>Trip not found</Text>
-                </View>
-            </SafeAreaView>
-        );
+  const handleActivity = async (
+    activity: ActivityPlaceBox | ActivityEventBox
+  ) => {
+    setSelectedActivity(activity);
+    const referenceType = isActivityPlace(activity) ? "place" : "event";
+    const notes = await fetchActivityNotes(
+      activity.trip_id,
+      activity.id,
+      referenceType
+    );
+    setActivityNotes(notes);
+    openPopup(setShowActivity, slideActivity);
+  };
+
+  const handleShare = () => {
+    openPopup(setShowShare, slideShare);
+  };
+
+  const handleShareConfirm = () => {
+    closePopup(setShowShare, slideShare);
+    setShareDescription("");
+    // Here you would make API call to share the trip
+  };
+
+  // Data loading
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const tripData = await get_trip_detail(parseInt(trip_id));
+      setTripDetail(tripData);
+
+      const userDetails = await get_more_detail(tripData.trip_id);
+      setUserRole(userDetails.role);
+
+      if (tripData && tripData.trip_id) {
+        const [flightsData, activitiesData, membersData] = await Promise.all([
+          get_flight_detail(tripData.trip_id),
+          organizeActivitiesByDay(
+            tripData.trip_id,
+            tripData.start_date,
+            tripData.end_date
+          ),
+          get_trip_member(tripData.trip_id),
+        ]);
+        setFlights(flightsData);
+        setDailyActivities(activitiesData);
+        setTripMembers(membersData);
+
+        const initialExpandedState: Record<string, boolean> = {};
+        activitiesData.forEach((day, index) => {
+          initialExpandedState[day.date] = index === 0;
+        });
+        setExpandedDays(initialExpandedState);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to load trip details");
+      console.error("Error loading trip details:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
+    if (trip_id) {
+      loadData();
+    }
+  }, [trip_id]);
+
+  if (loading) {
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-            <Header
-                title=""
-                onBackPress={() => {
-                    router.back();
-                }}
-            />
+      <SafeAreaView className="flex-1 bg-white">
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <Header
+          title=""
+          onBackPress={() => {
+            router.back();
+          }}
+        />
+        <View className="flex-1 justify-center items-center">
+          <Text>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
-            <ScrollView
-                className="flex-1"
-                contentContainerStyle={{
-                    paddingBottom: 50,
-                }}
-            >
-                {/* Hero Image */}
+  if (!tripDetail) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <Header
+          title=""
+          onBackPress={() => {
+            router.back();
+          }}
+        />
+        <View className="flex-1 justify-center items-center">
+          <Text>Trip not found</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <Header
+        title=""
+        onBackPress={() => {
+          router.back();
+        }}
+      />
+
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{
+          paddingBottom: 50,
+        }}
+      >
+        {/* Hero Image */}
+        <Image
+          source={{
+            uri: tripDetail.trip_image,
+          }}
+          className="w-full h-64"
+          resizeMode="cover"
+        />
+
+        {/* Content Section - Touchable */}
+        <TouchableOpacity
+          onPress={handleOverview}
+          className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl"
+          activeOpacity={0.7}
+        >
+          {/* Title Section */}
+          <View className="flex-row items-start justify-between mb-4">
+            <View className="flex-1 mr-4">
+              {/* Author Info */}
+              <View className="flex-row items-center mb-1">
                 <Image
-                    source={{
-                        uri: tripDetail.trip_image,
-                    }}
-                    className="w-full h-64"
-                    resizeMode="cover"
+                  source={{
+                    uri: tripDetail.owner_image,
+                  }}
+                  className="w-16 h-16 rounded-full"
+                  resizeMode="cover"
                 />
+                <View className="flex-col justify-center ml-4">
+                  <Text className="text-xl font-bold text-black">
+                    {truncateText(tripDetail.trip_name, 25)}
+                  </Text>
+                  <Text className="text-sm text-gray-500 font-medium">
+                    Owner: {tripDetail.owner_name}
+                  </Text>
+                  <Text className="text-sm text-gray-500 font-medium">
+                    Email: {tripDetail.owner_email}
+                  </Text>
+                </View>
+              </View>
+            </View>
 
-                {/* Content Section - Touchable */}
+            {/* Copy/Share Icon */}
+            <TouchableOpacity
+              className="w-8 h-8 items-center justify-center"
+              style={{ alignSelf: "flex-start" }}
+              onPress={(e) => {
+                e.stopPropagation();
+                copyGuide();
+              }}
+            >
+              <Feather name="copy" size={16} color="black" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Trip Details */}
+          <View className="mb-4">
+            <View className="flex-row">
+              <View>
+                <Text className="text-gray-600 text-sm font-medium mb-2">
+                  Trip Date:
+                </Text>
+                <Text className="text-gray-600 text-sm font-medium mb-2">
+                  Group:
+                </Text>
+                <Text className="text-gray-600 text-sm font-medium mb-2">
+                  Referenced:
+                </Text>
+              </View>
+              <View className="flex-1 ml-2">
+                <Text className="text-black text-sm font-medium mb-2">
+                  {formatDateRange(tripDetail.start_date, tripDetail.end_date)}
+                </Text>
+                <Text className="text-black text-sm font-medium mb-2">
+                  {tripDetail.group_members} Persons
+                </Text>
+                <Text className="text-black text-sm font-medium mb-2">
+                  {tripDetail.copies || 0} times
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Total Cost Section */}
+          <View className="border-t border-gray-200 pt-4">
+            <View className="flex-row justify-between items-center">
+              <Text className="text-lg font-bold text-black">Total Cost:</Text>
+              <Text className="text-lg font-bold text-black">
+                {(tripDetail.budget ?? 0).toLocaleString()} Baht
+              </Text>
+            </View>
+          </View>
+
+          {/* Tap indicator */}
+          <View className="flex-row justify-center mt-3">
+            <Text className="text-xs text-gray-400">Tap to view overview</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Members Section */}
+        {tripMembers.length > 0 && (
+          <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
+            <TouchableOpacity
+              onPress={toggleMembers}
+              className="flex-row justify-between items-center mb-4"
+            >
+              <Text className="text-xl font-bold text-black">Member</Text>
+              <Feather
+                name={showMembers ? "chevron-up" : "chevron-down"}
+                size={20}
+                color="black"
+              />
+            </TouchableOpacity>
+
+            {showMembers && (
+              <View>
+                {tripMembers.map((member) => (
+                  <MemberBoxEnd
+                    key={member.id}
+                    user_image={member.user_image}
+                    user_name={member.name}
+                    role={member.role}
+                    email={member.email}
+                    phone={member.phone}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* Flight Section */}
+        {flights.length > 0 && (
+          <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
+            <TouchableOpacity
+              onPress={toggleFlights}
+              className="flex-row justify-between items-center mb-6"
+            >
+              <Text className="text-xl font-bold text-black">
+                International Flight
+              </Text>
+              <Feather
+                name={showFlights ? "chevron-up" : "chevron-down"}
+                size={20}
+                color="black"
+              />
+            </TouchableOpacity>
+
+            {showFlights && (
+              <View>
+                {flights.map((flight) => (
+                  <FlightBox
+                    key={flight.id}
+                    id={flight.id}
+                    departure_airport={flight.departure_airport}
+                    arrival_airport={flight.arrival_airport}
+                    departure_date={flight.departure_date}
+                    arrival_date={flight.arrival_date}
+                    airline={flight.airline}
+                    departure_country={flight.departure_country}
+                    arrival_country={flight.arrival_country}
+                    trip_id={flight.trip_id}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* Travel Place Section */}
+        {dailyActivities.length > 0 && (
+          <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
+            <Text className="text-xl font-bold text-black mb-4">
+              Travel Place
+            </Text>
+
+            {dailyActivities.map((day) => (
+              <View key={day.date} className="mb-4">
                 <TouchableOpacity
-                    onPress={handleOverview}
-                    className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl"
-                    activeOpacity={0.7}
+                  onPress={() => toggleDay(day.date)}
+                  className="flex-row justify-between items-center mb-3 p-3 bg-gray-50 rounded-xl"
                 >
-                    {/* Title Section */}
-                    <View className="flex-row items-start justify-between mb-4">
-                        <View className="flex-1 mr-4">
-                            {/* Author Info */}
-                            <View className="flex-row items-center mb-1">
-                                <Image
-                                    source={{
-                                        uri: tripDetail.owner_image,
-                                    }}
-                                    className="w-16 h-16 rounded-full"
-                                    resizeMode="cover"
-                                />
-                                <View className="flex-col justify-center ml-4">
-                                    <Text className="text-xl font-bold text-black">
-                                        {truncateText(tripDetail.trip_name, 25)}
-                                    </Text>
-                                    <Text className="text-sm text-gray-500 font-medium">
-                                        Owner: {tripDetail.owner_name}
-                                    </Text>
-                                    <Text className="text-sm text-gray-500 font-medium">
-                                        Email: {tripDetail.owner_email}
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        {/* Copy/Share Icon */}
-                        <TouchableOpacity
-                            className="w-8 h-8 items-center justify-center"
-                            style={{ alignSelf: "flex-start" }}
-                            onPress={e => {
-                                e.stopPropagation();
-                                copyGuide();
-                            }}
-                        >
-                            <Feather name="copy" size={16} color="black" />
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Trip Details */}
-                    <View className="mb-4">
-                        <View className="flex-row">
-                            <View>
-                                <Text className="text-gray-600 text-sm font-medium mb-2">
-                                    Trip Date:
-                                </Text>
-                                <Text className="text-gray-600 text-sm font-medium mb-2">
-                                    Group:
-                                </Text>
-                                <Text className="text-gray-600 text-sm font-medium mb-2">
-                                    Referenced:
-                                </Text>
-                            </View>
-                            <View className="flex-1 ml-2">
-                                <Text className="text-black text-sm font-medium mb-2">
-                                    {formatDateRange(
-                                        tripDetail.start_date,
-                                        tripDetail.end_date
-                                    )}
-                                </Text>
-                                <Text className="text-black text-sm font-medium mb-2">
-                                    {tripDetail.group_members} Persons
-                                </Text>
-                                <Text className="text-black text-sm font-medium mb-2">
-                                    {tripDetail.copies || 0} times
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-
-                    {/* Total Cost Section */}
-                    <View className="border-t border-gray-200 pt-4">
-                        <View className="flex-row justify-between items-center">
-                            <Text className="text-lg font-bold text-black">
-                                Total Cost:
-                            </Text>
-                            <Text className="text-lg font-bold text-black">
-                                {(tripDetail.budget ?? 0).toLocaleString()} Baht
-                            </Text>
-                        </View>
-                    </View>
-
-                    {/* Tap indicator */}
-                    <View className="flex-row justify-center mt-3">
-                        <Text className="text-xs text-gray-400">
-                            Tap to view overview
-                        </Text>
-                    </View>
+                  <View className="flex-row items-center">
+                    <WeatherIcon
+                      trip_id={parsedTripId}
+                      date={day.date}
+                      size={20}
+                    />
+                    <Text className="text-lg font-semibold text-black ml-3">
+                      {formatDate(day.date)}
+                    </Text>
+                  </View>
+                  <Feather
+                    name={
+                      expandedDays[day.date] ? "chevron-up" : "chevron-down"
+                    }
+                    size={20}
+                    color="black"
+                  />
                 </TouchableOpacity>
 
-                {/* Members Section */}
-                {tripMembers.length > 0 && (
-                    <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
-                        <TouchableOpacity
-                            onPress={toggleMembers}
-                            className="flex-row justify-between items-center mb-4"
-                        >
-                            <Text className="text-xl font-bold text-black">
-                                Member
-                            </Text>
-                            <Feather
-                                name={
-                                    showMembers ? "chevron-up" : "chevron-down"
-                                }
-                                size={20}
-                                color="black"
-                            />
-                        </TouchableOpacity>
-
-                        {showMembers && (
-                            <View>
-                                {tripMembers.map(member => (
-                                    <MemberBoxEnd
-                                        key={member.id}
-                                        user_image={member.user_image}
-                                        user_name={member.name}
-                                        role={member.role}
-                                        email={member.email}
-                                        phone={member.phone}
-                                    />
-                                ))}
-                            </View>
+                {expandedDays[day.date] && (
+                  <View>
+                    {day.activities.map((activity) => (
+                      <TouchableOpacity
+                        key={`${activity.id}-${isActivityPlace(activity) ? "place" : "event"}`}
+                        className="mb-3"
+                        onPress={() => handleActivity(activity)}
+                      >
+                        {isActivityPlace(activity) ? (
+                          <ActivityPlace activity={activity} />
+                        ) : (
+                          <ActivityEvent activity={activity} />
                         )}
-                    </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
                 )}
+              </View>
+            ))}
+          </View>
+        )}
 
-                {/* Flight Section */}
-                {flights.length > 0 && (
-                    <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
-                        <TouchableOpacity
-                            onPress={toggleFlights}
-                            className="flex-row justify-between items-center mb-6"
-                        >
-                            <Text className="text-xl font-bold text-black">
-                                International Flight
-                            </Text>
-                            <Feather
-                                name={
-                                    showFlights ? "chevron-up" : "chevron-down"
-                                }
-                                size={20}
-                                color="black"
-                            />
-                        </TouchableOpacity>
+        {canShare && (
+          <CustomButton
+            onPress={handleShare}
+            title="Shared Trip"
+            isShared={true}
+          />
+        )}
+      </ScrollView>
 
-                        {showFlights && (
-                            <View>
-                                {flights.map(flight => (
-                                    <FlightBox
-                                        key={flight.id}
-                                        id={flight.id}
-                                        departure_airport={
-                                            flight.departure_airport
-                                        }
-                                        arrival_airport={flight.arrival_airport}
-                                        departure_date={flight.departure_date}
-                                        arrival_date={flight.arrival_date}
-                                        airline={flight.airline}
-                                        departure_country={
-                                            flight.departure_country
-                                        }
-                                        arrival_country={flight.arrival_country}
-                                        trip_id={flight.trip_id}
-                                    />
-                                ))}
-                            </View>
-                        )}
+      {/* Overview Modal */}
+      {showOverview && (
+        <View className="absolute inset-0">
+          <TouchableOpacity
+            className="absolute inset-0 bg-black/50"
+            onPress={() => closePopup(setShowOverview, slideOverview)}
+          />
+          <Animated.View
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 max-h-[70%]"
+            style={{
+              transform: [
+                {
+                  translateY: slideOverview.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [500, 0],
+                  }),
+                },
+              ],
+            }}
+          >
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-xl font-bold text-black">Overview</Text>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {overviewNotes.length > 0 ? (
+                overviewNotes.map((note) => (
+                  <View
+                    key={note.id}
+                    className="flex-row p-3 mb-3 bg-white rounded-lg border border-gray_border"
+                  >
+                    <Image
+                      source={{ uri: note.user_profile }}
+                      className="w-10 h-10 rounded-full mr-3"
+                    />
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold text-black mb-1">
+                        {note.user_name}
+                      </Text>
+                      <Text className="text-base text-gray-700 mb-2">
+                        {note.note_text}
+                      </Text>
+                      <Text className="text-sm text-gray-500">
+                        {formatDateTimeNote(note.created_at)}
+                      </Text>
                     </View>
-                )}
-
-                {/* Travel Place Section */}
-                {dailyActivities.length > 0 && (
-                    <View className="bg-white p-6 m-4 border-gray_border border-2 rounded-xl">
-                        <Text className="text-xl font-bold text-black mb-4">
-                            Travel Place
-                        </Text>
-
-                        {dailyActivities.map(day => (
-                            <View key={day.date} className="mb-4">
-                                <TouchableOpacity
-                                    onPress={() => toggleDay(day.date)}
-                                    className="flex-row justify-between items-center mb-3 p-3 bg-gray-50 rounded-xl"
-                                >
-                                    <View className="flex-row items-center">
-                                        <WeatherIcon
-                                            trip_id={parsedTripId}
-                                            date={day.date}
-                                            size={20}
-                                        />
-                                        <Text className="text-lg font-semibold text-black ml-3">
-                                            {formatDate(day.date)}
-                                        </Text>
-                                    </View>
-                                    <Feather
-                                        name={
-                                            expandedDays[day.date]
-                                                ? "chevron-up"
-                                                : "chevron-down"
-                                        }
-                                        size={20}
-                                        color="black"
-                                    />
-                                </TouchableOpacity>
-
-                                {expandedDays[day.date] && (
-                                    <View>
-                                        {day.activities.map(activity => (
-                                            <TouchableOpacity
-                                                key={`${activity.id}-${isActivityPlace(activity) ? "place" : "event"}`}
-                                                className="mb-3"
-                                                onPress={() =>
-                                                    handleActivity(activity)
-                                                }
-                                            >
-                                                {isActivityPlace(activity) ? (
-                                                    <ActivityPlace
-                                                        activity={activity}
-                                                    />
-                                                ) : (
-                                                    <ActivityEvent
-                                                        activity={activity}
-                                                    />
-                                                )}
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-                                )}
-                            </View>
-                        ))}
-                    </View>
-                )}
-
-                {canShare && (
-                    <View className="mx-4">
-                        <CustomButton
-                            onPress={handleShare}
-                            title="Shared Trip"
-                            isShared={true}
-                        />
-                    </View>
-                )}
+                  </View>
+                ))
+              ) : (
+                <View className="items-center py-8">
+                  <Text className="text-gray-500">No overview notes yet</Text>
+                </View>
+              )}
             </ScrollView>
+            <View className="mt-6 pt-4 border-t border-gray-200">
+              <TouchableOpacity
+                onPress={() => closePopup(setShowOverview, slideOverview)}
+                className="bg-green_2 py-3 px-6 rounded-lg"
+              >
+                <Text className="text-white text-center font-semibold">
+                  Close
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
+      )}
 
-            {/* Overview Modal */}
-            {showOverview && (
-                <View className="absolute inset-0">
-                    <TouchableOpacity
-                        className="absolute inset-0 bg-black/50"
-                        onPress={() =>
-                            closePopup(setShowOverview, slideOverview)
-                        }
+      {/* Activity Modal */}
+      {showActivity && (
+        <View className="absolute inset-0">
+          <TouchableOpacity
+            className="absolute inset-0 bg-black/50"
+            onPress={() => closePopup(setShowActivity, slideActivity)}
+          />
+          <Animated.View
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 max-h-[70%]"
+            style={{
+              transform: [
+                {
+                  translateY: slideActivity.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [500, 0],
+                  }),
+                },
+              ],
+            }}
+          >
+            <View className="flex-row justify-start items-center mb-4 ml-4">
+              <WeatherIcon
+                trip_id={selectedActivity?.trip_id ?? 0}
+                date={selectedActivity?.date ?? ""}
+                size={24}
+              />
+
+              <Text className="text-xl font-medium text-black ml-4">
+                {truncateText(
+                  selectedActivity
+                    ? `${formatDate(selectedActivity.date)}: ${selectedActivity.title}`
+                    : "Activity Notes",
+                  30
+                )}
+              </Text>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {activityNotes.length > 0 ? (
+                activityNotes.map((note) => (
+                  <View
+                    key={note.id}
+                    className="flex-row p-3 mb-3 bg-gray-50 rounded-lg"
+                  >
+                    <Image
+                      source={{
+                        uri: note.user_profile,
+                      }}
+                      className="w-10 h-10 rounded-full mr-3"
                     />
-                    <Animated.View
-                        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 max-h-[70%]"
-                        style={{
-                            transform: [
-                                {
-                                    translateY: slideOverview.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [500, 0],
-                                    }),
-                                },
-                            ],
-                        }}
-                    >
-                        <View className="flex-row justify-between items-center mb-4">
-                            <Text className="text-xl font-bold text-black">
-                                Overview
-                            </Text>
-                        </View>
-
-                        <ScrollView showsVerticalScrollIndicator={false}>
-                            {overviewNotes.length > 0 ? (
-                                overviewNotes.map(note => (
-                                    <View
-                                        key={note.id}
-                                        className="flex-row p-3 mb-3 bg-white rounded-lg border border-gray_border"
-                                    >
-                                        <Image
-                                            source={{ uri: note.user_profile }}
-                                            className="w-10 h-10 rounded-full mr-3"
-                                        />
-                                        <View className="flex-1">
-                                            <Text className="text-base font-semibold text-black mb-1">
-                                                {note.user_name}
-                                            </Text>
-                                            <Text className="text-base text-gray-700 mb-2">
-                                                {note.note_text}
-                                            </Text>
-                                            <Text className="text-sm text-gray-500">
-                                                {formatDateTimeNote(
-                                                    note.created_at
-                                                )}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                ))
-                            ) : (
-                                <View className="items-center py-8">
-                                    <Text className="text-gray-500">
-                                        No overview notes yet
-                                    </Text>
-                                </View>
-                            )}
-                        </ScrollView>
-                        <View className="mt-6 pt-4 border-t border-gray-200">
-                            <TouchableOpacity
-                                onPress={() =>
-                                    closePopup(setShowOverview, slideOverview)
-                                }
-                                className="bg-green_2 py-3 px-6 rounded-lg"
-                            >
-                                <Text className="text-white text-center font-semibold">
-                                    Close
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Animated.View>
+                    <View className="flex-1">
+                      <Text className="text-sm font-semibold text-black mb-1">
+                        {note.user_name}
+                      </Text>
+                      <Text className="text-sm text-gray-700 mb-2">
+                        {note.note_text}
+                      </Text>
+                      <Text className="text-xs text-gray-500">
+                        {formatDateTimeNote(note.created_at)}
+                      </Text>
+                    </View>
+                  </View>
+                ))
+              ) : (
+                <View className="items-center py-8">
+                  <Text className="text-gray-500">
+                    No notes for this activity yet
+                  </Text>
                 </View>
-            )}
+              )}
+            </ScrollView>
+            <View className="mt-6 pt-4 border-t border-gray-200">
+              <TouchableOpacity
+                onPress={() => closePopup(setShowActivity, slideActivity)}
+                className="bg-green_2 py-3 px-6 rounded-lg"
+              >
+                <Text className="text-white text-center font-semibold">
+                  Close
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
+      )}
 
-            {/* Activity Modal */}
-            {showActivity && (
-                <View className="absolute inset-0">
-                    <TouchableOpacity
-                        className="absolute inset-0 bg-black/50"
-                        onPress={() =>
-                            closePopup(setShowActivity, slideActivity)
-                        }
-                    />
-                    <Animated.View
-                        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 max-h-[70%]"
-                        style={{
-                            transform: [
-                                {
-                                    translateY: slideActivity.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [500, 0],
-                                    }),
-                                },
-                            ],
-                        }}
-                    >
-                        <View className="flex-row justify-start items-center mb-4 ml-4">
-                            <WeatherIcon
-                                trip_id={selectedActivity?.trip_id ?? 0}
-                                date={selectedActivity?.date ?? ""}
-                                size={24}
-                            />
+      {/* Share Modal */}
+      {showShare && (
+        <View className="absolute inset-0">
+          <TouchableOpacity
+            className="absolute inset-0 bg-black/50"
+            onPress={() => closePopup(setShowShare, slideShare)}
+          />
+          <Animated.View
+            className="flex-1 justify-center items-center p-6"
+            style={{
+              transform: [
+                {
+                  translateY: slideShare.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [500, 0],
+                  }),
+                },
+              ],
+            }}
+          >
+            <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
+              <Text className="text-xl font-bold text-black mb-4 text-center">
+                Shared Trip
+              </Text>
 
-                            <Text className="text-xl font-medium text-black ml-4">
-                                {truncateText(
-                                    selectedActivity
-                                        ? `${formatDate(selectedActivity.date)}: ${selectedActivity.title}`
-                                        : "Activity Notes",
-                                    30
-                                )}
-                            </Text>
-                        </View>
+              <View className="mb-4">
+                <Text className="text-sm text-gray-600 mb-2">
+                  Input Descriptions
+                </Text>
+                <TextInput
+                  className="border border-gray-300 rounded-lg p-3 text-sm"
+                  placeholder="Enter description for sharing..."
+                  multiline
+                  numberOfLines={4}
+                  value={shareDescription}
+                  onChangeText={setShareDescription}
+                  textAlignVertical="top"
+                />
+              </View>
 
-                        <ScrollView showsVerticalScrollIndicator={false}>
-                            {activityNotes.length > 0 ? (
-                                activityNotes.map(note => (
-                                    <View
-                                        key={note.id}
-                                        className="flex-row p-3 mb-3 bg-gray-50 rounded-lg"
-                                    >
-                                        <Image
-                                            source={{
-                                                uri: note.user_profile,
-                                            }}
-                                            className="w-10 h-10 rounded-full mr-3"
-                                        />
-                                        <View className="flex-1">
-                                            <Text className="text-sm font-semibold text-black mb-1">
-                                                {note.user_name}
-                                            </Text>
-                                            <Text className="text-sm text-gray-700 mb-2">
-                                                {note.note_text}
-                                            </Text>
-                                            <Text className="text-xs text-gray-500">
-                                                {formatDateTimeNote(
-                                                    note.created_at
-                                                )}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                ))
-                            ) : (
-                                <View className="items-center py-8">
-                                    <Text className="text-gray-500">
-                                        No notes for this activity yet
-                                    </Text>
-                                </View>
-                            )}
-                        </ScrollView>
-                        <View className="mt-6 pt-4 border-t border-gray-200">
-                            <TouchableOpacity
-                                onPress={() =>
-                                    closePopup(setShowActivity, slideActivity)
-                                }
-                                className="bg-green_2 py-3 px-6 rounded-lg"
-                            >
-                                <Text className="text-white text-center font-semibold">
-                                    Close
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Animated.View>
-                </View>
-            )}
+              <Text className="text-xs text-gray-500 mb-6 text-center">
+                This trip is shared with others{"\n"}
+                Excluding notes and member information
+              </Text>
 
-            {/* Share Modal */}
-            {showShare && (
-                <View className="absolute inset-0">
-                    <TouchableOpacity
-                        className="absolute inset-0 bg-black/50"
-                        onPress={() => closePopup(setShowShare, slideShare)}
-                    />
-                    <Animated.View
-                        className="flex-1 justify-center items-center p-6"
-                        style={{
-                            transform: [
-                                {
-                                    translateY: slideShare.interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [500, 0],
-                                    }),
-                                },
-                            ],
-                        }}
-                    >
-                        <View className="bg-white rounded-2xl p-6 w-full max-w-sm">
-                            <Text className="text-xl font-bold text-black mb-4 text-center">
-                                Shared Trip
-                            </Text>
+              <View className="flex-row justify-between">
+                <TouchableOpacity
+                  onPress={() => closePopup(setShowShare, slideShare)}
+                  className="flex-1 mr-2 py-3 px-4 bg-gray-200 rounded-lg"
+                >
+                  <Text className="text-center font-semibold text-gray-700">
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
 
-                            <View className="mb-4">
-                                <Text className="text-sm text-gray-600 mb-2">
-                                    Input Descriptions
-                                </Text>
-                                <TextInput
-                                    className="border border-gray-300 rounded-lg p-3 text-sm"
-                                    placeholder="Enter description for sharing..."
-                                    multiline
-                                    numberOfLines={4}
-                                    value={shareDescription}
-                                    onChangeText={setShareDescription}
-                                    textAlignVertical="top"
-                                />
-                            </View>
-
-                            <Text className="text-xs text-gray-500 mb-6 text-center">
-                                This trip is shared with others{"\n"}
-                                Excluding notes and member information
-                            </Text>
-
-                            <View className="flex-row justify-between">
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        closePopup(setShowShare, slideShare)
-                                    }
-                                    className="flex-1 mr-2 py-3 px-4 bg-gray-200 rounded-lg"
-                                >
-                                    <Text className="text-center font-semibold text-gray-700">
-                                        Cancel
-                                    </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={handleShareConfirm}
-                                    className="flex-1 ml-2 py-3 px-4 bg-blue_button rounded-lg"
-                                >
-                                    <Text className="text-center font-semibold text-white">
-                                        Confirm
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Animated.View>
-                </View>
-            )}
-        </SafeAreaView>
-    );
+                <TouchableOpacity
+                  onPress={handleShareConfirm}
+                  className="flex-1 ml-2 py-3 px-4 bg-blue_button rounded-lg"
+                >
+                  <Text className="text-center font-semibold text-white">
+                    Confirm
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Animated.View>
+        </View>
+      )}
+    </SafeAreaView>
+  );
 }
