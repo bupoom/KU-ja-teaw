@@ -152,7 +152,7 @@ export default function PlaceDetail() {
                                 className="flex-row items-center"
                             >
                                 <Text className="text-sm text-gray-600 ml-2 mr-2">
-                                    {truncateText(placeDetail.location, 45)}
+                                    {truncateText(placeDetail.location, 30)}
                                 </Text>
                                 <Feather
                                     name="external-link"
@@ -209,7 +209,7 @@ export default function PlaceDetail() {
                 {/* Add Button - Fixed at bottom */}
                 {Number(from_bookmark) === 1 && (
                     <CustomButton
-                        title="Add Place Bookmark"
+                        title="Add Place"
                         onPress={handlePostPlace}
                     />
                 )}

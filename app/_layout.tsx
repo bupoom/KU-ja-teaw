@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import * as NavigationBar from "expo-navigation-bar"; // ✅ เพิ่ม
 
 SplashScreen.preventAutoHideAsync();
 
@@ -15,8 +16,17 @@ export default function IntroLayout() {
     });
 
     useEffect(() => {
-        if (loaded) SplashScreen.hideAsync();
+        if (loaded) {
+            SplashScreen.hideAsync();
+
+            // ✅ ซ่อน Navigation Bar ด้านล่าง Android
+            NavigationBar.setVisibilityAsync("hidden");
+
+            // ✅ ให้ปัดขึ้นเพื่อแสดงได้ (แนะนำสำหรับแอปทั่วไป)
+            NavigationBar.setBehaviorAsync("overlay-swipe");
+        }
     }, [loaded]);
+
     if (!loaded) return null;
 
     return (

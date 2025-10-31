@@ -195,7 +195,7 @@ export default function HomeScreen(): JSX.Element {
                             scrollEnabled={false}
                         />
                     ) : (
-                        <View className="bg-gray-50 rounded-xl p-4 items-center">
+                        <View className="p-4 items-center">
                             <Text className="text-gray-500">
                                 No active trips
                             </Text>

@@ -109,7 +109,7 @@ export default function PlaceDetail() {
                 className="flex-row items-center"
               >
                 <Text className="text-sm text-gray-600 ml-2 mr-2">
-                  {truncateText(placeDetail.location, 52)}
+                  {truncateText(placeDetail.location, 30)}
                 </Text>
                 <Feather name="external-link" size={14} color="#666" />
               </TouchableOpacity>

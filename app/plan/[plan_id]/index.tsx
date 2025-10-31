@@ -250,7 +250,7 @@ const PlanIndex = () => {
   // เอาไว้กรองค่าใหม่ลง Flights Form
   const handleSaveFlight = async () => {
     if (!validateFlightForm()) return; // เช็คว่าต้องมี Date เเละ Time ถ้าไม่เช็คมันจะ Error
-
+    
     if (editingFlightId) {
       // Update existing flight
       const updatedFlight: Flight = {
@@ -340,22 +340,30 @@ const PlanIndex = () => {
 
   //  ---------- Catch error Function --------------
   const validateFlightForm = () => {
-    if (!flightForm.departure_date) {
-      Alert.alert("Missing Field", "Please select a departure date.");
+    const f = flightForm;
+
+    // เช็คความครบของฟิลด์พื้นฐาน
+    if (!f.departure_date || !f.departure_time) {
+      Alert.alert("Missing Field", "Please select a departure date and time.");
       return false;
     }
-    if (!flightForm.departure_time) {
-      Alert.alert("Missing Field", "Please select a departure time.");
+    if (!f.arrival_date || !f.arrival_time) {
+      Alert.alert("Missing Field", "Please select an arrival date and time.");
       return false;
     }
-    if (!flightForm.arrival_date) {
-      Alert.alert("Missing Field", "Please select an arrival date.");
+
+    // แปลงเป็น Date object เพื่อตรวจเช็คความถูกต้องของช่วงเวลา
+    const dep = new Date(`${f.departure_date}T${f.departure_time}:00`);
+    const arr = new Date(`${f.arrival_date}T${f.arrival_time}:00`);
+
+    if (arr <= dep) {
+      Alert.alert(
+        "Invalid Time",
+        "Arrival date/time must be after departure date/time."
+      );
       return false;
     }
-    if (!flightForm.arrival_time) {
-      Alert.alert("Missing Field", "Please select an arrival time.");
-      return false;
-    }
+
     return true;
   };
 

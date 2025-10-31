@@ -219,7 +219,7 @@ const EventDetails = () => {
                     <Text className="text-xl font-bold text-black mb-3">
                         Title
                     </Text>
-                    <Text className="text-sm text-gray-700">
+                    <Text className="text-base text-gray-700">
                         {eventDetail?.title || "No title"}
                     </Text>
                 </View>

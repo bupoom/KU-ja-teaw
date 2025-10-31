@@ -25,6 +25,7 @@ import {
     updateActivitiesNote,
 } from "@/service/APIserver/Note";
 import { get_more_detail } from "@/service/APIserver/userService";
+import { truncateText } from "@/util/truncateText";
 
 const PlaceDetailPage = () => {
     const { plan_id, place_detail_id, place_id } = useLocalSearchParams<{
@@ -217,7 +218,7 @@ const PlaceDetailPage = () => {
                                 className="flex-row items-center"
                             >
                                 <Text className="text-sm text-gray-600 ml-2 mr-2">
-                                    {placeDetail.location}
+                                    {truncateText(placeDetail.location, 30)}
                                 </Text>
                                 <Feather
                                     name="external-link"

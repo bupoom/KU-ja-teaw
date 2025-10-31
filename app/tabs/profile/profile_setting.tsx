@@ -216,7 +216,7 @@ const AccountScreen: React.FC = () => {
                     <View className="space-y-6 mt-8">
                         {/* Name Field */}
                         <View>
-                            <Text className="text-black font-medium text-base mb-3">
+                            <Text className="text-black font-medium text-lg mb-3">
                                 Name
                             </Text>
                             <TextInput
@@ -231,8 +231,8 @@ const AccountScreen: React.FC = () => {
                         </View>
 
                         {/* Phone Number Field */}
-                        <View>
-                            <Text className="text-black font-medium text-base mb-3">
+                        <View className="mt-3">
+                            <Text className="text-black font-medium text-lg mb-3">
                                 Phone Number
                             </Text>
                             <TextInput

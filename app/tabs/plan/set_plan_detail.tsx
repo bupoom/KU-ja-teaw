@@ -2,9 +2,7 @@ import Header from "@/components/common/Header";
 import NextButton from "@/components/common/NextButton";
 import generateTripCode from "@/util/generateTripCode";
 import { Feather } from "@expo/vector-icons";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -16,6 +14,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 
 const MAX_NAME = 20;
@@ -29,79 +29,14 @@ export default function SetPlanDetail() {
   const [posterUri, setPosterUri] = useState<string | null>(null);
 
   const fmt_start = (d?: Date | null) =>
-    d
-      ? `${String(d.getDate()).padStart(2, "0")}/${String(
-          d.getMonth() + 1
-        ).padStart(2, "0")}/${d.getFullYear()}`
-      : "Select Start Date";
+    d ? `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}` : "Select Start Date";
 
   const fmt_end = (d?: Date | null) =>
-    d
-      ? `${String(d.getDate()).padStart(2, "0")}/${String(
-          d.getMonth() + 1
-        ).padStart(2, "0")}/${d.getFullYear()}`
-      : "Select End Date";
-
-  const onPickStart = (_: DateTimePickerEvent, d?: Date) => {
-    setShowStart(false);
-    if (!d) return;
-
-    if (endDate && d > endDate) {
-      Alert.alert("Invalid date range", "Start date cannot be after end date.");
-      setStartDate(null);
-      return;
-    }
-
-    if (endDate) {
-      const diffTime = endDate.getTime() - d.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-      if (diffDays > 30) {
-        Alert.alert(
-          "Invalid date range",
-          "Trip duration cannot exceed 30 days."
-        );
-        setStartDate(null);
-        return;
-      }
-    }
-
-    setStartDate(d);
-  };
-
-  const onPickEnd = (_: DateTimePickerEvent, d?: Date) => {
-    setShowEnd(false);
-    if (!d) return;
-
-    if (startDate && startDate > d) {
-      Alert.alert("Invalid date range", "End date must be after start date.");
-      setEndDate(null);
-      return;
-    }
-
-    if (startDate) {
-      const diffTime = d.getTime() - startDate.getTime();
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-      if (diffDays > 30) {
-        setEndDate(null);
-        Alert.alert(
-          "Invalid date range",
-          "Trip duration cannot exceed 30 days."
-        );
-        return;
-      }
-    }
-
-    setEndDate(d);
-  };
+    d ? `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}` : "Select End Date";
 
   const pickPoster = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow photo permissions.");
-      return;
-    }
+    if (status !== "granted") return Alert.alert("Permission needed", "Please allow photo permissions.");
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
@@ -113,29 +48,22 @@ export default function SetPlanDetail() {
 
   const validate = () => {
     if (!name.trim()) return "Please enter trip name.";
-    if (name.trim().length > MAX_NAME)
-      return `Trip name must be ≤ ${MAX_NAME} characters.`;
+    if (name.trim().length > MAX_NAME) return `Trip name must be ≤ ${MAX_NAME} characters.`;
     if (!startDate || !endDate) return "Please select start and end dates.";
     if (startDate > endDate) return "End date must be after start date.";
-
-    const diffTime = endDate.getTime() - startDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    if (diffDays > 30) return "Trip duration cannot be more than 30 days.";
-
+    const diff = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    if (diff > 30) return "Trip duration cannot be more than 30 days.";
     return null;
   };
 
   const onNext = () => {
     const validationError = validate();
-    if (validationError) {
-      Alert.alert("Invalid input", validationError);
-      return;
-    }
+    if (validationError) return Alert.alert("Invalid input", validationError);
 
     router.push({
       pathname: "/tabs/plan/set_plan_code",
       params: {
-        name: name ?? "",
+        name,
         start: startDate?.toISOString() ?? "",
         end: endDate?.toISOString() ?? "",
         posterUri: posterUri ?? "",
@@ -145,25 +73,23 @@ export default function SetPlanDetail() {
   };
 
   return (
-    <View className="flex-1 bg-white">
-      {/* Header */}
+    <KeyboardAvoidingView
+      className="flex-1 bg-white"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <Header title="Create Trip" onBackPress={() => router.back()} />
 
-      <View className="flex-1 px-6 py-6">
-        {/* Title + subtitle */}
-        <Text className="text-[20px] font-sf-bold text-black mb-1">
-          Plan a new trip
-        </Text>
-        <Text className="text-dark_gray text-base">
-          It's a beginning of your journey
-        </Text>
+      <ScrollView
+        className="flex-1 px-6 py-6"
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <Text className="text-[20px] font-sf-bold text-black mb-1">Plan a new trip</Text>
+        <Text className="text-dark_gray text-base">It's a beginning of your journey</Text>
 
         {/* Trip Name */}
         <View className="bg-white border border-gray_border rounded-lg p-4 mt-5 mb-4">
-          <Text className="text-black font-sf-semibold mb-2 text-[16px]">
-            Trip Name
-          </Text>
-
+          <Text className="text-black font-sf-semibold mb-2 text-[16px]">Trip Name</Text>
           <View className="border border-gray_border rounded-lg px-4">
             <TextInput
               value={name}
@@ -171,107 +97,52 @@ export default function SetPlanDetail() {
               placeholder="Enter Your Trip Name"
               placeholderTextColor="#9CA3AF"
               maxLength={MAX_NAME}
-              className="text-black font-medium"
+              className="text-black font-medium py-2"
             />
           </View>
-
-          <Text className="text-right text-dark_gray text-xs mt-2">
-            {name.length}/{MAX_NAME} characters
-          </Text>
+          <Text className="text-right text-dark_gray text-xs mt-2">{name.length}/{MAX_NAME} characters</Text>
         </View>
 
         {/* Date Duration */}
         <View className="bg-white border border-gray_border rounded-lg p-4 mb-4">
-          <Text className="text-black font-sf-semibold mb-2 text-[16px]">
-            Date Duration
-          </Text>
-
+          <Text className="text-black font-sf-semibold mb-2 text-[16px]">Date Duration</Text>
           <View className="flex-row gap-3">
-            {/* Start */}
-            <TouchableOpacity
-              onPress={() => setShowStart(true)}
-              className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center"
-              activeOpacity={0.8}
-            >
+            <TouchableOpacity onPress={() => setShowStart(true)} className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center">
               <Feather name="calendar" size={16} color="#9CA3AF" />
-              <Text
-                className={`ml-2 ${startDate ? "text-black" : "text-gray-400"} font-medium`}
-              >
+              <Text className={`ml-2 ${startDate ? "text-black" : "text-gray-400"} font-medium`}>
                 {fmt_start(startDate)}
               </Text>
             </TouchableOpacity>
 
-            {/* End */}
-            <TouchableOpacity
-              onPress={() => setShowEnd(true)}
-              className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center"
-              activeOpacity={0.8}
-            >
+            <TouchableOpacity onPress={() => setShowEnd(true)} className="flex-1 border border-gray_border rounded-lg px-4 py-3 flex-row items-center">
               <Feather name="calendar" size={16} color="#9CA3AF" />
-              <Text
-                className={`ml-2 ${endDate ? "text-black" : "text-gray-400"} font-medium`}
-              >
+              <Text className={`ml-2 ${endDate ? "text-black" : "text-gray-400"} font-medium`}>
                 {fmt_end(endDate)}
               </Text>
             </TouchableOpacity>
           </View>
 
-          {/* Date pickers */}
-          {showStart && (
-            <DateTimePicker
-              value={startDate ?? new Date()}
-              mode="date"
-              display={Platform.select({
-                ios: "spinner",
-                android: "default",
-              })}
-              onChange={onPickStart}
-            />
-          )}
-          {showEnd && (
-            <DateTimePicker
-              value={endDate ?? new Date()}
-              mode="date"
-              display={Platform.select({
-                ios: "spinner",
-                android: "default",
-              })}
-              onChange={onPickEnd}
-            />
-          )}
+          {showStart && <DateTimePicker value={startDate ?? new Date()} mode="date" onChange={(_, d) => { setShowStart(false); d && setStartDate(d); }} />}
+          {showEnd && <DateTimePicker value={endDate ?? new Date()} mode="date" onChange={(_, d) => { setShowEnd(false); d && setEndDate(d); }} />}
         </View>
 
-        {/* Poster Trip */}
+        {/* Poster */}
         <View className="bg-white border border-gray_border rounded-lg p-4 mb-5">
-          <Text className="text-black font-sf-semibold text-[16px] mb-2">
-            Poster Trip
-          </Text>
-
-          <TouchableOpacity
-            onPress={pickPoster}
-            className="rounded-2xl border border-dashed border-gray_border p-5 items-center justify-center"
-            activeOpacity={0.8}
-          >
+          <Text className="text-black font-sf-semibold text-[16px] mb-2">Poster Trip</Text>
+          <TouchableOpacity onPress={pickPoster} className="rounded-2xl border border-dashed border-gray_border p-5 items-center">
             {posterUri ? (
-              <Image
-                source={{ uri: posterUri }}
-                className="w-full h-40 rounded-xl"
-                resizeMode="cover"
-              />
+              <Image source={{ uri: posterUri }} className="w-full h-40 rounded-xl" resizeMode="cover" />
             ) : (
               <View className="items-center">
                 <Feather name="image" size={28} color="#9CA3AF" />
-                <Text className="text-gray-400 mt-2 text-center">
-                  Upload Picture to be your Trip Poster
-                </Text>
+                <Text className="text-gray-400 mt-2 text-center">Upload Picture to be your Trip Poster</Text>
               </View>
             )}
           </TouchableOpacity>
         </View>
 
-        {/* Next Button */}
-        <NextButton onPress={onNext} disabled={validate() !== null} />
-      </View>
-    </View>
+        <NextButton onPress={onNext} disabled={!!validate()} />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
