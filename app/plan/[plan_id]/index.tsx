@@ -266,7 +266,15 @@ const PlanIndex = () => {
       };
 
       // ✅ ใช้ updatedFlight โดยตรง
-      await edit_flight(parseInt(plan_id), editingFlightId, updatedFlight);
+      try{
+        await edit_flight(parseInt(plan_id), editingFlightId, updatedFlight);
+        fetch_flight_detail();
+        setIsFlightModalVisible(false);
+        resetFlightForm();
+      } catch (err){
+        Alert.alert("The form cannot be empty");
+        setIsFlightModalVisible(true);
+      }
 
       // ✅ ค่อยอัปเดต state หลังจาก backend สำเร็จ
       setFlights((prev) =>
@@ -285,11 +293,16 @@ const PlanIndex = () => {
         airline: flightForm.airline,
         trip_id: parseInt(plan_id!),
       };
-      await add_flight(parseInt(plan_id), newFlight);
-      fetch_flight_detail();
+      try {
+        await add_flight(parseInt(plan_id), newFlight);
+        fetch_flight_detail();
+        setIsFlightModalVisible(false);
+        resetFlightForm();
+      } catch (err){
+        Alert.alert("The form cannot be empty");
+        setIsFlightModalVisible(true);
+      }
     }
-    setIsFlightModalVisible(false);
-    resetFlightForm();
   };
   const handleCancelFlight = () => {
     setIsFlightModalVisible(false);
@@ -731,7 +744,7 @@ const PlanIndex = () => {
                     Departure Airport
                   </Text>
                   <TextInput
-                    value={flightForm.departure_airport}
+                    value={flightForm.departure_airport.toUpperCase()}
                     onChangeText={(text) =>
                       setFlightForm((prev) => ({
                         ...prev,
@@ -739,6 +752,7 @@ const PlanIndex = () => {
                       }))
                     }
                     placeholder="Airport Code"
+                    maxLength={3}
                     className="bg-gray-100 rounded-lg p-3 text-gray-700"
                   />
                 </View>
@@ -823,7 +837,7 @@ const PlanIndex = () => {
                     Destination Airport
                   </Text>
                   <TextInput
-                    value={flightForm.arrival_airport}
+                    value={flightForm.arrival_airport.toUpperCase()}
                     onChangeText={(text) =>
                       setFlightForm((prev) => ({
                         ...prev,
@@ -831,6 +845,7 @@ const PlanIndex = () => {
                       }))
                     }
                     placeholder="Airport Code"
+                    maxLength={3}
                     className="bg-gray-100 rounded-lg p-3 text-gray-700"
                   />
                 </View>

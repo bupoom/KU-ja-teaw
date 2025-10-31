@@ -9,6 +9,7 @@ import {
     Modal,
     ScrollView,
     Alert,
+    TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
@@ -32,6 +33,9 @@ const SelectTimeVoteEvent = () => {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [dates, setDates] = useState<string[]>([]);
     const [showDateModal, setShowDateModal] = useState(false);
+
+    // event title input
+    const [eventTitle, setEventTitle] = useState("");
 
     // default times 00:00 → 12:00
     const [start, setStart] = useState(() => {
@@ -71,10 +75,26 @@ const SelectTimeVoteEvent = () => {
         };
 
     const goNext = async () => {
-        if (!isRangeValid) return;
-        const pit_id = await createBlockVote(parseInt(plan_id),selectedDate as string,hhmm(start),hhmm(end),"Event","events");
+        if (!eventTitle.trim()) {
+            Alert.alert("Please enter event title.");
+            return;
+        }
+
+        if (!isRangeValid) {
+            Alert.alert("End time must be after start time.");
+            return;
+        }
+
+        const pit_id = await createBlockVote(
+            parseInt(plan_id),
+            selectedDate as string,
+            hhmm(start),
+            hhmm(end),
+            eventTitle,
+            "events"
+        );
+
         if (pit_id) {
-            // Alert.alert("there's pit_id : ", String(pit_id));
             router.push({
                 pathname: `/plan/[plan_id]/daily_trip/add_vote/vote_event/[vote_id]/result_vote`,
                 params: {
@@ -86,7 +106,7 @@ const SelectTimeVoteEvent = () => {
                 },
             });
         } else {
-            Alert.alert("there's already activities on This time.");
+            Alert.alert("There are already activities at this time.");
         }
     };
 
@@ -115,9 +135,9 @@ const SelectTimeVoteEvent = () => {
                 }}
             />
 
-            {/* main container แบ่ง content และ footer */}
+            {/* main container */}
             <View className="flex-1 justify-between px-6">
-                {/* ===== Content Center ===== */}
+                {/* ===== Content ===== */}
                 <View className="flex-1 items-center justify-start pt-20">
                     {/* Clock Icon */}
                     <View className="w-20 h-20 rounded-full border border-gray-300 items-center justify-center mb-6">
@@ -209,6 +229,24 @@ const SelectTimeVoteEvent = () => {
                             </Text>
                         )}
                     </View>
+
+                    {/* EVENT TITLE INPUT */}
+                    <View className="w-full px-4 mt-10">
+                        <View className="items-center">
+                            <View className="px-4 py-2 rounded-full bg-[#294C43] mb-2">
+                                <Text className="text-white font-semibold text-lg">
+                                    EVENT TITLE
+                                </Text>
+                            </View>
+                            <TextInput
+                                value={eventTitle}
+                                onChangeText={setEventTitle}
+                                placeholder="Enter event name"
+                                className="w-full h-16 rounded-lg border border-gray_border bg-white px-4 text-xl text-black"
+                                placeholderTextColor="#999"
+                            />
+                        </View>
+                    </View>
                 </View>
 
                 {/* ===== Footer Button ===== */}
@@ -230,14 +268,12 @@ const SelectTimeVoteEvent = () => {
             >
                 <View className="flex-1 justify-end bg-black/50">
                     <View className="bg-white rounded-t-3xl">
-                        {/* Modal Header */}
                         <View className="flex-row items-center justify-center px-6 py-4 border-b border-gray-200">
                             <Text className="text-lg font-semibold text-black">
                                 Select Date
                             </Text>
                         </View>
 
-                        {/* Date List */}
                         <ScrollView className="max-h-80">
                             {dates.map((date, index) => (
                                 <TouchableOpacity
@@ -272,7 +308,6 @@ const SelectTimeVoteEvent = () => {
                             ))}
                         </ScrollView>
 
-                        {/* Modal Footer */}
                         <View className="px-6 py-4">
                             <TouchableOpacity
                                 onPress={() => setShowDateModal(false)}
@@ -309,4 +344,5 @@ const SelectTimeVoteEvent = () => {
         </SafeAreaView>
     );
 };
+
 export default SelectTimeVoteEvent;
