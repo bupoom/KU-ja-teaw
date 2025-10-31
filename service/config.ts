@@ -1,4 +1,4 @@
-export const BASE_URL = "http://10.3.135.116:3000";
+export const BASE_URL = "http://10.0.2.2:3000";
 
 export const TIME_BEFORE_TOKEN_EXPIRE = 5; 
 
