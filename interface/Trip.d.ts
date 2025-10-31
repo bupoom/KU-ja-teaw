@@ -12,7 +12,7 @@ interface TripDetails {
     budget?: number;
     note?: Note[];
     // เพิ่มส่วนนี้มาน่ะครับ
-    trip_status: "planning" | "completed";
+    trip_status: boolean; // true = completed, false = planning
     trip_code: string;
     trip_password: string;
 }

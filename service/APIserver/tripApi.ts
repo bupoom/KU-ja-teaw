@@ -196,6 +196,7 @@ export const get_trip_detail = async (
         const response = (await apiClient.get(
             `${endpoints.trip.ByTrip}/${trip_id}`
         )) as { data: any };
+        console.log("Trip detail response data:", response.data);
 
         const trip: TripDetails = {
             trip_id: response.data.trip_id,

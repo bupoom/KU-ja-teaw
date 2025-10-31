@@ -61,6 +61,7 @@ const ProfileScreen: React.FC = () => {
             { title: "Coming", trips: comingTrips },
             { title: "END", trips: endTrips },
         ];
+        // console.log("Organized trip sections:", sections);
 
         return sections;
     };
