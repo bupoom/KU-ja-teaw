@@ -162,7 +162,7 @@ const ProfileScreen: React.FC = () => {
                 {/* Header */}
                 <LinearGradient colors={["#284D44", "#059669"]}>
                     {/* Settings Button */}
-                    <View className="flex-row justify-end items-center px-4">
+                    <View className="flex-row justify-end items-center px-4 pt-12">
                         <TouchableOpacity
                             onPress={handleSettings}
                             className="p-2 bg-white/0 rounded-full"
