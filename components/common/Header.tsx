@@ -12,7 +12,7 @@ const Header = ({
 }) => {
     return (
         <View
-            className={`flex-row items-center justify-between px-4 py-3 ${backgroundColor} border-b ${borderColor} mt-16`}
+            className={`flex-row items-center justify-between px-4 ${backgroundColor} border-b ${borderColor} mt-16`}
         >
             {showBackButton ? (
                 <TouchableOpacity onPress={onBackPress} className="p-2">

@@ -124,13 +124,17 @@ const OwnerDecision = () => {
 
         {/* Title Section (read-only) */}
         <View className="bg-white rounded-lg border border-gray_border p-4 mb-4">
-          <Text className="text-xl font-bold text-black mb-3 ml-4">Title</Text>
-          <View className="border border-gray_border p-3 rounded-lg bg-gray-100">
-            <Text className="text-gray-700">{title}</Text>
+          <View className="flex-row items-center justify-start">
+            <Text className="text-xl font-bold text-black mr-2">
+              Title :
+            </Text>
+            <Text className="text-black font-semibold text-base">
+              {title || "No Title Provided"}
+            </Text>
           </View>
         </View>
 
-        <Text className="text-lg font-semibold text-black mb-3 ml-6">
+        <Text className="text-lg font-semibold text-black mb-3 ml-4">
           Select Final Decision
         </Text>
         <View className="flex-row flex-wrap gap-4 justify-start mb-6">

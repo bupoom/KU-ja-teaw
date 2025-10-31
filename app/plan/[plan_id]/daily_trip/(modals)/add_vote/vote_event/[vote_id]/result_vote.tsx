@@ -5,6 +5,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
@@ -33,8 +34,6 @@ const ResultVoteEvent = () => {
 
   const [title, setTitle] = useState<string>("");
   const [voteData, setVoteData] = useState<VoteEventData | null>();
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [editTitle, setEditTitle] = useState("");
   const [role, setRole] = useState<string>("Viewer");
   const [numMember, setNumMember] = useState<Number>(1);
   const [error, setError] = useState<string | null>(null);
@@ -126,7 +125,6 @@ const ResultVoteEvent = () => {
       });
 
       setTitle(result.event_title);
-      setEditTitle(result.event_title);
     } catch (err) {
       console.error("Error fetching vote data:", err);
       setError("Failed to load vote data");
@@ -134,19 +132,39 @@ const ResultVoteEvent = () => {
     }
   }, [plan_id, vote_id]);
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchVoteData();
+    setRefreshing(false);
+  }, [fetchVoteData]);
+
   const firstVote = async (pit_id: number, event_name: string) => {
     console.log("First Vote");
-    const res = await patchNewUserVote(parseInt(plan_id), pit_id, -1, event_name);
+    const res = await patchNewUserVote(
+      parseInt(plan_id),
+      pit_id,
+      -1,
+      event_name
+    );
     console.log("Result Change:", res);
   };
 
   const cancelVote = async (pit_id: number, event_name: string) => {
     console.log("Cancel Vote");
-    const res = await patchNewUserVote(parseInt(plan_id), pit_id, pit_id, event_name);
+    const res = await patchNewUserVote(
+      parseInt(plan_id),
+      pit_id,
+      pit_id,
+      event_name
+    );
     console.log("Result Change:", res);
   };
 
-  const changeVote = async (vote_pit_id: number, from_pit_id: number, event_name: string) => {
+  const changeVote = async (
+    vote_pit_id: number,
+    from_pit_id: number,
+    event_name: string
+  ) => {
     console.log("Change Vote");
     const res = await patchNewUserVote(
       parseInt(plan_id),
@@ -228,7 +246,12 @@ const ResultVoteEvent = () => {
   }
 
   return (
-    <ScrollView className="flex-1 bg-white">
+    <ScrollView
+      className="flex-1 bg-white"
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <Header title="Vote Event" onBackPress={handleBack} />
 
       <View className="px-6 mt-4">
@@ -264,52 +287,14 @@ const ResultVoteEvent = () => {
 
         {/* Title Section */}
         <View className="bg-white rounded-lg border border-gray_border p-4 mb-4">
-          <Text className="text-xl font-bold text-black mb-3 ml-4">Title</Text>
-
-          {isEditingTitle ? (
-            <View>
-              <TextInput
-                value={editTitle}
-                onChangeText={setEditTitle}
-                multiline
-                className="border border-gray-300 rounded-lg p-3 text-gray-700 min-h-[60px]"
-                style={{ textAlignVertical: "top" }}
-              />
-              <View className="flex-row gap-2 mt-2">
-                <TouchableOpacity
-                  onPress={() => {
-                    setTitle(editTitle);
-                    setIsEditingTitle(false);
-                  }}
-                  className="bg-green_2 px-4 py-2 rounded-lg flex-1"
-                >
-                  <Text className="text-white text-center font-medium">
-                    Save
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setEditTitle(title);
-                    setIsEditingTitle(false);
-                  }}
-                  className="bg-white px-4 py-2 rounded-lg flex-1 border border-gray_border"
-                >
-                  <Text className="text-gray-700 text-center font-medium">
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <TouchableOpacity
-              onPress={() => setIsEditingTitle(true)}
-              className="border border-gray_border p-3 rounded-lg"
-            >
-              <Text className="text-gray-700">
-                {title || "Tap to add a title..."}
-              </Text>
-            </TouchableOpacity>
-          )}
+          <View className="flex-row items-center justify-start">
+            <Text className="text-xl font-bold text-black mr-2">
+              Title :
+            </Text>
+            <Text className="text-black font-semibold text-base">
+              {title || "No Title Provided"}
+            </Text>
+          </View>
         </View>
 
         {/* Voting Results */}
@@ -342,7 +327,10 @@ const ResultVoteEvent = () => {
               <TouchableOpacity
                 key={option.id}
                 onPress={() =>
-                  handleToggleVote(transportOption?.pit_id as number, option.type)
+                  handleToggleVote(
+                    transportOption?.pit_id as number,
+                    option.type
+                  )
                 }
                 activeOpacity={0.8}
                 className="w-[30%] mb-4 rounded-lg"
